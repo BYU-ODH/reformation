@@ -28,6 +28,26 @@
           (for [o options]
             [:option o]))))
 
+(defn text-area [opt-map]
+  (let [{:keys [id input-value placeholder disabled label valpath changefn value word-limit]} opt-map
+        textarea 
+        [:textarea.form-control {:id id 
+                                 :name id 
+                                 :rows 5
+                                 :default-value input-value
+                                 :value value
+                                 :on-change changefn 
+                                 :placeholder placeholder
+                                 :disabled disabled}]]
+    [:div.form-group
+     [:label {:for id}
+      label]
+     textarea
+     (when word-limit
+       (let [words (clojure.string/split value #" +")
+             word-count (count words)]
+         [:div.word-limit (str word-count "/" word-limit " words")]))]))
+
 (defn tinput
   "Produce data-bound inputs for a given map, updating `ATOM` on change. `opt-map` specifies options including display variables."
   [ATOM valpath & [opt-map]]
@@ -36,18 +56,19 @@
               type "text"}} opt-map
         input-value (get-in @ATOM valpath)
         
-        change-fun1 (fn [e]
+        changefn1 (fn [e]
                       (swap! ATOM
                              assoc-in valpath (shared/get-value-from-change e)))
-        change-fun (if-let [vf validation-function]
+        changefn (if-let [vf validation-function]
+
                      (fn [e]
                        (vf e)
-                       (change-fun1 e))
-                     change-fun1)
+                       (changefn1 e))
+                     changefn1)
         input-map (merge {:type type
                           :id id
                           :name id
-                          :on-change change-fun
+                          :on-change changefn
                           :default-value default-value}
                          {:value input-value}
                          (when disabled
@@ -60,17 +81,10 @@
                            [:div.invalid-feedback invalid-feedback])
         input (condp = type
                 :select (select-box {:options (:options opt-map)
-                                     :on-change change-fun
+                                     :on-change changefn
                                      :id id})
-                :multi-table (mt/multi-table ATOM opt-map)
-                :textarea [:textarea.form-control {:id id 
-                                                   :name id 
-                                                   :rows 5
-                                                   :value input-value
-                                                   :on-change change-fun 
-                                                   :placeholder (:placeholder opt-map)
-                                                   :disabled disabled}]
-
+                :multi-table (multi-table ATOM opt-map)
+                :textarea (text-area (assoc opt-map :value input-value :changefn changefn))
                 ;; default
                 [:input.form-control input-map])]
     [:div.form-group
