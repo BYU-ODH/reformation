@@ -97,4 +97,4 @@
   
   Resulting form will be read-only with no changes possible."
   [schema application]
-  (application/render-application (shared/reviewify schema) (atom application)))
+  (render-application (shared/reviewify schema) (atom application)))
