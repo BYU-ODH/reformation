@@ -1,4 +1,4 @@
-(defproject reagent-forms "0.1.0"
+(defproject reagent-forms "0.1.1"
   :description "Generate and manipulate form datastructures in pure Clojure, which can be read with Reagent."
   :url "http://tech.toryanderson.com"
   :license {:name "Eclipse Public License"

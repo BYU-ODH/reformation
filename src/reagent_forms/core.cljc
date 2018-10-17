@@ -96,5 +96,5 @@
   "Parse the application map and render the review based on the ordered `schema` of the application, with values in `application` expected to be as given by `render-application`.
   
   Resulting form will be read-only with no changes possible."
-  [application schema]
+  [schema application]
   (application/render-application (shared/reviewify schema) (atom application)))
