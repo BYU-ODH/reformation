@@ -1,4 +1,4 @@
-(ns reagent-forms.shared
+(ns reagent-forms.shared-test
   (:require [reagent.core :as r]
             [reagent.session :as session]
             [clojure.string :as s]

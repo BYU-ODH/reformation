@@ -2,7 +2,7 @@
   "The application with which users fill out the form to make or edit an application"
   (:require [reagent.core :as r]
             [reagent.session :as session]
-            [reagent-forms.shared :as shared :refer [cx]]
+            [reagent-forms.shared-test :as shared :refer [cx]]
             [reagent-forms.shared.auth :as auth]
             [accountant.core]
             [reagent-forms.routes :as rt]

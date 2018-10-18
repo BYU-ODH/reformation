@@ -5,7 +5,7 @@
             [ajax.core :refer [GET POST]]
             [accountant.core :as a]
             [reagent-forms.routes :as rt]
-            [reagent-forms.shared :refer [get-value-by-id] :as shared]))
+            [reagent-forms.shared-test :refer [get-value-by-id] :as shared]))
 
 (defonce USER (r/atom nil))
 

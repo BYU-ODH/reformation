@@ -2,12 +2,11 @@
   "Comment-boxes and comment lists"
   (:require [reagent.core :as r]
             [reagent.session :as session]
-            [reagent-forms.shared :as shared]
+            [reagent-forms.shared-test :as shared]
             [reagent-forms.shared.components.input :as input]
             [reagent-forms.shared.components.lightbox :as lb]
             [reagent-forms.reviews :refer [APPLICATIONS] :as reviews]
             [reagent-forms.shared.auth :as auth]
-            [reagent-forms.approval-common :as approval]
             [clojure.string :as str]
             [ajax.core :refer [GET POST PATCH DELETE]]))
 

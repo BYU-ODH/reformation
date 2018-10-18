@@ -3,7 +3,7 @@
   (:require [reagent.core :as r]
             [reagent.session :as session]
             [reagent-forms.routes :as routes]
-            [reagent-forms.shared :as shared :refer [cx]]
+            [reagent-forms.shared-test :as shared :refer [cx]]
             [reagent-forms.shared.auth :as auth]
             [ajax.core :refer [GET POST]]))
 

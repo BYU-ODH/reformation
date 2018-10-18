@@ -1,6 +1,6 @@
 (ns reagent-forms.shared.components.nav
   (:require [reagent-forms.shared.auth :as auth]
-            [reagent-forms.shared :refer [cx] :as shared]
+            [reagent-forms.shared-test :refer [cx] :as shared]
             [reagent-forms.routes :as rt]
             [reagent-forms.shared.components.lightbox :as lb]
             [clojure.string :as str]

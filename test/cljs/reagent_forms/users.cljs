@@ -1,7 +1,7 @@
 (ns reagent-forms.users
   "User details page"
   (:require [reagent.core :as r]
-            [reagent-forms.shared :as shared]
+            [reagent-forms.shared-test :as shared]
             [reagent-forms.shared.auth :as auth]
             [reagent-forms.shared.components.input :as i]
             [reagent-forms.routes :as rt]

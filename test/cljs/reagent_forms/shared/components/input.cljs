@@ -1,5 +1,5 @@
 (ns reagent-forms.shared.components.input
-  (:require [reagent-forms.shared :as shared ]))
+  (:require [reagent-forms.shared-test :as shared ]))
 
 (defn reviewify
   "Adjust a submission-default map for review rather than editing, adding lots of "

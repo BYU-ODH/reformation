@@ -1,8 +1,8 @@
-(ns reagent-forms.core
+(ns reagent-forms.core-front
   (:require [reagent.core :as r]
             [reagent.session :as session]
             [reagent-forms.ajax :refer [load-interceptors!]]
-            [reagent-forms.shared :refer [page-template] :as shared]
+            [reagent-forms.shared-test :refer [page-template] :as shared]
             [reagent-forms.shared.components.nav :as nav]
             [reagent-forms.shared.auth :as auth]
             [reagent-forms.routes :as routes]
