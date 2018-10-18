@@ -10,7 +10,7 @@
                                   [com.andrewmcveigh/cljs-time "0.5.2"]
                                   [compojure "1.6.0"]
                                   [garden "1.3.2"]
-                                  [hiccup "1.0.5"]
+                                  [hiccup "1.0.5"] 
                                   [metosin/ring-http-response "0.9.0"]
                                   [mount "0.1.11"]
                                   [org.webjars.bower/tether "1.4.0"]

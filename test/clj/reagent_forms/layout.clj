@@ -4,7 +4,10 @@
    [hiccup.page :as hp]
    [hiccup.util :refer [with-base-url]]
    [hiccup.element :refer [javascript-tag]]
-   [ring.util.http-response :refer [content-type ok]]))
+   [cheshire.core :refer [generate-string]]
+   [ring.util.http-response :refer [content-type ok]]
+   [ring.util.anti-forgery :refer [anti-forgery-field]]
+   [ring.middleware.anti-forgery :refer [*anti-forgery-token*]]))
 
 (declare ^:dynamic *app-context*)
 (def style-path "/css/")
@@ -18,6 +21,9 @@
   ;;    (apply str path))
   )
 
+(defn anti-forgery-element []
+  [:input {:id "token" :value *anti-forgery-token* :type "hidden"}
+   (javascript-tag (str  "var csrfToken = '" *anti-forgery-token* "'"))])
 
 (defn include-byu-deps []
   (hp/include-css "https://cdn.byu.edu/byu-theme-components/latest/byu-theme-components.min.css")
@@ -28,6 +34,7 @@
    (hp/include-css "//cloud.typography.com/75214/6517752/css/fonts.css")
    [:meta {:name "viewport"
            :content "width=device-width, initial-scale=1.0"}]
+   (javascript-tag (str "var USER = " (generate-string userinfo)))
    (javascript-tag (str "var context = ''"))
    ;(javascript-tag (str "var context = '" *app-context* "'"))
    ])
@@ -50,7 +57,7 @@
 
 (defn cljs-includes []
   [:div
-   (hp/include-js (context-path script-path "app.js")
+   (hp/include-js (context-path script-path "app.js") ;; must precede the goog.require
                   (context-path assets-path "jquery/jquery.min.js")
                   (context-path assets-path "tether/dist/js/tether.min.js")
                   (context-path assets-path "bootstrap/js/bootstrap.min.js"))
@@ -64,6 +71,7 @@
     (hp/html5
      (boiler-header userinfo)
      (boiler-plate)
+     (anti-forgery-element)
      (cljs-app-base)
      (cljs-app-footer)
      (cljs-includes))) ;; it makes a big difference to make sure the clojurescript is included last, so the DOM is rendered

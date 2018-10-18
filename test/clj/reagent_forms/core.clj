@@ -2,7 +2,8 @@
   (:require [reagent-forms.handler :as handler]
             [luminus.repl-server :as repl]
             [luminus.http-server :as http]
-            ;[reagent-forms.config :refer [env]]
+            [luminus-migrations.core :as migrations]
+            [reagent-forms.config :refer [env]]
             [clojure.tools.cli :refer [parse-opts]]
             [clojure.tools.logging :as log]
             [mount.core :as mount])
@@ -18,7 +19,7 @@
                 (http/start
                   (-> env
                       (assoc :host "127.0.0.1" :handler (handler/app))
-                      (update :port 3099)))
+                      (update :port #(or (-> env :options :port) %))))
                 :stop
                 (http/stop http-server))
 
@@ -48,8 +49,10 @@
 (defn -main [& args]
   (cond
     (some #{"migrate" "rollback"} args)
-    (System/exit 0)
+    (do
+      (mount/start #'reagent-forms.config/env)
+      (migrations/migrate args (select-keys env [:database-url]))
+      (System/exit 0))
     :else
     (start-app args)))
   
- 
