@@ -85,7 +85,7 @@
                    :cljsbuild
                    {:builds
                     {:app
-                     {:source-paths ["test/cljs"]
+                     {:source-paths ["test/cljs" "src"]
                       :compiler
                       {:main "reagent-forms.app"
                        :asset-path "/js/out"

@@ -41,8 +41,6 @@
                                  :placeholder placeholder
                                  :disabled disabled}]]
     [:div.form-group
-     [:label {:for id}
-      label]
      textarea
      (when char-limit
        (let [char-count (count value)]
