@@ -5,10 +5,14 @@
             [reagent-forms.shared-test :as shared :refer [cx]]
             [accountant.core]
             [reagent-forms.routes :as rt]
-            [reagent-forms.core :as rfc]
-            [ajax.core :refer [GET POST]]))
+            [reagent-forms.core :as rfc]))
 
-;;TODO: Validation
+{:user
+ {:name "Testerly Test",
+  :email "toryanderson@byu.edu",
+  :username "tsatest"},
+ :chair {:name "Tory", :email "tory_anderson@byu.edu"},
+ :faculty-participants "mandatory fac"}
 
 
 (def hmeg-default (array-map :date-client [:label "Date"
@@ -108,16 +112,6 @@
 (def SUBMISSION
   (shared/reset-default (r/atom {}) hmeg-default))
 
-(defn submit! "Submit the SUBMISSION atom as a new form"
-  []
-  (let [url "/submit"
-        method POST
-        pmap {:handler (fn [r] (js/alert "Your submission has been received")
-                         (accountant.core/navigate! (rt/home)))
-              :error-handler (fn [e] (js/alert "There has been an error"))
-              :params {:submission @SUBMISSION}}]
-    (method url pmap)))
-
 (defn validate-and-submit "Validate the form and submit"
   [form-dom-id]
   (let [form (.getElementById js/document form-dom-id)
@@ -126,28 +120,11 @@
     (if (.checkValidity form)
       (js/alert "You have errors in your form. Please correct them before submitting."))))
 
-(defn submission-date-prompt []
-  (let [d (@SUBMISSION :date-client)
-        date-string (shared/format-date d)]
-    [:div.form-group
-     [:div.row
-      [:div.col-md-3
-       [:label "Date"]]
-      [:div.col date-string]]]))
-
 (defn tinput [value-fun & [opt-map]]
   (let [valpath (if (keyword? value-fun)
                   [value-fun]
                   value-fun)]
     (rfc/tinput SUBMISSION valpath opt-map)))
-
-(defn tinput-in
-  "Generate a function to either get or set a value along a path"
-  ([in-path]
-   (fn [m] (get-in m in-path)))
-  ([in-path value]
-   (fn [m value]
-     (assoc-in m in-path value))))
 
 (def jumbotext
   [:div.info
@@ -155,69 +132,13 @@
    [:p "Guidelines for operational aspects of international study programs may be found on our Faculty Resources page at " [:a {:href "http://kennedy.byu.edu/reagent-forms/faculty/index.php"} "http://kennedy.byu.edu/reagent-forms/faculty/index.php"]
     ", listed as “Principles to Guide International Study Programs”. Programs must adhere to the BYU International Travel Policy found at " [:a {:href "travelsmart.byu.edu"} "travelsmart.byu.edu."]]])
 
-(defn user-information []
-  [:div.user-details
-   [tinput [:user :name] {:label "Your Name"
-                          :disabled true
-                          :subtext "*Name as per your BYU profile."} ]
-   [tinput [:user :email] {:label "Your Email Address"
-                           :disabled true
-                           :subtext "*Email as per your BYU profile."}]])
-
-(defn sanitize-for-edit
-  "Sanitize a map for editing to be the current submission"
-  [f]
-  (-> f
-      (update :date-client #(js/Date. %))
-      (assoc :update (js/Date.))))
-
-(defn get-form-for-edit 
-  "Request the form for editing from the back-end"
-  [application-id]
-  (if-let [f (session/get! :edit-form)]
-    (reset! SUBMISSION (sanitize-for-edit f))
-    (shared/get-application
-     {:user-map {}
-      :application-id application-id
-      :receptacle-atom SUBMISSION
-      :filter-fn (comp sanitize-for-edit :form)})))
-
-(defn submit-button
-  "Generate the button for submitting a new application or the edits to an existing application"
-  [form-dom-id]
-  (let [update-id (session/get :application)]
-    (if update-id 
-      [:a.btn.btn-warning {:on-click #(validate-and-submit form-dom-id)} "Update"]
-      [:a.btn.btn-primary {:on-click #(validate-and-submit form-dom-id)} "Submit"])))
-
-(defn revision-cancel-button []
-  [:a.btn.btn-danger.cancel-revisions
-   {:href (rt/review-route {:application (session/get :application)})
-    :on-click (fn [click]
-                (.preventDefault click)
-                (when (js/confirm "Discard your changes?")
-                  (shared/go-to (rt/review-route {:application (session/get :application)}))))}
-   "Cancel Revisions"])
-
-(defn render-application
-  "Render a browser form based on an input [sorted] map `fm`, with values to be stored/updated in atom `A`"
-  [fm A & [pathv]]
-  (for [[k v] fm :let [path (conj (vec pathv) k)]]
-    (cond
-      (vector? v) [rfc/tinput A path (apply hash-map v)] 
-      (map? v) (render-application v A path) 
-      :default [:h3.error (str "Failed to render (type:" (type v) ") " fm)])))
-
 (defn generate-form []
-  (when-let [application-id (session/get :application)]
-    (when-not (:update @SUBMISSION)
-      (get-form-for-edit application-id)))
   (let [form-id "needs-validation"]
     [:div.submission-form 
      [:form.form-control {:id form-id}
-      (into [:div.form-contents]
-            (render-application hmeg-default SUBMISSION))
-      [submit-button form-id]]]))
+      (into [:div.form-contents]            
+            (rfc/render-application hmeg-default SUBMISSION))
+      ]]))
 
 (defn app-page []
   (shared/page-template {:jumbo-title "Humanities Undergraduate Grant Application"

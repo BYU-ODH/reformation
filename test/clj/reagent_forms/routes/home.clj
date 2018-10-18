@@ -14,6 +14,4 @@
 
 (defroutes home-routes
   (GET "/" req (home-page req))
-  (GET "/reviews" req (home-page req)) ;;;TODO: SECURE THIS
-  (GET "/review/:application" req (home-page req)) ;;;TODO: SECURE THIS
-  )
+  (GET "/review" req (home-page req)))

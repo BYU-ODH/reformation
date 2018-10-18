@@ -105,7 +105,7 @@
     (cond
       (vector? v) [tinput A path (apply hash-map v)] 
       (map? v) (render-application v A path) 
-      :default [:h3.error (str "Failed to render (type:" (type v) ") " fm)])))
+      :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)])))
 
 (defn render-review
   "Parse the application map and render the review based on the ordered `schema` of the application, with values in `application` expected to be as given by `render-application`.

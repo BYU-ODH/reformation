@@ -17,11 +17,7 @@
 ;; (secretary/defroute status-route "/status" []
 ;;   (session/put! :page :status))
 
-(secretary/defroute reviews-dashboard-route "/reviews" []
-  (session/put! :page :reviews-dashboard))
-
-(secretary/defroute review-route "/review/:application" [application]
-  (session/put! :application (js/parseInt application))
+(secretary/defroute review-route "/review" []
   (session/put! :page :review))
 
 (secretary/defroute edit-route "/application/edit/:application" [application]

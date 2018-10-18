@@ -8,6 +8,7 @@
             [reagent-forms.application :as app]
             [secretary.core :as secretary :include-macros true]
             [accountant.core :as accountant]
+            [reagent-forms.review-front :as review]
             [ajax.core :refer [GET POST]]))
 
 (defn home-page []
@@ -36,6 +37,7 @@
 
 (def pages
   {:home #'app/app-page
+   :review #'review/app-page
    :app #'app/app-page})
 
 (defn page []
