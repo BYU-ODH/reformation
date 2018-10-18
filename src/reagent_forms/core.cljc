@@ -29,7 +29,8 @@
             [:option o]))))
 
 (defn text-area [opt-map]
-  (let [{:keys [id input-value placeholder disabled label valpath changefn value word-limit]} opt-map
+  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-limit]} opt-map
+        
         textarea 
         [:textarea.form-control {:id id 
                                  :name id 
@@ -43,28 +44,30 @@
      [:label {:for id}
       label]
      textarea
-     (when word-limit
-       (let [words (clojure.string/split value #" +")
-             word-count (count words)]
-         [:div.word-limit (str word-count "/" word-limit " words")]))]))
+     (when char-limit
+       (let [char-count (count value)]
+         [:div.char-limit (str char-count "/" char-limit " characters")]))]))
 
 (defn tinput
   "Produce data-bound inputs for a given map, updating `ATOM` on change. `opt-map` specifies options including display variables."
   [ATOM valpath & [opt-map]]
-  (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback]
+  (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-limit]
          :or {id (str valpath)
               type "text"}} opt-map
         input-value (get-in @ATOM valpath)
-        
-        changefn1 (fn [e]
-                      (swap! ATOM
-                             assoc-in valpath (shared/get-value-from-change e)))
-        changefn (if-let [vf validation-function]
+        change-atom (fn [s] (swap! ATOM assoc-in valpath s))
+        changefn1 (fn [e] (change-atom (shared/get-value-from-change e)))
+        changefn (cond
+                   validation-function (comp validation-function changefn1)
+                   char-limit (fn [e]
+                                (let [v (shared/get-value-from-change e)]
+                                  (cond
+                                    (= char-limit (dec (count v))) identity
+                                    (< char-limit (count v)) (change-atom (apply str (take char-limit v)))
+                                    :default (changefn1 e)))
 
-                     (fn [e]
-                       (vf e)
-                       (changefn1 e))
-                     changefn1)
+                                )
+                   :default changefn1)
         input-map (merge {:type type
                           :id id
                           :name id
