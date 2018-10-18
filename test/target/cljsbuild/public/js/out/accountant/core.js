@@ -34,11 +34,11 @@ return nav_handler.call(null,token);
  *   Otherwise, return nil.
  */
 accountant.core.get_href_attribute = (function accountant$core$get_href_attribute(node){
-if(cljs.core.truth_((function (){var and__43249__auto__ = node;
-if(cljs.core.truth_(and__43249__auto__)){
+if(cljs.core.truth_((function (){var and__44503__auto__ = node;
+if(cljs.core.truth_(and__44503__auto__)){
 return cljs.core._EQ_.call(null,node.nodeType,Node.ELEMENT_NODE);
 } else {
-return and__43249__auto__;
+return and__44503__auto__;
 }
 })())){
 return node.getAttribute("href");
@@ -56,16 +56,16 @@ accountant.core.find_href_node = (function accountant$core$find_href_node(e){
 while(true){
 var href = accountant.core.get_href_attribute.call(null,e);
 var attrs = e.attributes;
-var navigation_link_QMARK_ = (function (){var and__43249__auto__ = href;
-if(cljs.core.truth_(and__43249__auto__)){
-var and__43249__auto____$1 = attrs;
-if(cljs.core.truth_(and__43249__auto____$1)){
+var navigation_link_QMARK_ = (function (){var and__44503__auto__ = href;
+if(cljs.core.truth_(and__44503__auto__)){
+var and__44503__auto____$1 = attrs;
+if(cljs.core.truth_(and__44503__auto____$1)){
 return cljs.core.not.call(null,(attrs["data-trigger"]));
 } else {
-return and__43249__auto____$1;
+return and__44503__auto____$1;
 }
 } else {
-return and__43249__auto__;
+return and__44503__auto__;
 }
 })();
 if(cljs.core.truth_(navigation_link_QMARK_)){
@@ -74,8 +74,8 @@ return e;
 var temp__5278__auto__ = e.parentNode;
 if(cljs.core.truth_(temp__5278__auto__)){
 var parent = temp__5278__auto__;
-var G__47234 = parent;
-e = G__47234;
+var G__51299 = parent;
+e = G__51299;
 continue;
 } else {
 return null;
@@ -111,17 +111,17 @@ var meta_key = e.metaKey;
 var alt_key = e.altKey;
 var ctrl_key = e.ctrlKey;
 var shift_key = e.shiftKey;
-var any_key = (function (){var or__43261__auto__ = meta_key;
-if(cljs.core.truth_(or__43261__auto__)){
-return or__43261__auto__;
+var any_key = (function (){var or__44515__auto__ = meta_key;
+if(cljs.core.truth_(or__44515__auto__)){
+return or__44515__auto__;
 } else {
-var or__43261__auto____$1 = alt_key;
-if(cljs.core.truth_(or__43261__auto____$1)){
-return or__43261__auto____$1;
+var or__44515__auto____$1 = alt_key;
+if(cljs.core.truth_(or__44515__auto____$1)){
+return or__44515__auto____$1;
 } else {
-var or__43261__auto____$2 = ctrl_key;
-if(cljs.core.truth_(or__43261__auto____$2)){
-return or__43261__auto____$2;
+var or__44515__auto____$2 = ctrl_key;
+if(cljs.core.truth_(or__44515__auto____$2)){
+return or__44515__auto____$2;
 } else {
 return shift_key;
 }
@@ -143,31 +143,31 @@ var current_host = window.location.hostname;
 var current_port = window.location.port;
 var loc = window.location;
 var current_relative_href = [cljs.core.str.cljs$core$IFn$_invoke$arity$1(loc.pathname),cljs.core.str.cljs$core$IFn$_invoke$arity$1(loc.query),cljs.core.str.cljs$core$IFn$_invoke$arity$1(loc.hash)].join('');
-if(cljs.core.truth_((function (){var and__43249__auto__ = cljs.core.not.call(null,any_key);
-if(and__43249__auto__){
-var and__43249__auto____$1 = new cljs.core.PersistentHashSet(null, new cljs.core.PersistentArrayMap(null, 2, ["",null,"_self",null], null), null).call(null,link_target);
-if(cljs.core.truth_(and__43249__auto____$1)){
-var and__43249__auto____$2 = cljs.core._EQ_.call(null,button,(0));
-if(and__43249__auto____$2){
-var and__43249__auto____$3 = cljs.core._EQ_.call(null,host,current_host);
-if(and__43249__auto____$3){
-var and__43249__auto____$4 = (cljs.core.not.call(null,port)) || (cljs.core._EQ_.call(null,[cljs.core.str.cljs$core$IFn$_invoke$arity$1(port)].join(''),[cljs.core.str.cljs$core$IFn$_invoke$arity$1(current_port)].join('')));
-if(and__43249__auto____$4){
+if(cljs.core.truth_((function (){var and__44503__auto__ = cljs.core.not.call(null,any_key);
+if(and__44503__auto__){
+var and__44503__auto____$1 = new cljs.core.PersistentHashSet(null, new cljs.core.PersistentArrayMap(null, 2, ["",null,"_self",null], null), null).call(null,link_target);
+if(cljs.core.truth_(and__44503__auto____$1)){
+var and__44503__auto____$2 = cljs.core._EQ_.call(null,button,(0));
+if(and__44503__auto____$2){
+var and__44503__auto____$3 = cljs.core._EQ_.call(null,host,current_host);
+if(and__44503__auto____$3){
+var and__44503__auto____$4 = (cljs.core.not.call(null,port)) || (cljs.core._EQ_.call(null,[cljs.core.str.cljs$core$IFn$_invoke$arity$1(port)].join(''),[cljs.core.str.cljs$core$IFn$_invoke$arity$1(current_port)].join('')));
+if(and__44503__auto____$4){
 return path_exists_QMARK_.call(null,path);
 } else {
-return and__43249__auto____$4;
+return and__44503__auto____$4;
 }
 } else {
-return and__43249__auto____$3;
+return and__44503__auto____$3;
 }
 } else {
-return and__43249__auto____$2;
+return and__44503__auto____$2;
 }
 } else {
-return and__43249__auto____$1;
+return and__44503__auto____$1;
 }
 } else {
-return and__43249__auto__;
+return and__44503__auto__;
 }
 })())){
 if(cljs.core.not_EQ_.call(null,current_relative_href,relative_href)){
@@ -198,11 +198,11 @@ accountant.core.path_exists_QMARK_ = null;
  * 
  *   path-exists?: a fn of one argument, a path. Return truthy if this path is handled by the SPA
  */
-accountant.core.configure_navigation_BANG_ = (function accountant$core$configure_navigation_BANG_(p__47235){
-var map__47236 = p__47235;
-var map__47236__$1 = ((((!((map__47236 == null)))?((((map__47236.cljs$lang$protocol_mask$partition0$ & (64))) || ((cljs.core.PROTOCOL_SENTINEL === map__47236.cljs$core$ISeq$)))?true:false):false))?cljs.core.apply.call(null,cljs.core.hash_map,map__47236):map__47236);
-var nav_handler = cljs.core.get.call(null,map__47236__$1,new cljs.core.Keyword(null,"nav-handler","nav-handler",2039495484));
-var path_exists_QMARK_ = cljs.core.get.call(null,map__47236__$1,new cljs.core.Keyword(null,"path-exists?","path-exists?",1473384514));
+accountant.core.configure_navigation_BANG_ = (function accountant$core$configure_navigation_BANG_(p__51300){
+var map__51301 = p__51300;
+var map__51301__$1 = ((((!((map__51301 == null)))?((((map__51301.cljs$lang$protocol_mask$partition0$ & (64))) || ((cljs.core.PROTOCOL_SENTINEL === map__51301.cljs$core$ISeq$)))?true:false):false))?cljs.core.apply.call(null,cljs.core.hash_map,map__51301):map__51301);
+var nav_handler = cljs.core.get.call(null,map__51301__$1,new cljs.core.Keyword(null,"nav-handler","nav-handler",2039495484));
+var path_exists_QMARK_ = cljs.core.get.call(null,map__51301__$1,new cljs.core.Keyword(null,"path-exists?","path-exists?",1473384514));
 accountant.core.history.setUseFragment(false);
 
 accountant.core.history.setPathPrefix("");
@@ -218,14 +218,14 @@ accountant.core.dispatch_on_navigate.call(null,accountant.core.history,nav_handl
 return accountant.core.prevent_reload_on_known_path.call(null,accountant.core.history,path_exists_QMARK_);
 });
 accountant.core.map__GT_params = (function accountant$core$map__GT_params(query){
-var params = cljs.core.map.call(null,(function (p1__47238_SHARP_){
-return cljs.core.name.call(null,p1__47238_SHARP_);
+var params = cljs.core.map.call(null,(function (p1__51303_SHARP_){
+return cljs.core.name.call(null,p1__51303_SHARP_);
 }),cljs.core.keys.call(null,query));
 var values = cljs.core.vals.call(null,query);
 var pairs = cljs.core.partition.call(null,(2),cljs.core.interleave.call(null,params,values));
 return clojure.string.join.call(null,"&",cljs.core.map.call(null,((function (params,values,pairs){
-return (function (p1__47239_SHARP_){
-return clojure.string.join.call(null,"=",p1__47239_SHARP_);
+return (function (p1__51304_SHARP_){
+return clojure.string.join.call(null,"=",p1__51304_SHARP_);
 });})(params,values,pairs))
 ,pairs));
 });
@@ -233,8 +233,8 @@ return clojure.string.join.call(null,"=",p1__47239_SHARP_);
  * add a browser history entry. updates window/location
  */
 accountant.core.navigate_BANG_ = (function accountant$core$navigate_BANG_(var_args){
-var G__47241 = arguments.length;
-switch (G__47241) {
+var G__51306 = arguments.length;
+switch (G__51306) {
 case 1:
 return accountant.core.navigate_BANG_.cljs$core$IFn$_invoke$arity$1((arguments[(0)]));
 

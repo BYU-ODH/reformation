@@ -3,10 +3,9 @@
   (:require [reagent.core :as r]
             [reagent.session :as session]
             [reagent-forms.shared-test :as shared :refer [cx]]
-            [reagent-forms.shared.auth :as auth]
             [accountant.core]
             [reagent-forms.routes :as rt]
-            [reagent-forms.shared.components.input :as input]
+            [reagent-forms.core :as input]
             [ajax.core :refer [GET POST]]))
 
 ;;TODO: Validation
@@ -77,24 +76,8 @@
         method POST
         pmap {:handler (fn [r] (js/alert "Your submission has been received")
                          (accountant.core/navigate! (rt/home)))
-              :__anti-forgery-token js/csrfToken
               :error-handler (fn [e] (js/alert "There has been an error"))
               :params {:submission @SUBMISSION}}]
-    (method url pmap)))
-
-(defn update! "Submit the SUBMISSION atom as an updated form"
-  [update-id]
-  (let [url "/update"
-        method POST
-        pmap {:handler (fn [r]
-                         (session/remove! :application)
-                         (session/remove! :edit-form)
-                         (accountant.core/navigate! (rt/review-route {:application update-id})))
-              :__anti-forgery-token js/csrfToken
-              :error-handler (fn [e] (js/alert "There has been an error"))
-              :params {:user-id (auth/get-user-id)
-                       :application-id update-id
-                       :submission @SUBMISSION}}]
     (method url pmap)))
 
 (defn validate-and-submit "Validate the form and submit"
@@ -103,9 +86,6 @@
         update-id (session/get :application)]
     (-> form .-classList (.add "was-validated"))
     (if (.checkValidity form)
-      (if (:update @SUBMISSION)
-        (update! update-id)
-        (submit!))
       (js/alert "You have errors in your form. Please correct them before submitting."))))
 
 (defn submission-date-prompt []
@@ -138,17 +118,13 @@
     ", listed as “Principles to Guide International Study Programs”. Programs must adhere to the BYU International Travel Policy found at " [:a {:href "travelsmart.byu.edu"} "travelsmart.byu.edu."]]])
 
 (defn user-information []
-  (let [s? (auth/signed-in?)
-        email (auth/get-user-email)
-        name (auth/get-full-name)]
-    (swap! SUBMISSION update :user assoc :email email :name name :username (auth/get-username))
-    [:div.user-details
-     [tinput [:user :name] {:label "Your Name"
-                            :disabled true
-                            :subtext "*Name as per your BYU profile."} ]
-     [tinput [:user :email] {:label "Your Email Address"
-                             :disabled true
-                             :subtext "*Email as per your BYU profile."}]]))
+  [:div.user-details
+   [tinput [:user :name] {:label "Your Name"
+                          :disabled true
+                          :subtext "*Name as per your BYU profile."} ]
+   [tinput [:user :email] {:label "Your Email Address"
+                           :disabled true
+                           :subtext "*Email as per your BYU profile."}]])
 
 (defn sanitize-for-edit
   "Sanitize a map for editing to be the current submission"
@@ -163,7 +139,7 @@
   (if-let [f (session/get! :edit-form)]
     (reset! SUBMISSION (sanitize-for-edit f))
     (shared/get-application
-     {:user-map (auth/get-usermap)
+     {:user-map {}
       :application-id application-id
       :receptacle-atom SUBMISSION
       :filter-fn (comp sanitize-for-edit :form)})))
@@ -201,9 +177,6 @@
   (let [form-id "needs-validation"]
     [:div.submission-form 
      [:form.form-control {:id form-id}
-      [:input {:type "hidden"
-               :name "__anti-forgery-token"
-               :value js/csrfToken}]
       [user-information]
       (into [:div.form-contents]
             (render-application submission-default SUBMISSION))

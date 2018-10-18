@@ -5,21 +5,21 @@ goog.require('cognitect.transit');
 goog.require('ajax.interceptors');
 goog.require('ajax.protocols');
 goog.require('ajax.util');
-ajax.transit.transit_type = (function ajax$transit$transit_type(p__46166){
-var map__46167 = p__46166;
-var map__46167__$1 = ((((!((map__46167 == null)))?((((map__46167.cljs$lang$protocol_mask$partition0$ & (64))) || ((cljs.core.PROTOCOL_SENTINEL === map__46167.cljs$core$ISeq$)))?true:false):false))?cljs.core.apply.call(null,cljs.core.hash_map,map__46167):map__46167);
-var type = cljs.core.get.call(null,map__46167__$1,new cljs.core.Keyword(null,"type","type",1174270348));
-var or__43261__auto__ = type;
-if(cljs.core.truth_(or__43261__auto__)){
-return or__43261__auto__;
+ajax.transit.transit_type = (function ajax$transit$transit_type(p__50763){
+var map__50764 = p__50763;
+var map__50764__$1 = ((((!((map__50764 == null)))?((((map__50764.cljs$lang$protocol_mask$partition0$ & (64))) || ((cljs.core.PROTOCOL_SENTINEL === map__50764.cljs$core$ISeq$)))?true:false):false))?cljs.core.apply.call(null,cljs.core.hash_map,map__50764):map__50764);
+var type = cljs.core.get.call(null,map__50764__$1,new cljs.core.Keyword(null,"type","type",1174270348));
+var or__44515__auto__ = type;
+if(cljs.core.truth_(or__44515__auto__)){
+return or__44515__auto__;
 } else {
 return new cljs.core.Keyword(null,"json","json",1279968570);
 }
 });
 ajax.transit.transit_write_fn = (function ajax$transit$transit_write_fn(type,request){
-var writer = (function (){var or__43261__auto__ = new cljs.core.Keyword(null,"writer","writer",-277568236).cljs$core$IFn$_invoke$arity$1(request);
-if(cljs.core.truth_(or__43261__auto__)){
-return or__43261__auto__;
+var writer = (function (){var or__44515__auto__ = new cljs.core.Keyword(null,"writer","writer",-277568236).cljs$core$IFn$_invoke$arity$1(request);
+if(cljs.core.truth_(or__44515__auto__)){
+return or__44515__auto__;
 } else {
 return cognitect.transit.writer.call(null,type,request);
 }
@@ -31,8 +31,8 @@ return cognitect.transit.write.call(null,writer,params);
 ;})(writer))
 });
 ajax.transit.transit_request_format = (function ajax$transit$transit_request_format(var_args){
-var G__46170 = arguments.length;
-switch (G__46170) {
+var G__50767 = arguments.length;
+switch (G__50767) {
 case 0:
 return ajax.transit.transit_request_format.cljs$core$IFn$_invoke$arity$0();
 
@@ -60,9 +60,9 @@ return new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"wr
 ajax.transit.transit_request_format.cljs$lang$maxFixedArity = 1;
 
 ajax.transit.transit_read_fn = (function ajax$transit$transit_read_fn(request){
-var reader = (function (){var or__43261__auto__ = new cljs.core.Keyword(null,"reader","reader",169660853).cljs$core$IFn$_invoke$arity$1(request);
-if(cljs.core.truth_(or__43261__auto__)){
-return or__43261__auto__;
+var reader = (function (){var or__44515__auto__ = new cljs.core.Keyword(null,"reader","reader",169660853).cljs$core$IFn$_invoke$arity$1(request);
+if(cljs.core.truth_(or__44515__auto__)){
+return or__44515__auto__;
 } else {
 return cognitect.transit.reader.call(null,new cljs.core.Keyword(null,"json","json",1279968570),request);
 }
@@ -74,8 +74,8 @@ return cognitect.transit.read.call(null,reader,ajax.protocols._body.call(null,re
 ;})(reader))
 });
 ajax.transit.transit_response_format = (function ajax$transit$transit_response_format(var_args){
-var G__46173 = arguments.length;
-switch (G__46173) {
+var G__50770 = arguments.length;
+switch (G__50770) {
 case 0:
 return ajax.transit.transit_response_format.cljs$core$IFn$_invoke$arity$0();
 

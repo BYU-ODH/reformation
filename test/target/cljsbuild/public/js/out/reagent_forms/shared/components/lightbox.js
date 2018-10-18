@@ -13,8 +13,8 @@ return cljs.core.reset_BANG_.call(null,reagent_forms.shared.components.lightbox.
  * A lightbox that fills the screen and shades the background with its contents. The lightbox is planted on the page at start-time, waiting to be filled. This function is not intended to directly render -- it populates the already-planted LIGHTBOX-CONTENTS
  */
 reagent_forms.shared.components.lightbox.lightbox = (function reagent_forms$shared$components$lightbox$lightbox(var_args){
-var G__48061 = arguments.length;
-switch (G__48061) {
+var G__56690 = arguments.length;
+switch (G__56690) {
 case 0:
 return reagent_forms.shared.components.lightbox.lightbox.cljs$core$IFn$_invoke$arity$0();
 

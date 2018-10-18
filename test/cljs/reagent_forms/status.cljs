@@ -3,10 +3,9 @@
   (:require [reagent.core :as r]
             [reagent.session :as session]
             [reagent-forms.routes :as routes]
-            [reagent-forms.shared-test :as shared]            
-            [reagent-forms.shared.auth :as auth]
-            [reagent-forms.reviews :refer [APPLICATIONS] :as reviews]
+            [reagent-forms.shared-test :as shared]
             [ajax.core :refer [GET POST]]))
+(def APPLICATIONS (r/atom [{}]))
 
 (defn parse-applications [applications]
   (let [concluded? (fn [row] (not (boolean (:next-approval-needed row))))
@@ -33,26 +32,18 @@
                      (for [[_ valfun] columns]
                        [:td {:class
                              (if c? "concluded" "active")}
-                        [:a {:href (routes/review-route {:application app-id})}
+                        [:a {:href "#"}
                          (valfun a)]])))]]))))
 
 (defn status-page []
-  (reviews/maybe-init)
-  (let [admin? (auth/admin?) ]
-    (shared/page-template {:jumbo-title (if admin?
-                                          "ISP Submissions (Admin)"
-                                          "Your ISP Submissions")
-                           :contents [:div.submission-contents
-                                      [:div.self-submissions
-                                       [:h2 "Your submissions"]
-                                       [:div.active
-                                        [:h3 "In Review"]
-                                        [parse-applications (-> @APPLICATIONS :proposals :active)]]
-                                       [:div.concluded
-                                        [:h3 "Completed"]
-                                        [parse-applications (-> @APPLICATIONS :proposals :concluded)]]]
-                                      (when admin?
-                                        [:div.admin-view-submissions
-                                         [:h2 "All Submissions"]
-                                         [parse-applications (:admin @APPLICATIONS)]
-                                         ])]})))
+  (shared/page-template {:jumbo-title "Your ISP Submissions"
+                         :contents [:div.submission-contents
+                                    [:div.self-submissions
+                                     [:h2 "Your submissions"]
+                                     [:div.active
+                                      [:h3 "In Review"]
+                                      [parse-applications (-> @APPLICATIONS :proposals :active)]]
+                                     [:div.concluded
+                                      [:h3 "Completed"]
+                                      [parse-applications (-> @APPLICATIONS :proposals :concluded)]]]
+                                    ]}))

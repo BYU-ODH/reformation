@@ -21,10 +21,6 @@
   ;;    (apply str path))
   )
 
-(defn anti-forgery-element []
-  [:input {:id "token" :value *anti-forgery-token* :type "hidden"}
-   (javascript-tag (str  "var csrfToken = '" *anti-forgery-token* "'"))])
-
 (defn include-byu-deps []
   (hp/include-css "https://cdn.byu.edu/byu-theme-components/latest/byu-theme-components.min.css")
   (hp/include-js  "https://cdn.byu.edu/byu-theme-components/latest/byu-theme-components.min.js"))
@@ -71,7 +67,6 @@
     (hp/html5
      (boiler-header userinfo)
      (boiler-plate)
-     (anti-forgery-element)
      (cljs-app-base)
      (cljs-app-footer)
      (cljs-includes))) ;; it makes a big difference to make sure the clojurescript is included last, so the DOM is rendered

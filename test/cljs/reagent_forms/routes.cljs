@@ -28,12 +28,6 @@
   (session/put! :application (js/parseInt application))
   (session/put! :page :update))
 
-(secretary/defroute about-route "/about" []
-  (session/put! :page :about))
-
-(secretary/defroute contact-route "/contact" []
-  (session/put! :page :contact))
-
 ;; -------------------------
 ;; History
 ;; must be called after routes have been defined

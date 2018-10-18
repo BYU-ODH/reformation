@@ -9,10 +9,14 @@
                    :resource-paths ["test/resources" "test/target/cljsbuild"]
                    :target-path "test/target/"
                    :main reagent-forms.core-test
+
+                   :clean-targets ^{:protect false}
+                   [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
+                   
                    :figwheel
                    {:http-server-root "public"
                     :nrepl-port 7002
-                    :css-dirs ["resources/public/css"]
+                    :css-dirs ["test/resources/public/css"]
                                         ;:nrepl-middleware
                                         ;[cemerick.piggieback/wrap-cljs-repl]
                     }
@@ -25,6 +29,7 @@
                                   [clj-http "3.7.0"]
                                   [clj-json "0.5.3"]
                                   [clj-time "0.14.0"]
+                                  [binaryage/devtools "0.9.4"]
                                   [com.andrewmcveigh/cljs-time "0.5.2"]
                                   [cljs-ajax "0.7.1"]
                                   [com.cognitect/transit-clj "0.8.300"] ;; TRANSIT json format

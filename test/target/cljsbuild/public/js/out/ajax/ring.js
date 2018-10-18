@@ -18,8 +18,8 @@ return new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"st
  * populate the :body key in the response map.
  */
 ajax.ring.ring_response_format = (function ajax$ring$ring_response_format(var_args){
-var G__46183 = arguments.length;
-switch (G__46183) {
+var G__50780 = arguments.length;
+switch (G__50780) {
 case 0:
 return ajax.ring.ring_response_format.cljs$core$IFn$_invoke$arity$0();
 
@@ -38,14 +38,14 @@ ajax.ring.ring_response_format.cljs$core$IFn$_invoke$arity$0 = (function (){
 return ajax.ring.ring_response_format.call(null,new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"format","format",-1306924766),ajax.formats.raw_response_format.call(null)], null));
 });
 
-ajax.ring.ring_response_format.cljs$core$IFn$_invoke$arity$1 = (function (p__46184){
-var map__46185 = p__46184;
-var map__46185__$1 = ((((!((map__46185 == null)))?((((map__46185.cljs$lang$protocol_mask$partition0$ & (64))) || ((cljs.core.PROTOCOL_SENTINEL === map__46185.cljs$core$ISeq$)))?true:false):false))?cljs.core.apply.call(null,cljs.core.hash_map,map__46185):map__46185);
-var map__46186 = cljs.core.get.call(null,map__46185__$1,new cljs.core.Keyword(null,"format","format",-1306924766));
-var map__46186__$1 = ((((!((map__46186 == null)))?((((map__46186.cljs$lang$protocol_mask$partition0$ & (64))) || ((cljs.core.PROTOCOL_SENTINEL === map__46186.cljs$core$ISeq$)))?true:false):false))?cljs.core.apply.call(null,cljs.core.hash_map,map__46186):map__46186);
-var read = cljs.core.get.call(null,map__46186__$1,new cljs.core.Keyword(null,"read","read",1140058661));
-var description = cljs.core.get.call(null,map__46186__$1,new cljs.core.Keyword(null,"description","description",-1428560544));
-var content_type = cljs.core.get.call(null,map__46186__$1,new cljs.core.Keyword(null,"content-type","content-type",-508222634));
+ajax.ring.ring_response_format.cljs$core$IFn$_invoke$arity$1 = (function (p__50781){
+var map__50782 = p__50781;
+var map__50782__$1 = ((((!((map__50782 == null)))?((((map__50782.cljs$lang$protocol_mask$partition0$ & (64))) || ((cljs.core.PROTOCOL_SENTINEL === map__50782.cljs$core$ISeq$)))?true:false):false))?cljs.core.apply.call(null,cljs.core.hash_map,map__50782):map__50782);
+var map__50783 = cljs.core.get.call(null,map__50782__$1,new cljs.core.Keyword(null,"format","format",-1306924766));
+var map__50783__$1 = ((((!((map__50783 == null)))?((((map__50783.cljs$lang$protocol_mask$partition0$ & (64))) || ((cljs.core.PROTOCOL_SENTINEL === map__50783.cljs$core$ISeq$)))?true:false):false))?cljs.core.apply.call(null,cljs.core.hash_map,map__50783):map__50783);
+var read = cljs.core.get.call(null,map__50783__$1,new cljs.core.Keyword(null,"read","read",1140058661));
+var description = cljs.core.get.call(null,map__50783__$1,new cljs.core.Keyword(null,"description","description",-1428560544));
+var content_type = cljs.core.get.call(null,map__50783__$1,new cljs.core.Keyword(null,"content-type","content-type",-508222634));
 return ajax.interceptors.map__GT_ResponseFormat.call(null,new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"read","read",1140058661),ajax.ring.make_ring_read.call(null,read),new cljs.core.Keyword(null,"description","description",-1428560544),["ring/",cljs.core.str.cljs$core$IFn$_invoke$arity$1(description)].join(''),new cljs.core.Keyword(null,"content-type","content-type",-508222634),content_type], null));
 });
 
