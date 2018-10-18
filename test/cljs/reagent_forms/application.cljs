@@ -12,42 +12,42 @@
 
 
 (def hmeg-default (array-map :date-client [:label "Date"
-                                                 :required? true
-                                                 :disabled true
-                                                 :value (js/Date.)]
-                                   :faculty-participants [:label "Faculty Participant(s)"
-                                                          :required? true]
-                                   :abstract [:label "Abstract"
-                                              :subtext "Provide a one-paragraph overview of the research; it’s central organizing questions and key details of method and scope, including its mentoring dimension."
+                                           :required? true
+                                           :disabled true
+                                           :value (js/Date.)]
+                             :faculty-participants [:label "Faculty Participant(s)"
+                                                    :required? true]
+                             :abstract [:label "Abstract"
+                                        :subtext "Provide a one-paragraph overview of the research; it’s central organizing questions and key details of method and scope, including its mentoring dimension."
+                                        :type :textarea]
+                             :description [:label "Description of the project"
+                                           :subtext "Provide some context for the project, its background and significance. How does it relate to the faculty mentor’s research interests? How will it contribute to larger disciplinary concerns? What is the current status of the research? What is the scope of the work under this grant, and what are its primary methods?"
+                                           :type :textarea
+                                           :required? true]
+                             :anticipated [:label "Anticipated Outcomes"
+                                           :subtext "Describe key outcomes of the project. These should include research outcomes as well as outcomes related to mentoring, including specific products of the work."
+                                           :type :textarea]
+                             :qualifications [:label "Qualifications"
+                                              :subtext "How is the faculty mentor well-situated to conduct/oversee the research and mentor students? Explain this in the context of past experience and ongoing work."
                                               :type :textarea]
-                                   :description [:label "Description of the project"
-                                                 :subtext "Provide some context for the project, its background and significance. How does it relate to the faculty mentor’s research interests? How will it contribute to larger disciplinary concerns? What is the current status of the research? What is the scope of the work under this grant, and what are its primary methods?"
-                                                 :type :textarea
-                                                 :required? true]
-                                   :anticipated [:label "Anticipated Outcomes"
-                                                 :subtext "Describe key outcomes of the project. These should include research outcomes as well as outcomes related to mentoring, including specific products of the work."
-                                                 :type :textarea]
-                                   :qualifications [:label "Qualifications"
-                                                    :subtext "How is the faculty mentor well-situated to conduct/oversee the research and mentor students? Explain this in the context of past experience and ongoing work."
-                                                    :type :textarea]
-                                   :budget {"Number of undergraduate students" [:label "Number of undergraduate students" :type :number]
-                                            "Budget for undergraduate students" [:label "Budget for undergraduate students" :type :number]
-                                            "Number of graduate students" [:label "Number of graduate students" :type :number]
-                                            "Budget for graduates" [:label "Budget for graduates" :type :number]
-                                            "Budget for supplies" [:label "Budget for supplies" :type :number]
-                                            "Explanation of supplies" [:label "Explanation of supplies" :type :textarea]
-                                            "Budget for travel" [:label "Budget for travel" :type :number]
-                                            "Explanation of travel" [:label "Explanation of travel" :type :textarea]
-                                            "Budget for other items" [:label "Budget for other items" :type :number]
-                                            "Explanation of other items" [:label "Explanation of other items" :type :textarea]
-                                            "Total budget" [:label "Total budget " :type :number]}
-                                   :timeline [:label "Timeline"
-                                              :subtext "Detail plans for completing each phase of the project including final completion date. An outcomes report must be submitted to the college no later than December 1, 2020."
-                                              :type :textarea]
-                                   :chair {:name [:label "Department Chair"
-                                                  :required? true]
-                                           :email [:label "Department Chair's Email"
-                                                   :required? true]}))
+                             :budget {"Number of undergraduate students" [:label "Number of undergraduate students" :type :number]
+                                      "Budget for undergraduate students" [:label "Budget for undergraduate students" :type :number]
+                                      "Number of graduate students" [:label "Number of graduate students" :type :number]
+                                      "Budget for graduates" [:label "Budget for graduates" :type :number]
+                                      "Budget for supplies" [:label "Budget for supplies" :type :number]
+                                      "Explanation of supplies" [:label "Explanation of supplies" :type :textarea]
+                                      "Budget for travel" [:label "Budget for travel" :type :number]
+                                      "Explanation of travel" [:label "Explanation of travel" :type :textarea]
+                                      "Budget for other items" [:label "Budget for other items" :type :number]
+                                      "Explanation of other items" [:label "Explanation of other items" :type :textarea]
+                                      "Total budget" [:label "Total budget " :type :number]}
+                             :timeline [:label "Timeline"
+                                        :subtext "Detail plans for completing each phase of the project including final completion date. An outcomes report must be submitted to the college no later than December 1, 2020."
+                                        :type :textarea]
+                             :chair {:name [:label "Department Chair"
+                                            :required? true]
+                                     :email [:label "Department Chair's Email"
+                                             :required? true]}))
 
 (def submission-default (array-map :title [:label "Project Title"
                                            :required? true]
@@ -200,7 +200,7 @@
    "Cancel Revisions"])
 
 (defn render-application
-    "Render a browser form based on an input [sorted] map `fm`, with values to be stored/updated in atom `A`"
+  "Render a browser form based on an input [sorted] map `fm`, with values to be stored/updated in atom `A`"
   [fm A & [pathv]]
   (for [[k v] fm :let [path (conj (vec pathv) k)]]
     (cond
