@@ -2,7 +2,6 @@
   (:require [compojure.core :refer [routes wrap-routes]]
             [reagent-forms.layout :refer [error-page]]
             [reagent-forms.routes.home :refer [home-routes]]
-            [reagent-forms.routes.admin :as admin]
             [compojure.route :as route]
             [ring.util.http-response :as response]
             [ring.middleware.format-params :as mformat]
@@ -17,13 +16,6 @@
 (defn app-routes []
   (routes
    (-> #'home-routes
-       (wrap-routes middleware/wrap-csrf)
-       (wrap-routes middleware/wrap-client-auth)
-       (wrap-routes middleware/wrap-formats))
-   (-> #'admin/routes
-       ;; (wrap-routes middleware/wrap-csrf)
-       ;; (wrap-routes middleware/wrap-client-auth)
-       (wrap-routes mformat/wrap-json-kw-params)
        (wrap-routes middleware/wrap-formats))
    (route/not-found
     (:body

@@ -58,7 +58,8 @@
                         (let [sum-key (-> sum-field name (str "-total") keyword)
                               sum-val (sum-key @ATOM)
                               total (apply + (for [c (get-in @ATOM value-path)]
-                                               (js/parseInt (sum-field c))))]
+                                               #?(:cljs (js/parseInt (sum-field c))
+                                                  :clj (Integer/parseInt (sum-field c)))))]
                           (swap! ATOM assoc sum-key (max total 0))
                           (conj tbody-base
                                 [:tr [:td.form-group.total {:col-span 2}

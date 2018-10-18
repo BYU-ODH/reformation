@@ -1,5 +1,5 @@
 (ns reagent-forms.core
-  (:require [reagent-forms.multitable :as mt]
+  (:require [reagent-forms.multitable :refer [multi-table] :as mt]
             [reagent-forms.shared :as shared]))
 
 (defn map-structure
