@@ -119,14 +119,15 @@
   (= (type m) cljs.core/PersistentArrayMap))
 
 (defn map-structure
-  "Produce a map with the same key-structure but with empty values"
-  [m]
-  (into (array-map)
-        (for [[k v] m :let [endv (cond 
-                                   (vector? v) (:value (apply hash-map v) "")
-                                   (map? v) (map-structure v)
-                                   :default "")]]
-          [k (:value endv endv)])))
+  "Produce a map with the same key-structure from the vector"
+  [v]
+  (into {}
+        (for [[k v] (partition 2 v) 
+              :let [nv (cond
+                         (vector? v) (map-structure v)
+                         (map? v) (:value v "")
+                         :default "")]]
+          [k nv])))
 
 (defn reset-default
   "Reset the given atom to a default state based on a default vector, where it will possess each of the (possibly nested) structural elements of the given default, but values only according to an internal :default"
@@ -137,4 +138,6 @@
 (defn render-val-map
   "set `A` to be a map designed to hold the values specified in `v`"
   [A v]
+  
   )
+

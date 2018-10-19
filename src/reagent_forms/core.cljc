@@ -3,14 +3,25 @@
             [reagent-forms.shared :as shared]))
 
 (defn map-structure
-  "Produce a map with the same key-structure but with empty values"
-  [m]
-  (into (array-map)
-        (for [[k v] m :let [endv (cond 
-                                   (vector? v) (:value (apply hash-map v) "")
-                                   (map? v) (map-structure v)
-                                   :default "")]]
-          [k (:value endv endv)])))
+  "Produce a map with the same key-structure from the vector"
+  [v]
+  (into {}
+        (for [[k v] (partition 2 v) 
+              :let [nv (cond
+                         (vector? v) (map-structure v)
+                         (map? v) (:value v "")
+                         :default "")]]
+          [k nv])))
+
+;; (defn map-structure
+;;   "Produce a map with the same key-structure but with empty values"
+;;   [m]
+;;   (into (array-map)
+;;         (for [[k v] m :let [endv (cond 
+;;                                    (vector? v) (:value (apply hash-map v) "")
+;;                                    (map? v) (map-structure v)
+;;                                    :default "")]]
+;;           [k (:value endv endv)])))
 
 (defn reset-default
   "Reset the given atom to a default state based on a default map, where it will possess each of the (possibly nested) structural elements of the given default, but values only according to an internal :default"
@@ -101,10 +112,10 @@
     "Render a browser form based on an input [sorted] map `fm`, with values to be stored/updated in atom `A`.
   Use an array-map or sorted-map as `fm` if you want to maintain order"
   [fm A & [pathv]]
-  (for [[k v] fm :let [path (conj (vec pathv) k)]]
+  (for [[k v] (partition 2 fm) :let [path (conj (vec pathv) k)]]
     (cond
-      (vector? v) [tinput A path (apply hash-map v)] 
-      (map? v) (render-application v A path) 
+      (vector? v) (render-application v A path)
+      (map? v) [tinput A path v]
       :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)])))
 
 (defn render-review
