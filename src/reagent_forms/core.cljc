@@ -15,10 +15,10 @@
 
 (defn reset-default
   "Reset the given atom to a default state based on a default map, where it will possess each of the (possibly nested) structural elements of the given default, but values only according to an internal :default"
-  ([default-map]
-   (reset-default (atom {}) default-map))
-  ([A default-map]
-   (when (reset! A (map-structure default-map))
+  ([default-schema-vec]
+   (reset-default (atom {}) default-schema-vec))
+  ([A default-schema-vec]
+   (when (reset! A (map-structure default-schema-vec))
      A)))
 
 (defn select-box [m]
