@@ -60,6 +60,13 @@
 (defn tinput
   "Produce data-bound inputs for a given map, updating `ATOM` on change. `opt-map` specifies options including display variables."
   [ATOM valpath & [opt-map]]
+  ;; (println "valpath is:")
+  ;; (prn valpath)
+  ;; (println "Value is:")
+  ;; (prn (get-in @ATOM valpath))
+  ;; (println "Atom is:")
+  ;; (prn @ATOM)
+
   (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-limit]
          :or {id (str valpath)
               type "text"}} opt-map
@@ -114,7 +121,7 @@
   [fm A & [pathv]]
   (for [[k v] (partition 2 fm) :let [path (conj (vec pathv) k)]]
     (cond
-      (vector? v) (render-application v A path)
+      (sequential? v) (render-application v A path)
       (map? v) [tinput A path v]
       :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)])))
 
@@ -123,4 +130,6 @@
   
   Resulting form will be read-only with no changes possible."
   [schema application]
-  (render-application (shared/reviewify schema) (atom application)))
+  (render-application
+   (shared/reviewify schema)
+   (atom application)))

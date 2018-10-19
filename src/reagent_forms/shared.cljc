@@ -19,10 +19,18 @@
 
 (defn reviewify
   "Adjust a submission-default map for review rather than editing"
-  [given-default]
-  (into (array-map)
-        (for [[k v] given-default]
-          [k 
-           (cond 
-             (vector? v) (conj v :disabled true)
-             (map? v) (reviewify v))])))
+  [default-vector]
+  (letfn [(m [x]
+            (cond
+              (map? x) (assoc x :disabled true)
+              (vector? x) (reviewify x)
+              :default x))]
+    (map m default-vector))
+
+  ;; (reduce conj
+  ;;         (for [[k v] (partition 2 default-vector)]
+  ;;           [k 
+  ;;            (cond 
+  ;;              (vector? v) (reviewify v)
+  ;;              (map? v) (assoc v :disabled true) )]))
+  )
