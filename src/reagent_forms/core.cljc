@@ -13,21 +13,13 @@
                          :default "")]]
           [k nv])))
 
-;; (defn map-structure
-;;   "Produce a map with the same key-structure but with empty values"
-;;   [m]
-;;   (into (array-map)
-;;         (for [[k v] m :let [endv (cond 
-;;                                    (vector? v) (:value (apply hash-map v) "")
-;;                                    (map? v) (map-structure v)
-;;                                    :default "")]]
-;;           [k (:value endv endv)])))
-
 (defn reset-default
   "Reset the given atom to a default state based on a default map, where it will possess each of the (possibly nested) structural elements of the given default, but values only according to an internal :default"
-  [A default-map]
-  (when (reset! A (map-structure default-map))
-    A))
+  ([default-map]
+   (reset-default (atom {}) default-map))
+  ([A default-map]
+   (when (reset! A (map-structure default-map))
+     A)))
 
 (defn select-box [m]
   (let [{:keys [options id on-change]
