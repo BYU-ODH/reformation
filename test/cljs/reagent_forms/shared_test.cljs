@@ -129,7 +129,12 @@
           [k (:value endv endv)])))
 
 (defn reset-default
-  "Reset the given atom to a default state based on a default map, where it will possess each of the (possibly nested) structural elements of the given default, but values only according to an internal :default"
+  "Reset the given atom to a default state based on a default vector, where it will possess each of the (possibly nested) structural elements of the given default, but values only according to an internal :default"
   [A default-map]
   (when (reset! A (map-structure default-map))
     A))
+
+(defn render-val-map
+  "set `A` to be a map designed to hold the values specified in `v`"
+  [A v]
+  )

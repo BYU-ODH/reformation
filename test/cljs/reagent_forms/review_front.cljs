@@ -19,4 +19,7 @@
 
 (defn app-page []
   (shared/page-template {:jumbo-title "Form Review"
-                         :contents (rfc/render-review application/hmeg-default application)}))
+                         :contents [:h1 "Not ready yet"]
+
+                         ;; (rfc/render-review application/hmeg-default application)
+                         }))

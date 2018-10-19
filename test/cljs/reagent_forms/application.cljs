@@ -15,7 +15,7 @@
  :faculty-participants "mandatory fac"}
 
 
-(def hmeg-default (array-map :date-client [:label "Date"
+(def hmeg-default [:date-client [:label "Date"
                                            :required? true
                                            :disabled true
                                            :value (js/Date.)]
@@ -51,7 +51,7 @@
                              :chair {:name [:label "Department Chair"
                                             :required? true]
                                      :email [:label "Department Chair's Email"
-                                             :required? true]}))
+                                             :required? true]}])
 
 (def submission-default (array-map :title [:label "Project Title"
                                            :required? true]
@@ -110,7 +110,7 @@
 
 
 (def SUBMISSION
-  (shared/reset-default (r/atom {}) hmeg-default))
+  (shared/render-val-map (r/atom {}) hmeg-default))
 
 (defn validate-and-submit "Validate the form and submit"
   [form-dom-id]
