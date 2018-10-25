@@ -32,7 +32,8 @@
             [:option o]))))
 
 (defn text-area [opt-map]
-  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-limit]} opt-map
+  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count]} opt-map
+        {:keys [limit enforce?]} char-count
         
         textarea 
         [:textarea.form-control {:id id 
@@ -45,9 +46,13 @@
                                  :disabled disabled}]]
     [:div.form-group
      textarea
-     (when char-limit
-       (let [char-count (count value)]
-         [:div.char-limit (str char-count "/" char-limit " characters")]))]))
+     (when char-count
+       (let [ccount (count value)
+             class (if (< ccount limit)
+                     "conforms"
+                     "exceeded")]
+         [:div.char-limit {:class class}
+          (str ccount "/" limit " characters")]))]))
 
 (defn tinput
   "Produce data-bound inputs for a given map, updating `ATOM` on change. `opt-map` specifies options including display variables."
@@ -59,20 +64,21 @@
   ;; (println "Atom is:")
   ;; (prn @ATOM)
 
-  (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-limit]
+  (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count]
          :or {id (str valpath)
               type "text"}} opt-map
+        {:keys [limit enforce?]} char-count
         input-value (get-in @ATOM valpath)
         change-atom (fn [s] (swap! ATOM assoc-in valpath s))
         changefn1 (fn [e] (change-atom (shared/get-value-from-change e)))
         changefn (cond
                    validation-function (comp validation-function changefn1)
-                   char-limit (fn [e]
-                                (let [v (shared/get-value-from-change e)]
-                                  (cond
-                                    (= char-limit (dec (count v))) identity
-                                    (< char-limit (count v)) (change-atom (apply str (take char-limit v)))
-                                    :default (changefn1 e)))
+                   enforce? (fn [e]
+                              (let [v (shared/get-value-from-change e)]
+                                (cond
+                                  (= limit (dec (count v))) identity
+                                  (< limit (count v)) (change-atom (apply str (take limit v)))
+                                  :default (changefn1 e)))
 
                                 )
                    :default changefn1)

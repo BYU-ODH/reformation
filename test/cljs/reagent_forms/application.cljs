@@ -23,7 +23,9 @@
                                           :required? true}
                    :abstract {:label "Abstract"
                               :subtext "Provide a one-paragraph overview of the research; it’s central organizing questions and key details of method and scope, including its mentoring dimension."
-                              :type :textarea}
+                              :type :textarea
+                              :char-count {:limit  50
+                                           :enforce? false}}
                    :description {:label "Description of the project"
                                  :subtext "Provide some context for the project, its background and significance. How does it relate to the faculty mentor’s research interests? How will it contribute to larger disciplinary concerns? What is the current status of the research? What is the scope of the work under this grant, and what are its primary methods?"
                                  :type :textarea
