@@ -32,7 +32,7 @@
             [:option o]))))
 
 (defn text-area [opt-map]
-  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count]} opt-map
+  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count required]} opt-map
         {:keys [limit enforce?]} char-count
         
         textarea 
@@ -41,7 +41,8 @@
                                  :rows 5
                                  :default-value input-value
                                  :value value
-                                 :on-change changefn 
+                                 :on-change changefn
+                                 :required required
                                  :placeholder placeholder
                                  :disabled disabled}]]
     [:div.form-group
@@ -64,7 +65,7 @@
   ;; (println "Atom is:")
   ;; (prn @ATOM)
 
-  (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count]
+  (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden class]
          :or {id (str valpath)
               type "text"}} opt-map
         {:keys [limit enforce?]} char-count
@@ -101,10 +102,11 @@
                                      :on-change changefn
                                      :id id})
                 :multi-table (multi-table ATOM opt-map)
-                :textarea (text-area (assoc opt-map :value input-value :changefn changefn))
+                :textarea (text-area (assoc input-map :changefn changefn))
                 ;; default
                 [:input.form-control input-map])]
     [:div.form-group
+     {:class [(str id "_group") (when hidden "hidden")]}
      [:div.row
       [:div.col-md-3.label-area
        [:label {:for id} (:label opt-map id)]

@@ -19,6 +19,10 @@
                                  :required? true
                                  :disabled true
                                  :value (js/Date.)}
+                   :hidden-field {:label "A hidden field"
+                                  :hidden true
+                                  :value 15
+                                  :disabled true}
                    :faculty-participants {:label "Faculty Participant(s)"
                                           :required? true}
                    :abstract {:label "Abstract"
