@@ -1,4 +1,4 @@
-(defproject reagent-forms "0.1.7"
+(defproject reformation "0.1.7"
   :description "Generate and manipulate form datastructures in pure Clojure, which can be read with Reagent."
   :url "http://tech.toryanderson.com"
   :license {:name "Eclipse Public License"
@@ -8,7 +8,7 @@
   :profiles {:dev {:jvm-opts ["-server" "-Dconf=.lein-env"]
                    :resource-paths ["test/resources" "test/target/cljsbuild"]
                    :target-path "test/target/"
-                   :main reagent-forms.core-test
+                   :main reformation.core-test
 
                    :clean-targets ^{:protect false}
                    [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
@@ -71,7 +71,7 @@
                                   [cljsjs/react "16.1.0-0"]
                                   [cljsjs/react-dom "16.1.0-0"]
                                   [tupelo "0.9.76"]
-                                  [reagent-forms "0.1.2"]
+                                  [reformation "0.1.2"]
                                   [cljsjs/react-dom-server "16.1.0-0"]]
                    :plugins [[com.jakemccrary/lein-test-refresh "0.14.0"]
                              [lein-doo "0.1.7"]
@@ -87,7 +87,7 @@
                     {:app
                      {:source-paths ["test/cljs" "src"]
                       :compiler
-                      {:main "reagent-forms.app"
+                      {:main "reformation.app"
                        :asset-path "/js/out"
                        :output-to "test/target/cljsbuild/public/js/app.js"
                        :output-dir "test/target/cljsbuild/public/js/out"

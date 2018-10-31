@@ -1,8 +1,8 @@
 (ns user
   (:require [mount.core :as mount]
-            [reagent-forms.figwheel :refer [start-fw stop-fw cljs]]
+            [reformation.figwheel :refer [start-fw stop-fw cljs]]
             [garden-gnome.watcher :as garden-gnome]
-            reagent-forms.core-test))
+            reformation.core-test))
 
 (mount/defstate garden
   :start (garden-gnome/start! (garden-gnome/default-config))
@@ -10,10 +10,10 @@
 
 
 (defn start []
-  (mount/start-without #'reagent-forms.core-test/repl-server))
+  (mount/start-without #'reformation.core-test/repl-server))
 
 (defn stop []
-  (mount/stop-except #'reagent-forms.core-test/repl-server))
+  (mount/stop-except #'reformation.core-test/repl-server))
 
 (defn restart []
   (stop)
