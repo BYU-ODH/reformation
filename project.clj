@@ -1,4 +1,4 @@
-(defproject reformation "0.1.7"
+(defproject reformation "0.1.0"
   :description "Generate and manipulate form datastructures in pure Clojure, which can be read with Reagent."
   :url "http://tech.toryanderson.com"
   :license {:name "Eclipse Public License"
@@ -21,7 +21,7 @@
                                         ;[cemerick.piggieback/wrap-cljs-repl]
                     }
                    :garden {:builds [{:id "style"
-                                      :source-path "src/clj/orca/styles"
+                                      :source-path "src/clj/reformation/styles"
                                       :stylesheet orca.styles.main/main
                                       :compiler {:output-to "test/resources/public/css/style.css"
                                                  :pretty-print? true}}]}
@@ -71,7 +71,6 @@
                                   [cljsjs/react "16.1.0-0"]
                                   [cljsjs/react-dom "16.1.0-0"]
                                   [tupelo "0.9.76"]
-                                  [reformation "0.1.2"]
                                   [cljsjs/react-dom-server "16.1.0-0"]]
                    :plugins [[com.jakemccrary/lein-test-refresh "0.14.0"]
                              [lein-doo "0.1.7"]
