@@ -7,15 +7,28 @@
             [reformation.routes :as rt]
             [reformation.core :as rfc]))
 
-{:user
- {:name "Testerly Test",
-  :email "toryanderson@byu.edu",
-  :username "tsatest"},
- :chair {:name "Tory", :email "tory_anderson@byu.edu"},
- :faculty-participants "mandatory fac"}
+;; {:user
+;;  {:name "Testerly Test",
+;;   :email "toryanderson@byu.edu",
+;;   :username "tsatest"},
+;;  :chair {:name "Tory", :email "tory_anderson@byu.edu"},
+;;  :faculty-participants "mandatory fac"}
 
 
-(def hmeg-default [:date-client {:label "Date"
+(def hmeg-default [:next-reviewers
+                   [:reviewer1
+                    [:name {:label "Reviewer 1"
+                            :required? true
+                                        ;:disabled (assigned?)
+                            :subtext "Provide the email address of the first reviewer for this application"}
+                     :email {:label "Email for reviewer 1"}]
+                    :reviewer2
+                    [:name {:label "Reviewer 2"
+                            :required? true
+                                        ;:disabled (assigned?)
+                            :subtext "Provide the email address of the second reviewer for this application"}]]
+                   
+                   :date-client {:label "Date"
                                  :required? true
                                  :disabled true
                                  :value (js/Date.)}

@@ -1,6 +1,7 @@
 (ns reformation.core
   (:require [reformation.multitable :refer [multi-table] :as mt]
-            [reformation.shared :as shared]))
+            [reformation.shared :as shared]
+            [clojure.string :as str]))
 
 (defn map-structure
   "Produce a map with the same key-structure from the vector"
@@ -66,7 +67,7 @@
   ;; (prn @ATOM)
 
   (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden class]
-         :or {id (str valpath)
+         :or {id (str/join " " (map name valpath))
               type "text"}} opt-map
         {:keys [limit enforce?]} char-count
         input-value (get-in @ATOM valpath)
