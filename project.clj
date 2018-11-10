@@ -3,7 +3,7 @@
   :url "http://tech.toryanderson.com"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.8.0"]]
+  :dependencies [[org.clojure/clojure "1.9.0"]]
   :source-paths ["src"]
   :profiles {:dev {:jvm-opts ["-server" "-Dconf=.lein-env"]
                    :resource-paths ["test/resources" "test/target/cljsbuild"]
@@ -52,8 +52,8 @@
                                   [luminus-nrepl "0.1.4"]
                                   [metosin/ring-http-response "0.9.0"]
                                   [mount "0.1.14"] ;; Modular runtime operation
-                                  [org.clojure/clojure "1.9.0-alpha17"]
-                                  [org.clojure/clojurescript "1.9.908" :scope "provided" :upgrade false]
+                                  [org.clojure/clojure "1.9.0"]
+                                  [org.clojure/clojurescript "1.10.439" :scope "provided"]
                                   [org.clojure/tools.cli "0.4.1"]
                                   [org.clojure/tools.logging "0.4.1"]
                                   [org.postgresql/postgresql "42.2.5"] ;; Postgres
@@ -75,7 +75,7 @@
                    :plugins [[com.jakemccrary/lein-test-refresh "0.14.0"]
                              [lein-doo "0.1.7"]
                              [lein-figwheel "0.5.12"]
-                             [org.clojure/clojurescript "1.9.908" :upgrade false]
+                             [org.clojure/clojurescript "1.10.439"]
                              [lein-cprop "1.0.1"]
                              [migratus-lein "0.4.3"]
                              [lein-cljsbuild "1.1.4"]
