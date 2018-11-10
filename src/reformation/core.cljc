@@ -123,7 +123,7 @@
   (for [[k v] (partition 2 fm) :let [path (conj (vec pathv) k)]]
     (cond
       (sequential? v) (render-application v A path)
-      (map? v) [tinput A path v]
+      (map? v) ^{:key v} [tinput A path v]
       :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)])))
 
 (defn render-review
