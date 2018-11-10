@@ -25,57 +25,57 @@
                                       :stylesheet orca.styles.main/main
                                       :compiler {:output-to "test/resources/public/css/style.css"
                                                  :pretty-print? true}}]}
-                   :dependencies [[cheshire "5.8.0"]
-                                  [clj-http "3.7.0"]
+                   :dependencies [[cheshire "5.8.1"]
+                                  [clj-http "3.9.1"]
                                   [clj-json "0.5.3"]
-                                  [clj-time "0.14.0"]
-                                  [binaryage/devtools "0.9.4"]
+                                  [clj-time "0.15.1"]
+                                  [binaryage/devtools "0.9.10"]
                                   [com.andrewmcveigh/cljs-time "0.5.2"]
-                                  [cljs-ajax "0.7.1"]
-                                  [com.cognitect/transit-clj "0.8.300"] ;; TRANSIT json format
-                                  [com.cognitect/transit-cljs "0.8.239"] ;; TRANSIT json format
+                                  [cljs-ajax "0.7.5"]
+                                  [com.cognitect/transit-clj "0.8.313"]
+                                  [com.cognitect/transit-cljs "0.8.256"]
                                   [com.draines/postal "2.0.2"] ;; Emailing
-                                  [prone "1.1.4"]
-                                  [ring/ring-mock "0.3.1"]
-                                  [ring/ring-devel "1.6.2"]
-                                  [compojure "1.6.0"]
-                                  [conman "0.6.8"]
-                                  [cprop "0.1.11"]
-                                  [figwheel-sidecar "0.5.13"]
+                                  [prone "1.6.1"]
+                                  [ring/ring-mock "0.3.2"]
+                                  [ring/ring-devel "1.7.1"]
+                                  [compojure "1.6.1"]
+                                  [conman "0.8.3"]
+                                  [cprop "0.1.13"]
+                                  [figwheel-sidecar "0.5.17"]
                                   [garden-gnome "0.1.0"]
-                                  [garden "1.3.2"]
+                                  [garden "1.3.6"]
                                   [hiccup "1.0.5"]
-                                  [hikari-cp "1.7.6"]
-                                  [honeysql "0.9.1"] ;; SQL meets clojure
-                                  [luminus-immutant "0.2.3"]
-                                  [luminus-migrations "0.4.0"]
+                                  [hikari-cp "2.6.0"]
+                                  [honeysql "0.9.4"] ;; SQL meets clojure
+                                  [luminus-immutant "0.2.4"]
+                                  [luminus-migrations "0.6.1"]
                                   [luminus-nrepl "0.1.4"]
                                   [metosin/ring-http-response "0.9.0"]
-                                  [mount "0.1.11"] ;; Modular runtime operation
+                                  [mount "0.1.14"] ;; Modular runtime operation
                                   [org.clojure/clojure "1.9.0-alpha17"]
-                                  [org.clojure/clojurescript "1.9.908" :scope "provided"]
-                                  [org.clojure/tools.cli "0.3.5"]
-                                  [org.clojure/tools.logging "0.4.0"]
-                                  [org.postgresql/postgresql "42.1.4"] ;; Postgres
-                                  [org.webjars.bower/tether "1.4.0"]
-                                  [org.webjars/bootstrap "4.0.0-alpha.6-1"]
-                                  [org.webjars/font-awesome "4.7.0"]
-                                  [org.webjars/webjars-locator-jboss-vfs "0.1.0"]
+                                  [org.clojure/clojurescript "1.9.908" :scope "provided" :upgrade false]
+                                  [org.clojure/tools.cli "0.4.1"]
+                                  [org.clojure/tools.logging "0.4.1"]
+                                  [org.postgresql/postgresql "42.2.5"] ;; Postgres
+                                  [org.webjars.bower/tether "1.4.0" :upgrade false]
+                                  [org.webjars/bootstrap "4.0.0-alpha.6-1" :upgrade false]
+                                  [org.webjars/font-awesome "4.7.0" :upgrade false]
+                                  [org.webjars/webjars-locator-jboss-vfs "0.1.0" :upgrade false]
                                   [ring-middleware-format "0.7.2"] ;; CLJ Routing
                                   [ring-webjars "0.2.0"] ;; Web assetts & their routing
-                                  [ring/ring-defaults "0.3.1"] ;; CLJ routing
+                                  [ring/ring-defaults "0.3.2"] ;; CLJ routing
                                   [secretary "1.2.3"] ;; CLJS routing
-                                  [venantius/accountant "0.2.3"]
-                                  [reagent "0.8.0-alpha2"];; REACT 
-                                  [reagent-utils "0.2.1"];; & REACT
-                                  [cljsjs/react "16.1.0-0"]
-                                  [cljsjs/react-dom "16.1.0-0"]
-                                  [tupelo "0.9.76"]
-                                  [cljsjs/react-dom-server "16.1.0-0"]]
+                                  [venantius/accountant "0.2.4"]
+                                  [reagent "0.8.1"];; REACT 
+                                  [reagent-utils "0.3.1"];; & REACT
+                                  [cljsjs/react "16.6.0-0"]
+                                  [cljsjs/react-dom "16.6.0-0"]
+                                  [tupelo "0.9.107"]
+                                  [cljsjs/react-dom-server "16.6.0-0"]]
                    :plugins [[com.jakemccrary/lein-test-refresh "0.14.0"]
                              [lein-doo "0.1.7"]
                              [lein-figwheel "0.5.12"]
-                             [org.clojure/clojurescript "1.9.908"]
+                             [org.clojure/clojurescript "1.9.908" :upgrade false]
                              [lein-cprop "1.0.1"]
                              [migratus-lein "0.4.3"]
                              [lein-cljsbuild "1.1.4"]
