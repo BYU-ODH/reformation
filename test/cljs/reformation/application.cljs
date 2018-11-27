@@ -27,6 +27,21 @@
                             :required? true
                                         ;:disabled (assigned?)
                             :subtext "Provide the email address of the second reviewer for this application"}]]
+
+
+                   :simple-selectbox
+                   {:label "I'm a select box!"
+                    :type :select
+                    :options ["Option 1"
+                              "Option 2"]}
+
+                   :varied-selectbox
+                   {:label "I'm a fancier select box!"
+                    :type :select
+                    :options [{:content "Poor"
+                               :value 0}
+                              {:content "Excellent"
+                               :value 4}]}
                    
                    :date-client {:label "Date"
                                  :required? true
