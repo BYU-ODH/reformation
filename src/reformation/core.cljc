@@ -30,7 +30,10 @@
                                  :name id
                                  :on-change on-change}]
           (for [o options]
-            [:option o]))))
+            (if (map? o)
+              [:option {:value (:value o)}
+               (:content o)]
+              [:option o])))))
 
 (defn text-area [opt-map]
   (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count required]} opt-map
@@ -59,13 +62,6 @@
 (defn tinput
   "Produce data-bound inputs for a given map, updating `ATOM` on change. `opt-map` specifies options including display variables."
   [ATOM valpath & [opt-map]]
-  ;; (println "valpath is:")
-  ;; (prn valpath)
-  ;; (println "Value is:")
-  ;; (prn (get-in @ATOM valpath))
-  ;; (println "Atom is:")
-  ;; (prn @ATOM)
-
   (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden class]
          :or {id (str/join " " (map name valpath))
               type "text"}} opt-map
