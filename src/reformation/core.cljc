@@ -122,7 +122,7 @@
       (map? v) ^{:key v} [tinput A path v]
       :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)])))
 
-(defn render-review
+(defn render-review ;; TODO: Allow to receive an Atom, giving the same arg profile as render-application
   "Parse the application map and render the review based on the ordered `schema` of the application, with values in `application` expected to be as given by `render-application`.
   
   Resulting form will be read-only with no changes possible."
