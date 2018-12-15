@@ -17,20 +17,19 @@
 ;;             (map? v) (reviewify v))])]
 ;;     (map f given-default)))
 
+(defn reviewify-map
+  [m]
+  (cond-> m
+    true (assoc :disabled true)
+    (= (:type m) :select) (dissoc :type)))
+
+
 (defn reviewify
   "Adjust a submission-default map for review rather than editing"
   [default-vector]
   (letfn [(m [x]
             (cond
-              (map? x) (assoc x :disabled true)
+              (map? x) (reviewify-map x)
               (vector? x) (reviewify x)
               :default x))]
-    (map m default-vector))
-
-  ;; (reduce conj
-  ;;         (for [[k v] (partition 2 default-vector)]
-  ;;           [k 
-  ;;            (cond 
-  ;;              (vector? v) (reviewify v)
-  ;;              (map? v) (assoc v :disabled true) )]))
-  )
+    (map m default-vector)))
