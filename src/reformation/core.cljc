@@ -59,6 +59,25 @@
          [:div.char-limit {:class class}
           (str ccount "/" limit " characters")]))]))
 
+(defn validation-function?
+  [f]
+  (:validation-function? (meta f)))
+
+(defn to-validation 
+  "Given a predicate, wrap it properly to be a validation function for tinput.
+
+  Validation function runs on the input at every change, altering the validity of the element as prescribed. It waits for .checkValidity on the input to explain the error"
+  [f & [error-message]]
+  (if (validation-function? f) f 
+      (with-meta (fn [click]
+                   (let [v (.. click -target -value)
+                         dom-element (.. click -target)
+                         error-message (or error-message "Invalid input")]
+                     (if (f v)
+                       (.setCustomValidity dom-element "")
+                       (.setCustomValidity dom-element error-message)))) {:validation-function? true})))
+
+
 (defn tinput
   "Produce data-bound inputs for a given map, updating `ATOM` on change. `opt-map` specifies options including display variables."
   [ATOM valpath & [opt-map]]
@@ -69,16 +88,16 @@
         input-value (get-in @ATOM valpath)
         change-atom (fn [s] (swap! ATOM assoc-in valpath s))
         changefn1 (fn [e] (change-atom (shared/get-value-from-change e)))
+        validation-function (when-let [vf validation-function]
+                              (to-validation vf invalid-feedback))
         changefn (cond
-                   validation-function (comp validation-function changefn1)
+                   validation-function (fn [e] (doto e changefn1 validation-function))
                    enforce? (fn [e]
                               (let [v (shared/get-value-from-change e)]
                                 (cond
                                   (= limit (dec (count v))) identity
                                   (< limit (count v)) (change-atom (apply str (take limit v)))
-                                  :default (changefn1 e)))
-
-                                )
+                                  :default (changefn1 e))))
                    :default changefn1)
         input-map (merge {:type type
                           :id id

@@ -20,126 +20,129 @@
                     [:name {:label "Reviewer 1"
                             :required? true
                                         ;:disabled (assigned?)
-                            :subtext "Provide the email address of the first reviewer for this application"}
+                            :subtext "Provide the email address of the first reviewer for this application. Must be an odd number of chars"
+                            :validation-function #(odd? (count %))
+                            :invalid-feedback "You must have an odd number of chars"}
                      :email {:label "Email for reviewer 1"}]
-                    :reviewer2
-                    [:name {:label "Reviewer 2"
-                            :required? true
-                                        ;:disabled (assigned?)
-                            :subtext "Provide the email address of the second reviewer for this application"}]]
+                   ;;  :reviewer2
+;;                     [:name {:label "Reviewer 2"
+;;                             :required? true
+;;                                         ;:disabled (assigned?)
+;;                             :subtext "Provide the email address of the second reviewer for this application"}]]
 
 
-                   :simple-selectbox
-                   {:label "I'm a select box!"
-                    :type :select
-                    :options ["Option 1"
-                              "Option 2"]}
+;;                    :simple-selectbox
+;;                    {:label "I'm a select box!"
+;;                     :type :select
+;;                     :options ["Option 1"
+;;                               "Option 2"]}
 
-                   :varied-selectbox
-                   {:label "I'm a fancier select box!"
-                    :type :select
-                    :options [{:content "Poor"
-                               :value 0}
-                              {:content "Excellent"
-                               :value 4}]}
+;;                    :varied-selectbox
+;;                    {:label "I'm a fancier select box!"
+;;                     :type :select
+;;                     :options [{:content "Poor"
+;;                                :value 0}
+;;                               {:content "Excellent"
+;;                                :value 4}]}
                    
-                   :date-client {:label "Date"
-                                 :required? true
-                                 :disabled true
-                                 :value (js/Date.)}
-                   :hidden-field {:label "A hidden field"
-                                  :hidden true
-                                  :value 15
-                                  :disabled true}
-                   :faculty-participants {:label "Faculty Participant(s)"
-                                          :required? true}
-                   :abstract {:label "Abstract"
-                              :subtext "Provide a one-paragraph overview of the research; it’s central organizing questions and key details of method and scope, including its mentoring dimension."
-                              :type :textarea
-                              :char-count {:limit  50
-                                           :enforce? false}}
-                   :description {:label "Description of the project"
-                                 :subtext "Provide some context for the project, its background and significance. How does it relate to the faculty mentor’s research interests? How will it contribute to larger disciplinary concerns? What is the current status of the research? What is the scope of the work under this grant, and what are its primary methods?"
-                                 :type :textarea
-                                 :required? true}
-                   :anticipated {:label "Anticipated Outcomes"
-                                 :subtext "Describe key outcomes of the project. These should include research outcomes as well as outcomes related to mentoring, including specific products of the work."
-                                 :type :textarea}
-                   :qualifications {:label "Qualifications"
-                                    :subtext "How is the faculty mentor well-situated to conduct/oversee the research and mentor students? Explain this in the context of past experience and ongoing work."
-                                    :type :textarea}
-                   :budget ["Number of undergraduate students" {:label "Number of undergraduate students" :type :number}
-                            "Budget for undergraduate students" {:label "Budget for undergraduate students" :type :number}
-                            "Number of graduate students" {:label "Number of graduate students" :type :number}
-                            "Budget for graduates" {:label "Budget for graduates" :type :number}
-                            "Budget for supplies" {:label "Budget for supplies" :type :number}
-                            "Explanation of supplies" {:label "Explanation of supplies" :type :textarea}
-                            "Budget for travel" {:label "Budget for travel" :type :number}
-                            "Explanation of travel" {:label "Explanation of travel" :type :textarea}
-                            "Budget for other items" {:label "Budget for other items" :type :number}
-                            "Explanation of other items" {:label "Explanation of other items" :type :textarea}
-                            "Total budget" {:label "Total budget " :type :number}]
-                   :timeline {:label "Timeline"
-                              :subtext "Detail plans for completing each phase of the project including final completion date. An outcomes report must be submitted to the college no later than December 1, 2020."
-                              :type :textarea}
-                   :chair [:name {:label "Department Chair"
-                                  :required? true}
-                           :email {:label "Department Chair's Email"
-                                   :required? true}]])
+;;                    :date-client {:label "Date"
+;;                                  :required? true
+;;                                  :disabled true
+;;                                  :value (js/Date.)}
+;;                    :hidden-field {:label "A hidden field"
+;;                                   :hidden true
+;;                                   :value 15
+;;                                   :disabled true}
+;;                    :faculty-participants {:label "Faculty Participant(s)"
+;;                                           :required? true}
+;;                    :abstract {:label "Abstract"
+;;                               :subtext "Provide a one-paragraph overview of the research; it’s central organizing questions and key details of method and scope, including its mentoring dimension."
+;;                               :type :textarea
+;;                               :char-count {:limit  50
+;;                                            :enforce? false}}
+;;                    :description {:label "Description of the project"
+;;                                  :subtext "Provide some context for the project, its background and significance. How does it relate to the faculty mentor’s research interests? How will it contribute to larger disciplinary concerns? What is the current status of the research? What is the scope of the work under this grant, and what are its primary methods?"
+;;                                  :type :textarea
+;;                                  :required? true}
+;;                    :anticipated {:label "Anticipated Outcomes"
+;;                                  :subtext "Describe key outcomes of the project. These should include research outcomes as well as outcomes related to mentoring, including specific products of the work."
+;;                                  :type :textarea}
+;;                    :qualifications {:label "Qualifications"
+;;                                     :subtext "How is the faculty mentor well-situated to conduct/oversee the research and mentor students? Explain this in the context of past experience and ongoing work."
+;;                                     :type :textarea}
+;;                    :budget ["Number of undergraduate students" {:label "Number of undergraduate students" :type :number}
+;;                             "Budget for undergraduate students" {:label "Budget for undergraduate students" :type :number}
+;;                             "Number of graduate students" {:label "Number of graduate students" :type :number}
+;;                             "Budget for graduates" {:label "Budget for graduates" :type :number}
+;;                             "Budget for supplies" {:label "Budget for supplies" :type :number}
+;;                             "Explanation of supplies" {:label "Explanation of supplies" :type :textarea}
+;;                             "Budget for travel" {:label "Budget for travel" :type :number}
+;;                             "Explanation of travel" {:label "Explanation of travel" :type :textarea}
+;;                             "Budget for other items" {:label "Budget for other items" :type :number}
+;;                             "Explanation of other items" {:label "Explanation of other items" :type :textarea}
+;;                             "Total budget" {:label "Total budget " :type :number}]
+;;                    :timeline {:label "Timeline"
+;;                               :subtext "Detail plans for completing each phase of the project including final completion date. An outcomes report must be submitted to the college no later than December 1, 2020."
+;;                               :type :textarea}
+;;                    :chair [:name {:label "Department Chair"
+;;                                   :required? true}
+;;                            :email {:label "Department Chair's Email"
+;;                                    :required? true}]])
 
-(def submission-default [:title {:label "Project Title"
-                                 :required? true}
-                         :date-client {:label "Date"
-                                       :required? true
-                                       :disabled true
-                                       :value (js/Date.)}
-                         :major {:label "Major"
-                                 :required? true}
-                         :purpose-and-significance {:label "Purpose and Significance"
-                                                    :required? true
-                                                    :type :textarea
-                                                    :subtext [:div [:h6 "Things to Consider:"] [:p "Provide a concise rationale for your project. What is the central research question and why is it significant? How will it contribute to a larger disciplinary conversation?"]]}
-                         :research-description {:label "Description of Research"
-                                                :required? true
-                                                :type :textarea
-                                                :subtext [:div [:h6 "Things to consider:"] [:p "Explain your research process including the key steps or stages involved and what you will need to be successful."]]}
-                         :outcomes-description {:label "Description of Outcomes"
-                                                :required? true
-                                                :type :textarea
-                                                :subtext [:div [:h6 "Things to consider:"] [:p "What will be the " [:i "product(s)"] " of your research? How will you demonstrate results? What will " [:i "your"] " outcomes be—what will you be able to do (do better) because of this work? Why will the experience be valuable given your future plans and goals?"]]}
-                         :qualifications {:label "Qualifications"
-                                          :required? true
-                                          :type :textarea
-                                          :subtext [:div [:h6 "Things to consider:"] [:p "Explain how you are prepared to be successful with this project. What experience have you had—with previous research, with previous coursework—that will inform this project? Describe your faculty mentor’s role in this project. How will your mentor’s background and interests contribute to your success?"]]}
-                         :timetable {:label "Timetable"
-                                     :required? true
-                                     :type :textarea
-                                     :subtext "Indicate when you will accomplish each part of your project, including final completion date."}
-                         :budget {:label "Budget"
-                                  :required? true
-                                  :type :multi-table
-                                  :subtext "Indicate any expenses involved in carryout out your research, including a reason for each expense."
-                                  :value-path [:proposed-budget]
-                                  :sum-field :amount
-                                  :columns [{:key :item
-                                             :title "Item"}
-                                            {:key :amount
-                                             :title "Amount"
-                                             :input-type "number"}
-                                            {:key :purpose
-                                             :title "Purpose"
-                                             :input-type "textarea"}]
-                                  ;; Item, Amount, Purpose (TOTAL)
-                                  }
-                         :scholarship {:label "Scholarly Sources"
-                                       :required? true
-                                       :type :textarea
-                                       :subtext "Provide an annotated list of sources relevant to your research."}
-                         :faculty-mentor [:name {:label "Faculty Mentor Name"
-                                                 :required? true
-                                                 :place-holder "(Your Faculty Mentor)"}
-                                          :email [:label "Faculty Mentor Email"
-                                                  :required? true]]])
+;; (def submission-default [:title {:label "Project Title"
+;;                                  :required? true}
+;;                          :date-client {:label "Date"
+;;                                        :required? true
+;;                                        :disabled true
+;;                                        :value (js/Date.)}
+;;                          :major {:label "Major"
+;;                                  :required? true}
+;;                          :purpose-and-significance {:label "Purpose and Significance"
+;;                                                     :required? true
+;;                                                     :type :textarea
+;;                                                     :subtext [:div [:h6 "Things to Consider:"] [:p "Provide a concise rationale for your project. What is the central research question and why is it significant? How will it contribute to a larger disciplinary conversation?"]]}
+;;                          :research-description {:label "Description of Research"
+;;                                                 :required? true
+;;                                                 :type :textarea
+;;                                                 :subtext [:div [:h6 "Things to consider:"] [:p "Explain your research process including the key steps or stages involved and what you will need to be successful."]]}
+;;                          :outcomes-description {:label "Description of Outcomes"
+;;                                                 :required? true
+;;                                                 :type :textarea
+;;                                                 :subtext [:div [:h6 "Things to consider:"] [:p "What will be the " [:i "product(s)"] " of your research? How will you demonstrate results? What will " [:i "your"] " outcomes be—what will you be able to do (do better) because of this work? Why will the experience be valuable given your future plans and goals?"]]}
+;;                          :qualifications {:label "Qualifications"
+;;                                           :required? true
+;;                                           :type :textarea
+;;                                           :subtext [:div [:h6 "Things to consider:"] [:p "Explain how you are prepared to be successful with this project. What experience have you had—with previous research, with previous coursework—that will inform this project? Describe your faculty mentor’s role in this project. How will your mentor’s background and interests contribute to your success?"]]}
+;;                          :timetable {:label "Timetable"
+;;                                      :required? true
+;;                                      :type :textarea
+;;                                      :subtext "Indicate when you will accomplish each part of your project, including final completion date."}
+;;                          :budget {:label "Budget"
+;;                                   :required? true
+;;                                   :type :multi-table
+;;                                   :subtext "Indicate any expenses involved in carryout out your research, including a reason for each expense."
+;;                                   :value-path [:proposed-budget]
+;;                                   :sum-field :amount
+;;                                   :columns [{:key :item
+;;                                              :title "Item"}
+;;                                             {:key :amount
+;;                                              :title "Amount"
+;;                                              :input-type "number"}
+;;                                             {:key :purpose
+;;                                              :title "Purpose"
+;;                                              :input-type "textarea"}]
+;;                                   ;; Item, Amount, Purpose (TOTAL)
+;;                                   }
+;;                          :scholarship {:label "Scholarly Sources"
+;;                                        :required? true
+;;                                        :type :textarea
+;;                                        :subtext "Provide an annotated list of sources relevant to your research."}
+;;                          :faculty-mentor [:name {:label "Faculty Mentor Name"
+;;                                                  :required? true
+;;                                                  :place-holder "(Your Faculty Mentor)"}
+;;                                           :email [:label "Faculty Mentor Email"
+                    ;;                                                   :required? true]
+                    ]])
 
 
 (def SUBMISSION
@@ -166,14 +169,23 @@
     ", listed as “Principles to Guide International Study Programs”. Programs must adhere to the BYU International Travel Policy found at " [:a {:href "travelsmart.byu.edu"} "travelsmart.byu.edu."]]])
 
 (defn generate-form []
-  (let [form-id "needs-validation"]
+  (let [form-id "needs-validation"
+        validate (fn [e] (let [s (shared/get-value-from-change e)
+                               element (.. e -target)]
+                           (if (even? (count s))
+                             (.setCustomValidity element "")
+                             (.setCustomValidity element "You're odd!"))))]
     [:div.submission-form 
      [:form.form-control {:id form-id}
-      (into [:div.form-contents]            
-            (rfc/render-application hmeg-default SUBMISSION))]]))
+      (into [:div.form-contents
+             [:a.btn.btn-success {:on-click #(.reportValidity (.getElementById js/document form-id))}
+              "Validate"]]
+            ;; [[:input {:on-change #(validate %)}]
+            ;;  [:div.invalid-feedback "invalid here"]]
+            
+            (rfc/render-application hmeg-default SUBMISSION)
+            )]]))
 
 (defn app-page []
-  (shared/page-template {:jumbo-title "Humanities Undergraduate Grant Application"
-                                        ;:jumbo-contents jumbotext
-                         :contents [generate-form]
-                         }))
+  (shared/page-template {:jumbo-title "Reformation Application"
+                         :contents [generate-form]}))
