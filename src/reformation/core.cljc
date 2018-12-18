@@ -23,11 +23,12 @@
      A)))
 
 (defn select-box [m]
-  (let [{:keys [options id on-change]
+  (let [{:keys [options id on-change required?]
          :or {id "generic-select"
               options ["No :options provided"]}} m]
     (into [:select.form-control {:id id
                                  :name id
+                                 :required required?
                                  :on-change on-change}]
           (for [o options]
             (if (map? o)
@@ -114,9 +115,9 @@
         invalid-feedback (when invalid-feedback
                            [:div.invalid-feedback invalid-feedback])
         input (condp = type
-                :select (select-box {:options (:options opt-map)
-                                     :on-change changefn
-                                     :id id})
+                :select (select-box (merge (select-keys opt-map [:options :required?])
+                                           {:on-change changefn
+                                            :id id}))
                 :multi-table (multi-table ATOM opt-map)
                 :textarea (text-area (assoc input-map :changefn changefn))
                 ;; default
