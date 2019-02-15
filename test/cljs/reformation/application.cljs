@@ -15,7 +15,13 @@
 ;;  :faculty-participants "mandatory fac"}
 
 
-(def hmeg-default [:next-reviewers
+(def hmeg-default [:disability
+                   {:type :togglebox
+                    :label "Are you disabled?"
+                    :content [:disabled-explanation
+                              {:label "Explanation for your disability"
+                               :type :textarea}]}
+                   :next-reviewers
                    [:reviewer1
                     [:name {:label "Reviewer 1"
                             :required? true
@@ -74,6 +80,18 @@
             (rfc/render-application hmeg-default SUBMISSION)
             )]]))
 
+(defn internal-closure
+  "Stuff with a Closure init"
+  []
+  (let [counter (r/atom 0)]
+    (fn []
+      [:div.counter
+       [:h1 (str "Clicks: " @counter)]
+       [:button {:on-click #(swap! counter inc)} "Add me"]])))
+
+
 (defn app-page []
   (shared/page-template {:jumbo-title "Reformation Application"
-                         :contents [generate-form]}))
+                         :contents [:div.mycontent
+                                    [internal-closure]
+                                    [generate-form]]}))

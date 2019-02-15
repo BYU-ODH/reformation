@@ -1,7 +1,9 @@
 (ns reformation.core
   (:require [reformation.multitable :refer [multi-table] :as mt]
             [reformation.shared :as shared]
+            #?(:cljs [reagent.core :refer [atom]])
             [clojure.string :as str]))
+(declare tinput render-application render-review)
 
 (defn map-structure
   "Produce a map with the same key-structure from the vector"
@@ -21,6 +23,14 @@
   ([A default-schema-vec]
    (when (reset! A (map-structure default-schema-vec))
      A)))
+
+(defn render-label
+  "Create a label to go into a .row"
+  [{:keys [for-id label-text subtext]}]
+  [:div.col-md-3.label-area
+   [:label {:for for-id}
+    label-text]
+   subtext])
 
 (defn select-box [m]
   (let [{:keys [options id on-change required?]
@@ -78,14 +88,36 @@
                        (.setCustomValidity dom-element "")
                        (.setCustomValidity dom-element error-message)))) {:validation-function? true})))
 
+(def checked? (atom true))
+(defn togglebox
+  "Builds a group which, when toggled, displays its `:content`"
+  [{:keys [label content valpath ATOM]}]
+  (let [content-id "togglebox-content"]
+    [:div.togglebox
+     (comment [render-label {:for-id content-id
+                             :label-text label}])
+     [:input {:type :checkbox
+              :checked @checked?
+              :on-click #(swap! checked? not)}]
+     (when @checked? 
+       [:div.toggle-content
+        {:class (if @checked? "togglebox-show" "togglebox-hidden")}
+        (render-application content ATOM)
+        ])
+     
+     
+                                        ;content
+     ]))
+
 
 (defn tinput
   "Produce data-bound inputs for a given map, updating `ATOM` on change. `opt-map` specifies options including display variables."
   [ATOM valpath & [opt-map]]
-  (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden class]
+  (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden class contingent]
          :or {id (str/join " " (map name valpath))
               type "text"}} opt-map
         {:keys [limit enforce?]} char-count
+        {:keys [field-key contingent-fn]} contingent
         input-value (get-in @ATOM valpath)
         change-atom (fn [s] (swap! ATOM assoc-in valpath s))
         changefn1 (fn [e] (change-atom (shared/get-value-from-change e)))
@@ -120,15 +152,16 @@
                                             :id id}))
                 :multi-table (multi-table ATOM opt-map)
                 :textarea (text-area (assoc input-map :changefn changefn))
+                :togglebox (togglebox (merge {:ATOM ATOM :valpath valpath} opt-map))
                 ;; default
                 [:input.form-control input-map])]
     [:div.form-group
      {:class [(str id "_group") (when hidden "hidden")]}
      [:div.row
-      [:div.col-md-3.label-area
-       [:label {:for id} (:label opt-map id)]
-       sub]
-      [:div.col
+      [render-label {:for-id id
+                     :label-text  (:label opt-map id)
+                     :subtext sub}]
+      [:div.col.val-area
        input
        invalid-feedback]]]))
 
