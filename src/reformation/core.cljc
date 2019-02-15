@@ -88,26 +88,21 @@
                        (.setCustomValidity dom-element "")
                        (.setCustomValidity dom-element error-message)))) {:validation-function? true})))
 
-(def checked? (atom true))
+;(def checked? (atom true))
 (defn togglebox
   "Builds a group which, when toggled, displays its `:content`"
   [{:keys [label content valpath ATOM]}]
-  (let [content-id "togglebox-content"]
-    [:div.togglebox
-     (comment [render-label {:for-id content-id
-                             :label-text label}])
-     [:input {:type :checkbox
-              :checked @checked?
-              :on-click #(swap! checked? not)}]
-     (when @checked? 
-       [:div.toggle-content
-        {:class (if @checked? "togglebox-show" "togglebox-hidden")}
-        (render-application content ATOM)
-        ])
-     
-     
-                                        ;content
-     ]))
+  (let [content-id "togglebox-content"
+        checked? (atom false)]
+    (fn []
+      [:div.togglebox
+       [tinput ATOM valpath {:type :checkbox
+                             :validation-function #(swap! checked? not)
+                             :label ""}]
+       (when @checked? 
+         [:div.toggle-content
+          {:class (if @checked? "togglebox-show" "togglebox-hidden")}
+          (render-application content ATOM)])])))
 
 
 (defn tinput
@@ -152,7 +147,7 @@
                                             :id id}))
                 :multi-table (multi-table ATOM opt-map)
                 :textarea (text-area (assoc input-map :changefn changefn))
-                :togglebox (togglebox (merge {:ATOM ATOM :valpath valpath} opt-map))
+                :togglebox [togglebox (merge {:ATOM ATOM :valpath valpath} opt-map)]
                 ;; default
                 [:input.form-control input-map])]
     [:div.form-group
