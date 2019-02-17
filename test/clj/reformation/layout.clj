@@ -5,9 +5,7 @@
    [hiccup.util :refer [with-base-url]]
    [hiccup.element :refer [javascript-tag]]
    [cheshire.core :refer [generate-string]]
-   [ring.util.http-response :refer [content-type ok]]
-   [ring.util.anti-forgery :refer [anti-forgery-field]]
-   [ring.middleware.anti-forgery :refer [*anti-forgery-token*]]))
+   [ring.util.http-response :refer [content-type ok]]))
 
 (declare ^:dynamic *app-context*)
 (def style-path "/css/")

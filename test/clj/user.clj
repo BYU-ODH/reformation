@@ -8,12 +8,15 @@
   :start (garden-gnome/start! (garden-gnome/default-config))
   :stop (garden-gnome/stop! garden))
 
-
 (defn start []
-  (mount/start-without #'reformation.core-test/repl-server))
+  (mount/start)
+  ;(mount/start-without #'reformation.core-test/repl-server)
+  )
 
 (defn stop []
-  (mount/stop-except #'reformation.core-test/repl-server))
+  (mount/start)
+  ;(mount/stop-except #'reformation.core-test/repl-server)
+  )
 
 (defn restart []
   (stop)
