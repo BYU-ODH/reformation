@@ -17,6 +17,7 @@
 
 (def hmeg-default [:disability
                    {:type :togglebox
+                    :default-value true
                     :label "Are you disabled?"
                     :content [:disabled-explanation
                               {:label "Explanation for your disability"
@@ -93,5 +94,5 @@
 (defn app-page []
   (shared/page-template {:jumbo-title "Reformation Application"
                          :contents [:div.mycontent
-                                    [internal-closure]
+                                    ;[internal-closure]
                                     [generate-form]]}))
