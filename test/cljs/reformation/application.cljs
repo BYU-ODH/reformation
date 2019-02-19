@@ -14,6 +14,70 @@
 ;;  :chair {:name "Tory", :email "tory_anderson@byu.edu"},
 ;;  :faculty-participants "mandatory fac"}
 
+(def humgrants-default  [:title {:label "Project Title"
+                                 :required? true}
+                         :date-client {:label "Date"
+                                       :required? true
+                                       :disabled true
+                                       :value (js/Date.)}
+                         :major {:label "Major"
+                                 :required? true}
+                         :purpose-and-significance {:label "Purpose and Significance"
+                                                    :required? true
+
+                                                    :type :textarea
+                                                    :subtext [:div [:h6 "Things to Consider:"] [:p "Provide a concise rationale for your project. What is the central research question and why is it significant? How will it contribute to a larger disciplinary conversation?"]]}
+                         :research-description {:label "Description of Research"
+                                                :required? true
+
+                                                :type :textarea
+                                                :subtext [:div [:h6 "Things to consider:"] [:p "Explain your research process including the key steps or stages involved and what you will need to be successful."]]}
+                         :outcomes-description {:label "Description of Outcomes"
+                                                :required? true
+
+                                                :type :textarea
+                                                :subtext [:div [:h6 "Things to consider:"] [:p "What will be the " [:i "product(s)"] " of your research? How will you demonstrate results? What will " [:i "your"] " outcomes be—what will you be able to do (do better) because of this work? Why will the experience be valuable given your future plans and goals?"]]}
+                         :qualifications {:label "Qualifications"
+                                          :required? true
+
+                                          :type :textarea
+                                          :subtext [:div [:h6 "Things to consider:"] [:p "Explain how you are prepared to be successful with this project. What experience have you had—with previous research, with previous coursework—that will inform this project? Describe your faculty mentor’s role in this project. How will your mentor’s background and interests contribute to your success?"]]}
+                         :timetable {:label "Timetable"
+                                     :required? true
+
+                                     :type :textarea
+                                     :subtext "Indicate when you will accomplish each part of your project, including final completion date."}
+                         :budget {:label "Budget"
+                                  :required? true
+
+                                  :type :multi-table
+                                  :subtext "Indicate any expenses involved in carryout out your research, including a reason for each expense."
+                                  :value-path [:proposed-budget]
+                                  :sum-field :amount
+                                  :columns [{:key :item
+                                             :title "Item"}
+                                            {:key :amount
+                                             :title "Amount"
+                                             :input-type "number"}
+                                            {:key :purpose
+                                             :title "Purpose"
+                                             :input-type "textarea"}]}
+                         :scholarship {:label "Scholarly Sources"
+                                       :required? true
+
+                                       :type :textarea
+                                       :subtext "Provide an annotated list of sources relevant to your research."}
+                         :disabled {:label "Do you have a physical or mental disability?"
+                                    :type :togglebox
+                                    :open-height "9em"
+                                    :content [:disability-explanation {:type :textarea
+                                                                       :label "Explanation of Disability"}]}
+                         :faculty-mentor [:name {:label "Faculty Mentor Name"
+                                                 :required? true
+
+                                                 :place-holder "(Your Faculty Mentor)"}
+                                          :email {:label "Faculty Mentor Email"
+                                                  :required? true}]]) 
 
 (def hmeg-default [:disability
                    {:type :togglebox
@@ -27,7 +91,6 @@
                    [:reviewer1
                     [:name {:label "Reviewer 1"
                             :required? true
-                                        ;:disabled (assigned?)
                             :subtext "Provide the email address of the first reviewer for this application. Must be an odd number of chars"
                             :validation-function #(odd? (count %))
                             :invalid-feedback "You must have an odd number of chars"}
@@ -76,24 +139,10 @@
       (into [:div.form-contents
              [:a.btn.btn-success {:on-click #(.reportValidity (.getElementById js/document form-id))}
               "Validate"]]
-            ;; [[:input {:on-change #(validate %)}]
-            ;;  [:div.invalid-feedback "invalid here"]]
-            
             (rfc/render-application hmeg-default SUBMISSION)
             )]]))
-
-(defn internal-closure
-  "Stuff with a Closure init"
-  []
-  (let [counter (r/atom 0)]
-    (fn []
-      [:div.counter
-       [:h1 (str "Clicks: " @counter)]
-       [:button {:on-click #(swap! counter inc)} "Add me"]])))
-
 
 (defn app-page []
   (shared/page-template {:jumbo-title "Reformation Application"
                          :contents [:div.mycontent
-                                    ;[internal-closure]
                                     [generate-form]]}))

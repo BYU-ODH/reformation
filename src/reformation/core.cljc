@@ -100,27 +100,36 @@
              :checked checked?
              :on-change toggle-fn}]))
 
+(defn checkset
+  "If a checkbox value is nil, set it; otherwise, return it."
+  [{:keys [ATOM valpath default-value]}]
+  (println "checkset given")
+  (prn {:valpath valpath :default default-value})
+  (let [v (get-in @ATOM valpath)]
+                   (if-not (nil? v)
+                     v
+                     (swap! ATOM assoc-in valpath (boolean default-value)))))
+
 
 (defn togglebox
   "Builds a group which, when toggled, displays its `:content`"
   [{:keys [label content valpath ATOM default-value override-inline? open-height]
-    :or {open-height "5em"}}]
+    :or {open-height "5em"}
+    :as opt-map}]
   (let [content-id "togglebox-content"
-        checked? (atom (boolean default-value))
+        checked? (checkset opt-map)
         transition-style {:-webkit-transition "height 0.4s ease-in-out"
                           :transition "height 0.4s ease-in-out"
                           :overflow "hidden"}]
-    (swap! ATOM assoc-in valpath @checked?)
-    (fn []
-      [:div.togglebox
-       [tinput ATOM valpath {:type :checkbox
-                             :validation-function #(swap! checked? not)
-                             :label ""}]
-       [:div.toggle-content
-        {:class (if @checked? "togglebox-show" "togglebox-hidden")
-         :style (when-not override-inline?
-                  (assoc transition-style :height (if @checked? open-height "0em")))}
-        (render-application content ATOM)]])))
+    [:div.togglebox
+     [tinput ATOM valpath {:type :checkbox
+                           :checked checked?
+                           :label ""}]
+     [:div.toggle-content
+      {:class (if checked? "togglebox-show" "togglebox-hidden")
+       :style (when-not override-inline?
+                (assoc transition-style :height (if checked? open-height "0em")))}
+      (render-application content ATOM)]]))
 
 
 (defn tinput
