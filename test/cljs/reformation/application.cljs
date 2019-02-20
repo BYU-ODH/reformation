@@ -82,7 +82,7 @@
 (def hmeg-default [:disability
                    {:type :togglebox
                     :open-height "10em"
-                    :default-value true
+                    ;:default-value false
                     :label "Are you disabled?"
                     :content [:disabled-explanation
                               {:label "Explanation for your disability"

@@ -103,12 +103,11 @@
 (defn checkset
   "If a checkbox value is nil, set it; otherwise, return it."
   [{:keys [ATOM valpath default-value]}]
-  (println "checkset given")
-  (prn {:valpath valpath :default default-value})
-  (let [v (get-in @ATOM valpath)]
-                   (if-not (nil? v)
-                     v
-                     (swap! ATOM assoc-in valpath (boolean default-value)))))
+  (let [v (get-in @ATOM valpath)
+        dv   (boolean default-value)]
+    (if (boolean? v)
+      v
+      (do (swap! ATOM assoc-in valpath dv) dv))))
 
 
 (defn togglebox
@@ -129,6 +128,7 @@
       {:class (if checked? "togglebox-show" "togglebox-hidden")
        :style (when-not override-inline?
                 (assoc transition-style :height (if checked? open-height "0em")))}
+      [:h1 "Checked?" (str checked?)]
       (render-application content ATOM)]]))
 
 
