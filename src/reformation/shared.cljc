@@ -1,6 +1,8 @@
 (ns reformation.shared
   (:require [clojure.string :as s]))
 
+(declare reviewify)
+
 (defn get-value-from-change [e]
   (.. e -target -value))
 
@@ -11,7 +13,8 @@
   [m]
   (cond-> m
     true (assoc :disabled true)
-    (= (:type m) :select) (dissoc :type)))
+    (= (:type m) :select) (dissoc :type)
+    (:content m) (update :content reviewify)))
 
 
 (defn reviewify

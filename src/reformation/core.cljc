@@ -91,12 +91,13 @@
 
 (defn checkbox
   "Create a checkbox"
-  [{:keys [valpath ATOM validation-function]}]
+  [{:keys [valpath ATOM validation-function disabled]}]
   (let [checked? (get-in @ATOM valpath)
         toggle-fn (comp (or validation-function identity)
                         #(swap! ATOM update-in valpath not))]
     [:input {:class (last valpath)
              :type "checkbox"
+             :disabled disabled
              :checked checked?
              :on-change toggle-fn}]))
 
@@ -112,7 +113,7 @@
 
 (defn togglebox
   "Builds a group which, when toggled, displays its `:content`"
-  [{:keys [label content valpath ATOM default-value override-inline? open-height]
+  [{:keys [label content valpath ATOM default-value override-inline? open-height disabled]
     :or {open-height "5em"}
     :as opt-map}]
   (let [content-id "togglebox-content"
@@ -123,12 +124,12 @@
     [:div.togglebox
      [tinput ATOM valpath {:type :checkbox
                            :checked checked?
+                           :disabled disabled
                            :label ""}]
      [:div.toggle-content
       {:class (if checked? "togglebox-show" "togglebox-hidden")
        :style (when-not override-inline?
                 (assoc transition-style :height (if checked? open-height "0em")))}
-      [:h1 "Checked?" (str checked?)]
       (render-application content ATOM)]]))
 
 
@@ -175,7 +176,7 @@
                 :multi-table (multi-table ATOM opt-map)
                 :textarea (text-area (assoc input-map :changefn changefn))
                 :togglebox [togglebox (merge {:ATOM ATOM :valpath valpath} opt-map)]
-                :checkbox [checkbox (merge {:ATOM ATOM :valpath valpath} opt-map)]
+                :checkbox [checkbox (merge {:ATOM ATOM :valpath valpath} input-map)]
                 ;; default
                 [:input.form-control input-map])]
     [:div.form-group
