@@ -16,10 +16,7 @@
                    :figwheel
                    {:http-server-root "public"
                     :nrepl-port 7002
-                    :css-dirs ["test/resources/public/css"]
-                                        ;:nrepl-middleware
-                                        ;[cemerick.piggieback/wrap-cljs-repl]
-                    }
+                    :css-dirs ["test/resources/public/css"]}
                    :garden {:builds [{:id "style"
                                       :source-path "src/clj/reformation/styles"
                                       :stylesheet orca.styles.main/main
