@@ -189,17 +189,33 @@
        input
        invalid-feedback]]]))
 
-(defn render-application
-    "Render a browser form based on an input [sorted] map `fm`, with values to be stored/updated in atom `A`.
-  Use an array-map or sorted-map as `fm` if you want to maintain order"
-  [fm A & [pathv]]
-  (for [[k v] (partition 2 fm) :let [path (conj (vec pathv) k)]]
-    (cond
-      (sequential? v) (render-application v A path)
-      (map? v) ^{:key v} [tinput A path v]
-      :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)])))
+(defn atom?
+  [a]
+  (try (do (deref a) true)
+       (catch #?(:clj Exception :cljs js/Error) _ false)))
 
-(defn render-review ;; TODO: Allow to receive an Atom, giving the same arg profile as render-application
+
+(defmulti render-application
+  "Render an (default) editable application, receiving either an atom or a CRUD-map"
+  (fn [_fm atom-or-map & [pathv]]
+    (cond
+      (map? atom-or-map) :map
+      (atom? atom-or-map) :atom)))
+
+;; (defmethod render-application :map
+;;   )
+
+;; (defn render-application
+;;     "Render a browser form based on an input [sorted] map `fm`, with values to be stored/updated in atom `A`.
+;;   Use an array-map or sorted-map as `fm` if you want to maintain order"
+;;   [fm A & [pathv]]
+;;   (for [[k v] (partition 2 fm) :let [path (conj (vec pathv) k)]]
+;;     (cond
+;;       (sequential? v) (render-application v A path)
+;;       (map? v) ^{:key v} [tinput A path v]
+;;       :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)])))
+
+(defn render-review
   "Parse the application map and render the review based on the ordered `schema` of the application, with values in `application` expected to be as given by `render-application`.
   
   Resulting form will be read-only with no changes possible."
