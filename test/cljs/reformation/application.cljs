@@ -24,10 +24,10 @@
 (def my-atom (r/atom {:mything "hello"}))
 
 (def test-form [:mytext {:type :text
-                         :label "Text line"}
+                         :label "my text"}
                 :mytextarea {:type :textarea
-                             :label "Text Area"}
-                :mymultitable  {:label "My Multitable"
+                             :label "My textarea"}
+                :mymultitable  {:label "My multitable"
                                 :id :mymulti
                                 :required? true
                                 :type :multi-table
@@ -46,7 +46,14 @@
                 :mytoggle {:type :togglebox
                            :label "My togglebox"
                            :content [:test {:type :text :label "My toggled "}]}
-                :mycheckbox {:type :checkbox :label "Check"}])
+                :mycheckbox {:type :checkbox :label "My checkbox"}
+                :myfileupload {:type :file
+                               :label "My file"
+                               :submit-text "Click or Drop a File Here"
+                               :error-text "Maybe We had an error?"
+                               :style-classes {:drag-over "dragover"
+                                               :un-dragged "undragged"
+                                               :have-file "have-file"}}])
 
 (defn generate-form []
   (let [form-id "needs-validation"

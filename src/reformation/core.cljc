@@ -1,5 +1,6 @@
 (ns reformation.core
   (:require [reformation.multitable :refer [multi-table] :as mt]
+            [reformation.fileupload :as fileu]
             [reformation.shared :as shared]
             #?(:cljs [reagent.core :refer [atom]])
             [clojure.string :as str]))
@@ -178,6 +179,7 @@
                 :textarea (text-area (assoc input-map :changefn changefn))
                 :togglebox [togglebox (merge (assoc fn-map :valpath valpath) opt-map)]
                 :checkbox [checkbox (assoc fn-map :valpath valpath) input-map]
+                :file [fileu/file-upload opt-map]
                 ;; default
                 [:input.form-control input-map])]
     [:div.form-group
