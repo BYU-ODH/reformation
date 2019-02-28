@@ -1,17 +1,15 @@
 (ns reformation.multitable
   (:require [reformation.shared :as shared]))
 
-(defn add-multi-table-row [multitable-map vpath row-template]
-  (update-in multitable-map vpath
-          (fn [x]
-            (if (nil? x) [row-template]
-                (conj x row-template)))))
+(defn add-row [rows row-template]
+  (if (nil? rows) [row-template]
+      (conj rows row-template)))
 
-(defn delete-multi-table-row [multitable-map vpath]
-  (update-in multitable-map vpath (comp vec butlast)))
-
-(defn update-multi-table [multi-table table-row-num column-key value]
-  (assoc-in multi-table [table-row-num column-key] value))
+(defn delete-row
+  "Delete a row if you are above min-rows; uses pop, so last row if vec, else first row."
+  [multitable-map min-rows]
+  (cond-> multitable-map
+    (> (count multitable-map) min-rows) pop))
 
 (defn multi-table [{:keys [READ UPDATE] :as fn-map}
                    {:keys [label id subtext columns min-rows vpath sum-field disabled]
@@ -23,8 +21,8 @@
   (let [row-template (into {} (for [c columns] [(c :key) nil]))
         sub (when subtext
               [:small.form-text.text-muted {:id (str "sub_" id)} subtext])
-        ;; _init-table! (when (< (count (READ vpath)) min-rows)
-        ;;                (UPDATE vpath add-multi-table-row row-template))
+        _init-table! (when (< (count (READ vpath)) min-rows)
+                       (UPDATE vpath add-row row-template))
         headers [:thead (into [:tr] (for [c columns] [:th {:class (when (:disabled c) "disabled")}(:title c)]))]
         tbody-base (into [:tbody] (for [[i m] (map-indexed vector (READ vpath))]
                                (into [:tr]
@@ -35,8 +33,9 @@
                                              multi-vpath (conj vpath i (:key c))
                                              on-change-function
                                              (fn [e]
-                                               (UPDATE multi-vpath assoc-in
-                                                       (if-checkbox (-> e .-target .-checked) (shared/get-value-from-change e))))]
+                                               (UPDATE multi-vpath
+                                                (if-checkbox (constantly (-> e .-target .-checked))
+                                                  (constantly (shared/get-value-from-change e)))))]
                                          [:td {:class ["form-group" nameval nameval_num (:input-type c) (:column-class c)]}
                                           [:label.custom-control.custom-checkbox
                                            [(if (= "textarea" (:input-type c)) :textarea
@@ -70,10 +69,10 @@
                                          :disabled true
                                          :value (READ [sum-key])}]]]]))))
         add-button [:a.btn.btn-success
-                    {:on-click #(UPDATE vpath add-multi-table-row row-template)}
+                    {:on-click #(UPDATE vpath add-row row-template)}
                     [:i.fa.fa-plus]]
         delete-button [:a.btn.btn-danger
-                       {:on-click #(UPDATE vpath delete-multi-table-row)}
+                       {:on-click #(UPDATE vpath delete-row min-rows)}
                        [:i.fa.fa-minus]]]
     [:div.multi-table.table-responsive
      (into [:table.table-bordered.table-striped

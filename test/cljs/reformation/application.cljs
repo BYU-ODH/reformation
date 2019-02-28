@@ -28,6 +28,7 @@
                 :mytextarea {:type :textarea
                              :label "Text Area"}
                 :mymultitable  {:label "My Multitable"
+                                :id :mymulti
                                 :required? true
                                 :type :multi-table
                                 :min-rows 3
