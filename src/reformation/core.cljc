@@ -91,10 +91,11 @@
 
 (defn checkbox
   "Create a checkbox"
-  [{:keys [valpath ATOM validation-function disabled]}]
-  (let [checked? (get-in @ATOM valpath)
+  [{:keys [READ UPDATE valpath] :as fn-map}
+   {:keys [validation-function disabled] :as input-map}]
+  (let [checked? (READ valpath)
         toggle-fn (comp (or validation-function identity)
-                        #(swap! ATOM update-in valpath not))]
+                        #(UPDATE valpath not))]
     [:input {:class (last valpath)
              :type "checkbox"
              :disabled disabled
@@ -103,17 +104,17 @@
 
 (defn checkset
   "If a checkbox value is nil, set it; otherwise, return it."
-  [{:keys [ATOM valpath default-value]}]
-  (let [v (get-in @ATOM valpath)
-        dv   (boolean default-value)]
+  [{:keys [READ UPDATE  valpath default-value]}]
+  (let [v (READ valpath)
+        dv (boolean default-value)]
     (if (boolean? v)
       v
-      (do (swap! ATOM assoc-in valpath dv) dv))))
+      (UPDATE valpath (constantly dv)))))
 
 
 (defn togglebox
   "Builds a group which, when toggled, displays its `:content`"
-  [{:keys [label content valpath ATOM default-value override-inline? open-height disabled]
+  [{:keys [label content valpath READ UPDATE default-value override-inline? open-height disabled]
     :or {open-height "5em"}
     :as opt-map}]
   (let [content-id "togglebox-content"
@@ -122,28 +123,28 @@
                           :transition "height 0.4s ease-in-out"
                           :overflow "hidden"}]
     [:div.togglebox
-     [tinput ATOM valpath {:type :checkbox
-                           :checked checked?
-                           :disabled disabled
-                           :label ""}]
+     [tinput (select-keys opt-map [:READ :UPDATE]) valpath
+      {:type :checkbox
+       :checked checked?
+       :disabled disabled
+       :label ""}]
      [:div.toggle-content
       {:class (if checked? "togglebox-show" "togglebox-hidden")
        :style (when-not override-inline?
                 (assoc transition-style :height (if checked? open-height "0em")))}
-      (render-application content ATOM)]]))
+      (render-application content opt-map)]]))
 
 
 (defn tinput
-  "Produce data-bound inputs for a given map, updating `ATOM` on change. `opt-map` specifies options including display variables."
-  [ATOM valpath & [opt-map]]
+  "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
+  [{:keys [READ UPDATE] :as fn-map} valpath & [opt-map]]
   (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden class contingent]
          :or {id (str/join " " (map name valpath))
               type "text"}} opt-map
         {:keys [limit enforce?]} char-count
         {:keys [field-key contingent-fn]} contingent
-        input-value (get-in @ATOM valpath)
-        change-atom (fn [s] (swap! ATOM assoc-in valpath s))
-        changefn1 (fn [e] (change-atom (shared/get-value-from-change e)))
+        input-value (READ valpath)
+        changefn1 (fn [e] (UPDATE valpath #(shared/get-value-from-change e)))
         validation-function (when-let [vf validation-function]
                               (to-validation vf invalid-feedback))
         changefn (cond
@@ -152,7 +153,7 @@
                               (let [v (shared/get-value-from-change e)]
                                 (cond
                                   (= limit (dec (count v))) identity
-                                  (< limit (count v)) (change-atom (apply str (take limit v)))
+                                  (< limit (count v)) #(UPDATE valpath (constantly (apply str (take limit v))))
                                   :default (changefn1 e))))
                    :default changefn1)
         input-map (merge {:type type
@@ -173,10 +174,10 @@
                 :select (select-box (merge (select-keys opt-map [:options :required?])
                                            {:on-change changefn
                                             :id id}))
-                :multi-table (multi-table ATOM opt-map)
+                :multi-table (multi-table fn-map opt-map)
                 :textarea (text-area (assoc input-map :changefn changefn))
-                :togglebox [togglebox (merge {:ATOM ATOM :valpath valpath} opt-map)]
-                :checkbox [checkbox (merge {:ATOM ATOM :valpath valpath} input-map)]
+                :togglebox [togglebox (merge (assoc fn-map :valpath valpath) opt-map)]
+                :checkbox [checkbox (assoc fn-map :valpath valpath) input-map]
                 ;; default
                 [:input.form-control input-map])]
     [:div.form-group
@@ -189,31 +190,42 @@
        input
        invalid-feedback]]]))
 
+#_(defn atom? [x]
+  #?(:clj (instance? clojure.lang.IAtom x)
+     :cljs (instance? cljs.core.IAtom x)))
+
 (defn atom?
+  "ducktype an atom as something dereferable"
   [a]
   (try (do (deref a) true)
        (catch #?(:clj Exception :cljs js/Error) _ false)))
 
-
 (defmulti render-application
-  "Render an (default) editable application, receiving either an atom or a CRUD-map"
+  "Render an (default) editable application, receiving either an atom or a CRUD-map.
+
+  The map requires analogous fns which will receive pathv and (if applicable) new-val
+     `{:READ get-in
+       :UPDATE update-in}`"
   (fn [_fm atom-or-map & [pathv]]
     (cond
       (map? atom-or-map) :map
-      (atom? atom-or-map) :atom)))
+      (atom? atom-or-map) :atom
+      :default (throw (ex-info "Unsupported arg for atom-or-map" {:atom-or-map atom-or-map})))))
 
-;; (defmethod render-application :map
-;;   )
+(defmethod render-application :map
+  [fm {:keys [READ UPDATE] :as fn-map} & [pathv]]
+  (for [[k v] (partition 2 fm) :let [path (conj (vec pathv) k)]]
+    (cond
+      (sequential? v) (render-application v fn-map path)
+      (map? v) ^{:key v} [tinput fn-map path v]
+      :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)])))
 
-;; (defn render-application
-;;     "Render a browser form based on an input [sorted] map `fm`, with values to be stored/updated in atom `A`.
-;;   Use an array-map or sorted-map as `fm` if you want to maintain order"
-;;   [fm A & [pathv]]
-;;   (for [[k v] (partition 2 fm) :let [path (conj (vec pathv) k)]]
-;;     (cond
-;;       (sequential? v) (render-application v A path)
-;;       (map? v) ^{:key v} [tinput A path v]
-;;       :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)])))
+(defmethod render-application :atom
+  [fm A & [pathv]]
+  (let [R (fn [pathv] (get-in @A pathv))
+        U (fn [pathv upd-fn] (swap! A update-in pathv upd-fn))
+        fn-map {:READ R :UPDATE U}]
+    (render-application fm fn-map pathv)))
 
 (defn render-review
   "Parse the application map and render the review based on the ordered `schema` of the application, with values in `application` expected to be as given by `render-application`.
