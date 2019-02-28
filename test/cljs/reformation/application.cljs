@@ -27,14 +27,25 @@
                          :label "Text line"}
                 :mytextarea {:type :textarea
                              :label "Text Area"}
-                ;; :mymultitable {:type :multi-table
-                ;;                :label "Multitable"
-                ;;                :contents nil}
+                :mymultitable  {:label "My Multitable"
+                                :required? true
+                                :type :multi-table
+                                :min-rows 3
+                                :subtext "Indicate any expenses involved in carryout out your research, including a reason for each expense."
+                                :value-path [:my-multitable]
+                                ;:sum-field :amount
+                                :columns [{:key :item
+                                           :title "Item"}
+                                          {:key :amount
+                                           :title "Amount"
+                                           :input-type "number"}
+                                          {:key :purpose
+                                           :title "Purpose"
+                                           :input-type "textarea"}]}
                 :mytoggle {:type :togglebox
                            :label "My togglebox"
                            :content [:test {:type :text :label "My toggled "}]}
-                ;; :mycheckbox {:type :checkbox :label "Check"}
-                ])
+                :mycheckbox {:type :checkbox :label "Check"}])
 
 (defn generate-form []
   (let [form-id "needs-validation"
