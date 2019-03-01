@@ -1,5 +1,6 @@
 (ns reformation.fileupload
-  (:require [reagent.core :refer [atom]]))
+  (:require [clojure.string :as str]
+            [reagent.core :refer [atom]]))
 
 (defn round-to-2 "round to two decimals" [num]
   (-> num (* 100) (->> (.round js/Math)) (/ 100)))
@@ -14,25 +15,18 @@
                 :default (str size " bytes"))]
     label))
 
-(defn parse-file [file]
+(defn parse-file [{:keys [file allowed-extensions-f save-fn bad-ext-fn]}]
   (let [file-type (.-type file)
         file-size (size-format (.-size file))
         file-name (.-name file)
-        allowed-types #{
-                        "text/plain"
-                        }]
-    (if (allowed-types file-type)
-      true
-      ;; (do
-      ;;                                   ;(reset! *submit-text* (str file-name "\n(" file-size ")" ))
-      ;;   (reset! *submit-button* {:text "Process File"
-      ;;                            :class "enabled"
-      ;;                            :disabled false})
-      ;;   (reset! *submit-text* [:div.submit-text
-      ;;                          [:span.filename file-name]
-      ;;                          [:span.filesize file-size]])
-      ;;   (reset! *file* file))
-      (js/alert (str  "Sorry; you can't upload files of type " file-type)))))
+        file-extension (-> file-name (str/split ".") last)
+        allowed-extensions (or allowed-extensions-f
+                          identity)
+        bad-ext-fn (or bad-ext-fn
+                       #(js/alert (str  "Sorry; you can't upload files of type " %)))]
+    (if (allowed-extensions file-extension)
+      (save-fn file)
+      (bad-ext-fn file-extension))))
 
 (defn filelist-to-vec
   "http://www.dotkam.com/2012/11/23/convert-html5-filelist-to-clojure-vector/"
@@ -81,13 +75,13 @@
   "Generate the hiccup necessary for a file-upload area, which can be clicked or have a file dropped on it"
   [{:keys [style-classes submit-text error-text]
     :or {submit-text "Click or Drop a File Here"}
-    {:keys [drag-over un-dragged have-file]
+    {:keys [drag-over inactive have-file]
      :or {drag-over "dragover"
-          un-dragged "undragged"
+          inactive "undragged"
           have-file "have-file"}} :style-classes}]
   (let [DRAGGING (atom false)]
     (fn []
-      (let [extra-classes [(if @DRAGGING drag-over un-dragged)
+      (let [extra-classes [(if @DRAGGING drag-over inactive)
                            have-file]]
         [:div.upload.col-md-3
          {:class extra-classes

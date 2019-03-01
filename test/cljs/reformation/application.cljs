@@ -24,7 +24,7 @@
 (def my-atom (r/atom {:mything "hello"}))
 
 (def test-form [:mytext {:type :text
-                         :label "my text"}
+                         :label "My text"}
                 :mytextarea {:type :textarea
                              :label "My textarea"}
                 :mymultitable  {:label "My multitable"
@@ -51,8 +51,11 @@
                                :label "My file"
                                :submit-text "Click or Drop a File Here"
                                :error-text "Maybe We had an error?"
+                               :submit-button [:a.btn.btn-success "Submit!"]
+                               :submit-fn #{js/alert "You did a submit!"}
+                               :allowed-extensions-f #{"txt"}
                                :style-classes {:drag-over "dragover"
-                                               :un-dragged "undragged"
+                                               :inactive "undragged"
                                                :have-file "have-file"}}])
 
 (defn generate-form []
