@@ -97,7 +97,7 @@
     [:div.form-group
      [:h1 :h2 {:margin-top (em 2)}]
      [:>:div {:margin-top (em 2)}]
-     [:.form-text.text-muted
+     [:.form-text.text-muted 
       [:h6 {:font-size "12px"}]]]
     [:div.multi-table
      {:padding-bottom (em 2)}
@@ -130,9 +130,17 @@
           [:span {:display "inline-block"}]
           [:input {:width (em 5)}]]
          ]])]    
-    [:.course-learning-outcomes {:margin-top "3em"}
-     [:div.particular-course {:border "solid black 2px"
-                              :padding "1em"}]]   
+    [:div.upload {:height (px 150)
+                  :width (px 300)
+                  :background-color "#9e9e9e"
+                  :border-style "dashed"
+                  :border-width (px 3)
+                  :border-color "green"}
+     [:&.dragover {:border-color "#ee1"
+                    :border-width (px 10)}]
+     [:.error {:display "block"
+               :bottom (px -20)
+               :color "#dc3545"}]]
     [:.invalid-feedback {:display "none"
                          :color "#dc3545"}]]])
 
@@ -353,7 +361,7 @@
   review
   footer
   comments-style-
-  ;comments/style
+                                        ;comments/style
   lightbox
 
   [:a.btn {:cursor "pointer"}]
@@ -386,7 +394,7 @@
 
   [:h2.organization {:font-style "italic"
                      :text-decoration "underline"
-                     ;:color (defs/ycolors :blue10)
+                                        ;:color (defs/ycolors :blue10)
                      :font-weight 700}]
 
   ;; Circles for busy
@@ -407,27 +415,27 @@
              :animation-iteration-count "infinite"
              :animation-direction "normal"}]
   [:#frotateG-0 {:left (px 0)
-                :top (px 51)}
+                 :top (px 51)}
    ^:prefix {:animation-delay "0.45s"}]
   [:#frotateG-1 {:left (px 15)
-                :top (px 15)}
+                 :top (px 15)}
    ^:prefix {:animation-delay "0.6s"}]
   [:#frotateG-2 {:left (px 51)
-                :top (px 0)}
+                 :top (px 0)}
    ^:prefix {:animation-delay "0.9s"}]
   [:#frotateG-3 {:right (px 15)
-                :top (px 15)}
+                 :top (px 15)}
    ^:prefix {:animation-delay "0.9s"}]
   [:#frotateG-4 {:right (px 0)
-                :top (px 51)}
+                 :top (px 51)}
    ^:prefix {:animation-delay "1.05s"}]    
   [:#frotateG-5 {:right (px 15)
-                :bottom (px 15)}
+                 :bottom (px 15)}
    ^:prefix {:animation-delay "1.2s"}]
   [:#frotateG-6 {:left (px 51)
-                :bottom (px 0)}
+                 :bottom (px 0)}
    ^:prefix {:animation-delay "1.35s"}]
   [:#frotateG-7 {:left (px 15)
-                :bottom (px 15)}
+                 :bottom (px 15)}
    ^:prefix {:animation-delay "1.5s"}]
   f-fadeG)

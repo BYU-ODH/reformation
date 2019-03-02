@@ -209,13 +209,24 @@ div.submission-form form div.multi-table table td.total div.input-group input {
   width: 5em;
 }
 
-div.submission-form form .course-learning-outcomes {
-  margin-top: 3em;
+div.submission-form form div.upload {
+  height: 150px;
+  width: 300px;
+  background-color: #9e9e9e;
+  border-style: dashed;
+  border-width: 3px;
+  border-color: green;
 }
 
-div.submission-form form .course-learning-outcomes div.particular-course {
-  border: solid black 2px;
-  padding: 1em;
+div.submission-form form div.upload.dragover {
+  border-color: #ee1;
+  border-width: 10px;
+}
+
+div.submission-form form div.upload .error {
+  display: block;
+  bottom: -20px;
+  color: #dc3545;
 }
 
 div.submission-form form .invalid-feedback {

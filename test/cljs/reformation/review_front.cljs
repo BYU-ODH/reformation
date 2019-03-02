@@ -32,7 +32,8 @@
                :timetable "timetable"})
 
 (defn app-page []
-  (shared/page-template {:jumbo-title "Form Review!"
-                         :contents (rfc/render-review application/humgrants-default app-vals)
-                         ;(rfc/render-review application/hmeg-default hmeg-app-vals)
-                         })) 
+  ;; (shared/page-template {:jumbo-title "Form Review!"
+  ;;                        :contents (rfc/render-review application/humgrants-default app-vals)
+  ;;                        ;(rfc/render-review application/hmeg-default hmeg-app-vals)
+  ;;                        })
+  ) 
