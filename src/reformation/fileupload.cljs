@@ -2,6 +2,8 @@
   (:require [clojure.string :as str]
             [reagent.core :refer [atom]]))
 
+;; TODO clarify opt-map so we don't pass an unidentified thing around to parse-file and file-handler
+
 (defn round-to-2 "round to two decimals" [num]
   (-> num (* 100) (->> (.round js/Math)) (/ 100)))
 
@@ -36,7 +38,10 @@
       (.call js-col)
       (js->clj)))
 
-(defn file-handler [event]
+(defn file-handler
+  "Handles an event of a file beign selected, getting the file from an event
+  and including it in the `opt-map` for parse-file"
+  [event opt-map]
   (let [files (or
                (-> event .-dataTransfer .-files)
                (-> event .-target .-files))
@@ -46,49 +51,58 @@
     (.log js/console files)
     (if (> fcount 1)
       (js/alert "Please select only one file")
-      (parse-file file))))
+      (parse-file (assoc opt-map :file file)))))
 
 (defn change-dragging
   "Change the status of dragging atom, stopping propogation"
-  [event A true?]
+  [event DRAGGING true?]
   (.stopPropagation event)
   (.preventDefault event)
-  (reset! A true?))
+  (reset! DRAGGING true?))
 
-(defn upload-input
+(defn generate-hidden-upload-input
   "Generate a hidden input prompt for the on-click event of the drop
   zone"
-  []
-  (let [input (.createElement js/document "input")]
+  [opt-map]
+  (let [input (.createElement js/document "input")
+        pfn (fn [file] (parse-file (assoc opt-map :file file))) ]
     (doto input
       (.setAttribute "type" "file")
-      (.addEventListener "change" #(-> % .-target .-files (.item 0) parse-file)))))
+      (.addEventListener "change" #(-> % .-target .-files (.item 0) pfn)))))
 
 (defn drag-drop
   "Stop events and handle dropped file"
-  [event A]
-  (change-dragging event A false)
-  (file-handler event))
+  [event DRAGGING opt-map]
+  (change-dragging event DRAGGING false)
+  (file-handler event opt-map))
 
-;(def DRAGGING (atom false))
 (defn file-upload
-  "Generate the hiccup necessary for a file-upload area, which can be clicked or have a file dropped on it"
-  [{:keys [style-classes submit-text error-text]
+  "Generate the hiccup necessary for a file-upload area, which can be clicked or have a file dropped on it.
+
+  If no `submit-button` is given, it will auto-submit upon dropping using `submit-fn`"
+  [{:keys [style-classes submit-text submit-fn error-text submit-button save-fn allowed-extensions-f]
     :or {submit-text "Click or Drop a File Here"}
     {:keys [drag-over inactive have-file]
      :or {drag-over "dragover"
           inactive "undragged"
-          have-file "have-file"}} :style-classes}]
+          have-file "have-file"}} :style-classes
+    :as opt-map}]
   (let [DRAGGING (atom false)]
     (fn []
       (let [extra-classes [(if @DRAGGING drag-over inactive)
-                           have-file]]
-        [:div.upload.col-md-3
-         {:class extra-classes
-          :on-drag-over #(change-dragging % DRAGGING true)
-          :on-drag-leave #(change-dragging % DRAGGING false)
-          :on-drop #(change-dragging % DRAGGING false)
-          :on-click #(.click (upload-input))}
-         [:div.upload-text.text-center
-          [:div.submit-text submit-text]
-          [:div.error error-text]]]))))
+                           have-file]
+            maybe-auto-submit-fn (if-not submit-button submit-fn identity)]
+        [:div.upload-content 
+         [:div.upload.col-md-3
+          {:class extra-classes
+           :on-drag-over #(change-dragging % DRAGGING true)
+           :on-drag-leave #(change-dragging % DRAGGING false)
+           :on-drop (fn [e] (doto e
+                              (change-dragging DRAGGING false)
+                              (file-handler opt-map))
+                      (maybe-auto-submit-fn)) 
+           :on-click #(.click (generate-hidden-upload-input opt-map))}
+          [:div.upload-text.text-center
+           [:div.submit-text submit-text]
+           [:div.error error-text]]]
+         submit-button]))))

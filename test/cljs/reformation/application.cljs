@@ -22,6 +22,7 @@
     ", listed as “Principles to Guide International Study Programs”. Programs must adhere to the BYU International Travel Policy found at " [:a {:href "travelsmart.byu.edu"} "travelsmart.byu.edu."]]])
 
 (def my-atom (r/atom {:mything "hello"}))
+(def FILE (r/atom nil))
 
 (def test-form [:mytext {:type :text
                          :label "My text"}
@@ -51,8 +52,9 @@
                                :label "My file"
                                :submit-text "Click or Drop a File Here"
                                :error-text "Maybe We had an error?"
-                               :submit-button [:a.btn.btn-success "Submit!"]
-                               :submit-fn #{js/alert "You did a submit!"}
+                               ;:submit-button [:a.btn.btn-success "Submit!"]
+                               :submit-fn #(js/alert "Trying to submit:")
+                               :save-fn #(reset! FILE %)                               
                                :allowed-extensions-f #{"txt"}
                                :style-classes {:drag-over "dragover"
                                                :inactive "undragged"
