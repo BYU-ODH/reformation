@@ -1,7 +1,54 @@
 * reformation
-** TODO Use
-COMING SOON
+** Use
+Specify your vector to define your map, then process it with =(render-application)=, which can take a map specifying =:READ= and =:UPDATE= functions for how to handle changes, or else be provided an atom which it will put the form data into. 
 
+*** Example form-structure
+#+BEGIN_SRC clojure
+(def test-form [:mytext {:type :text
+                         :label "My text"}
+                :mytextarea {:type :textarea
+                             :label "My textarea"}
+                :mymultitable  {:label "My multitable"
+                                :id :mymulti
+                                :required? true
+                                :type :multi-table
+                                :min-rows 3
+                                :subtext "Indicate any expenses involved in carryout out your research, including a reason for each expense."
+                                :value-path [:my-multitable]
+                                ;:sum-field :amount
+                                :columns [{:key :item
+                                           :title "Item"}
+                                          {:key :amount
+                                           :title "Amount"
+                                           :input-type "number"}
+                                          {:key :purpose
+                                           :title "Purpose"
+                                           :input-type "textarea"}]}
+                :mytoggle {:type :togglebox
+                           :label "My togglebox"
+                           :content [:test {:type :text :label "My toggled "}]}
+                :mycheckbox {:type :checkbox :label "My checkbox"}
+                :myfileupload {:type :file
+                               :label "My file"
+                               :submit-text "Click or Drop a File Here"
+                               :error-text "Maybe We had an error?"
+                               :submit-fn #(js/alert "Trying to submit:")
+                               :save-fn #(reset! FILE %)                               
+                               :allowed-extensions-f #{"txt"}
+                               :style-classes {:drag-over "dragover"
+                                               :inactive "undragged"
+                                               :have-file "have-file"}}])
+#+END_SRC
+
+*** Example READ and UPDATE in the control map
+As the second arg to =render-application= you can specify your read and update functions, which will be called to get the value of a field and to update the value of a field. Each function will receive from Reformation =[:path :to :value]= and, for update, also =new-value=. The following example works if you are using a local atom; you can trivially adjust this function to work with re-frame. 
+
+#+BEGIN_SRC clojure
+  (rfc/render-application test-form {:READ (partial get-in @my-atom)
+				     :UPDATE (partial swap! my-atom update-in)})
+#+END_SRC
+
+** TODO Validation
 ** Prerequisites
    :PROPERTIES:
    :CUSTOM_ID: prerequisites
