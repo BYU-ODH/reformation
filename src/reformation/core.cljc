@@ -1,6 +1,6 @@
 (ns reformation.core
   (:require [reformation.multitable :refer [multi-table] :as mt]
-            [reformation.fileupload :as fileu]
+            [reformation.fileupload :refer [file-upload]]
             [reformation.shared :as shared]
             #?(:cljs [reagent.core :refer [atom]])
             [clojure.string :as str]))
@@ -27,11 +27,9 @@
 
 (defn render-label
   "Create a label to go into a .row"
-  [{:keys [for-id label-text subtext]}]
-  [:div.col-md-3.label-area
-   [:label {:for for-id}
-    label-text]
-   subtext])
+  [{:keys [for-id label-text]}]
+  [:label.label {:for for-id}
+   label-text])
 
 (defn select-box [m]
   (let [{:keys [options id on-change required?]
@@ -167,8 +165,6 @@
                            {:disabled disabled})
                          (when required?
                            {:required true}))
-        sub (when subtext
-              [:small.form-text.text-muted subtext])
         invalid-feedback (when invalid-feedback
                            [:div.invalid-feedback invalid-feedback])
         input (condp = type
@@ -179,22 +175,18 @@
                 :textarea (text-area (assoc input-map :changefn changefn))
                 :togglebox [togglebox (merge (assoc fn-map :valpath valpath) opt-map)]
                 :checkbox [checkbox (assoc fn-map :valpath valpath) input-map]
-                :file [fileu/file-upload opt-map]
+                :file [file-upload opt-map]
                 ;; default
                 [:input.form-control input-map])]
-    [:div.form-group
+    [:div.field
      {:class [(str id "_group") (when hidden "hidden")]}
-     [:div.row
-      [render-label {:for-id id
-                     :label-text  (:label opt-map id)
-                     :subtext sub}]
-      [:div.col.val-area
-       input
-       invalid-feedback]]]))
-
-#_(defn atom? [x]
-  #?(:clj (instance? clojure.lang.IAtom x)
-     :cljs (instance? cljs.core.IAtom x)))
+     [render-label {:for-id id
+                    :label-text  (:label opt-map id)}]
+     (when subtext
+       [:p.help subtext])
+     [:div.control      
+      input
+      invalid-feedback]]))
 
 (defn atom?
   "ducktype an atom as something dereferable"

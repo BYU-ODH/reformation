@@ -178,10 +178,6 @@ div.submission-form form div.multi-table table td {
   text-align: center;
 }
 
-div.submission-form form div.multi-table table td input[type="text"] {
-  max-width: 10em;
-}
-
 div.submission-form form div.multi-table table td input[type="number"] {
   max-width: 4em;
   height: 2em;

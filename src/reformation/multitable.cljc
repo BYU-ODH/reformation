@@ -36,9 +36,9 @@
                                                (UPDATE multi-vpath
                                                 (if-checkbox (constantly (-> e .-target .-checked))
                                                   (constantly (shared/get-value-from-change e)))))]
-                                         [:td {:class ["form-group" nameval nameval_num (:input-type c) (:column-class c)]}
+                                         [:td {:class [nameval nameval_num (:column-class c)]}
                                           [:label.custom-control.custom-checkbox
-                                           [(if (= "textarea" (:input-type c)) :textarea
+                                           [(if (= "textarea" (:input-type c)) :textarea.textarea
                                                 :input)
                                             {:type (or (:input-type c) "text")
                                              :class [(:input-class c)
@@ -74,8 +74,8 @@
         delete-button [:a.btn.btn-danger
                        {:on-click #(UPDATE vpath delete-row min-rows)}
                        [:i.fa.fa-minus]]]
-    [:div.multi-table.table-responsive
-     (into [:table.table-bordered.table-striped
+    [:div.multi-table
+     (into [:table.table.is-striped.is-fullwidth.is-hoverable
             headers
             tbody])
      (when-not disabled

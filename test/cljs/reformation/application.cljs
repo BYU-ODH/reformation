@@ -2,7 +2,7 @@
   "The application with which users fill out the form to make or edit an application"
   (:require [reagent.core :as r]
             [reagent.session :as session]
-            [reformation.shared-test :as shared :refer [cx]]
+            [reformation.shared-test :as shared]
             [accountant.core]
             [reformation.routes :as rt]
             [reformation.core :as rfc]))
@@ -15,13 +15,8 @@
     (if (.checkValidity form)
       (js/alert "You have errors in your form. Please correct them before submitting."))))
 
-(def jumbotext
-  [:div.info
-   [:p "After approval by the appropriate college, operational elements of the program being proposed will be evaluated by Kennedy Center staff, while its academic quality and effectiveness are reviewed by the Academic Oversight Committee. This committee places special emphasis on clarity of learning outcomes and demonstration of appropriate purpose and rigor. Programs will be listed in the catalog under the sponsoring unit, and learning outcomes for approved programs should be placed on the BYU learning outcomes site. The sponsoring academic unit is responsible for program outcomes; however, the Oversight Committee will periodically review learning effectiveness in international programs."]
-   [:p "Guidelines for operational aspects of international study programs may be found on our Faculty Resources page at " [:a {:href "http://kennedy.byu.edu/reformation/faculty/index.php"} "http://kennedy.byu.edu/reformation/faculty/index.php"]
-    ", listed as “Principles to Guide International Study Programs”. Programs must adhere to the BYU International Travel Policy found at " [:a {:href "travelsmart.byu.edu"} "travelsmart.byu.edu."]]])
-
 (def my-atom (r/atom {:mything "hello"}))
+
 (def FILE (r/atom nil))
 
 (def test-form [:mytext {:type :text
@@ -69,8 +64,7 @@
                                                :UPDATE (partial swap! my-atom update-in)}))]]))
 
 (defn app-page []
-  (shared/page-template {:jumbo-title "Reformation Application"
+  (shared/page-template {:header-title "Reformation Application"
                          :contents [:div.mycontent
-                                    [:h1 "My Form"]
                                     [generate-form]
                                     ]}))

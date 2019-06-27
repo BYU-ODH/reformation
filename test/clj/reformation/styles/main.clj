@@ -109,9 +109,6 @@
               :text-align "center"}]
         [:td {:text-align "center"}
          [((s/selector :input)
-           (s/attr= :type :text))
-          {:max-width (em 10)}]
-         [((s/selector :input)
            (s/attr= :type :number))
           {:max-width (em 4)
            :height (em 2)}]
@@ -361,7 +358,7 @@
   review
   footer
   comments-style-
-                                        ;comments/style
+  ;;comments/style
   lightbox
 
   [:a.btn {:cursor "pointer"}]

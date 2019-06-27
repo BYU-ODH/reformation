@@ -24,7 +24,7 @@
   (hp/include-js  "https://cdn.byu.edu/byu-theme-components/latest/byu-theme-components.min.js"))
 
 (defn boiler-header [& [userinfo]]
-  [:head [:title "Humanities Undergraduate Grant Application"]
+  [:head [:title "Reformation: CLJS Forms"]
    (hp/include-css "//cloud.typography.com/75214/6517752/css/fonts.css")
    [:meta {:name "viewport"
            :content "width=device-width, initial-scale=1.0"}]
@@ -45,7 +45,7 @@
   [:div#boiler-wrapper
    [:div#navbar]
    ;; styles
-   (hp/include-css (context-path assets-path "bootstrap/css/bootstrap.min.css")
+   (hp/include-css (context-path assets-path "bulma/css/bulma.css")
                    (context-path assets-path "font-awesome/css/font-awesome.min.css")
                    (context-path style-path "style.css"))])
 
