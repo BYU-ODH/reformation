@@ -12,7 +12,7 @@
             [ajax.core :refer [GET POST]]))
 
 (defn home-page []
-  [page-template {:jumbo-title "International Study Programs"
+  [page-template {:jumbo-title "Reformation"
                   :jumbo-subtitle "Dashboard"
                   :contents [:div.dashboard.text-center
                              [:div.apply
@@ -22,17 +22,7 @@
                                    :alt "Propose an International Study Program"
                                    :title "Propose an International Study Program"}
                                [:i.fa.fa-pencil-square-o]
-                               [:span "Propose"]]]
-                             ;; [:div.review
-                             ;;  [:a {:href (routes/status-route)
-                             ;;       :data-toggle "tooltip"
-                             ;;       :data-placement "top"
-                             ;;       :title "Your Proposal Applications"
-                             ;;       :alt "Review Your Proposal Applications"}
-                             ;;   [:i.fa.fa-envelope-open-o]
-                             ;;   [:span "Status"]
-                             ;;   ]]
-                             ]}])
+                               [:span "Propose"]]]]}])
 
 
 (def pages

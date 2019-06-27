@@ -2,7 +2,7 @@
   "The application with which users will review the form"
   (:require [reagent.core :as r]
             [reagent.session :as session]
-            [reformation.shared-test :as shared :refer [cx]]
+            [reformation.shared-test :as shared]
             [accountant.core]
             [reformation.routes :as rt]
             [reformation.application :as application]

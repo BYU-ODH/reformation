@@ -61,21 +61,12 @@
                                                :have-file "have-file"}}])
 
 (defn generate-form []
-  (let [form-id "needs-validation"
-        validate (fn [e] (let [s (shared/get-value-from-change e)
-                               element (.. e -target)]
-                           (if (even? (count s))
-                             (.setCustomValidity element "")
-                             (.setCustomValidity element "You're odd!"))))]
+  (let [form-id "needs-validation"]
     [:div.submission-form 
      [:form.form-control {:id form-id}
-      (into [:div.form-contents
-             #_[:a.btn.btn-success {:on-click #(.reportValidity (.getElementById js/document form-id))}
-              "Validate"]]
-                                        ;(rfc/render-application test-form my-atom)
+      (into [:div.form-contents]
             (rfc/render-application test-form {:READ (partial get-in @my-atom)
-                                               :UPDATE (partial swap! my-atom update-in)})
-            )]]))
+                                               :UPDATE (partial swap! my-atom update-in)}))]]))
 
 (defn app-page []
   (shared/page-template {:jumbo-title "Reformation Application"
