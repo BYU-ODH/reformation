@@ -30,17 +30,20 @@
                    ;;                    :compiler {:output-to "test/resources/public/css/style.css"
                    ;;                               :pretty-print? true}}]}
                    :dependencies [[cheshire "5.8.1"]
+                                  [binaryage/devtools "0.9.10"]
                                   [clj-http "3.9.1"]
                                   [clj-json "0.5.3"]
-                                  [clj-time "0.15.1"]
-                                  [binaryage/devtools "0.9.10"]
-                                  [com.andrewmcveigh/cljs-time "0.5.2"]
+                                  [clj-time "0.15.1"]                                  
                                   [cljs-ajax "0.8.0"]
+                                  [cljsjs/react "16.8.1-0"]
+                                  [cljsjs/react-dom "16.8.1-0"]
+                                  [cljsjs/react-dom-server "16.8.1-0"]
+                                  [com.andrewmcveigh/cljs-time "0.5.2"]
                                   [compojure "1.6.1"]
                                   [cprop "0.1.13"]
                                   [figwheel-sidecar "0.5.18"]
-                                  [garden-gnome "0.1.0"]
                                   [garden "1.3.6"]
+                                  [garden-gnome "0.1.0"]
                                   [hiccup "1.0.5"]
                                   [luminus-immutant "0.2.5"]
                                   [metosin/ring-http-response "0.9.1"]
@@ -50,18 +53,16 @@
                                   [org.clojure/tools.cli "0.4.1"]
                                   [org.clojure/tools.logging "0.4.1"]
                                   [org.webjars.bower/tether "1.4.0" :upgrade false]
+                                  [org.webjars.npm/bulma "0.7.5"]
                                   [org.webjars/bootstrap "4.0.0-alpha.6-1" :upgrade false]
                                   [org.webjars/font-awesome "4.7.0" :upgrade false]
+                                  [reagent "0.8.1"];; REACT 
+                                  [reagent-utils "0.3.2"];; & REACT
                                   [ring-middleware-format "0.7.3"] ;; CLJ Routing
                                   [ring-webjars "0.2.0"] ;; Web assetts & their routing
                                   [ring/ring-defaults "0.3.2"] ;; CLJ routing
                                   [secretary "1.2.3"] ;; CLJS routing
-                                  [venantius/accountant "0.2.4"]
-                                  [reagent "0.8.1"];; REACT 
-                                  [reagent-utils "0.3.2"];; & REACT
-                                  [cljsjs/react "16.8.1-0"]
-                                  [cljsjs/react-dom "16.8.1-0"]
-                                  [cljsjs/react-dom-server "16.8.1-0"]]
+                                  [venantius/accountant "0.2.4"]]
                    :plugins [[com.jakemccrary/lein-test-refresh "0.14.0"]
                              [lein-doo "0.1.7"]
                              [lein-figwheel "0.5.12"]
