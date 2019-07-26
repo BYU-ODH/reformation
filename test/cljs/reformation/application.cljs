@@ -28,9 +28,9 @@
                                 :required? true
                                 :type :multi-table
                                 :min-rows 3
-                                :subtext "Indicate any expenses involved in carryout out your research, including a reason for each expense."
+                                :subtext "Indicate any expenses involved in carrying out your request, including a reason for each expense"
                                 :value-path [:my-multitable]
-                                ;:sum-field :amount
+                                :sum-field :amount
                                 :columns [{:key :item
                                            :title "Item"}
                                           {:key :amount

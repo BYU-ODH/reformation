@@ -52,22 +52,25 @@
                                              :value (READ multi-vpath)}]
                                            (if-checkbox [:span.custom-control-indicator])]])))))
         tbody (if-not sum-field tbody-base
-                      (do
-                        (let [sum-key (-> sum-field name (str "-total") keyword)
-                              sum-val (READ [sum-key])
-                              total (apply + (for [c (READ vpath)]
-                                               #?(:cljs (js/parseInt (sum-field c))
-                                                  :clj (Integer/parseInt (sum-field c)))))]
-                          (UPDATE [sum-key] assoc (max total 0))
-                          (conj tbody-base
-                                [:tr [:td.form-group.total {:col-span 2}
-                                      [:label "Total"]
-                                      [:div.input-group
-                                       [:span.input-group-addon "$"]
-                                       [:input
-                                        {:type "text"
-                                         :disabled true
-                                         :value (READ [sum-key])}]]]]))))
+                      (let [sum-key (-> sum-field name (str "-total") keyword)
+                            sum-val (READ [sum-key])
+                            total (apply + (for [c (READ vpath)]
+                                             #?(:cljs (if-let [c (sum-field c)]
+                                                        (js/parseInt c)
+                                                        0)
+                                                :clj (if-let [c (sum-field c)]
+                                                       (Integer/parseInt c)
+                                                       0))))]
+                        (UPDATE [sum-key] (constantly total))
+                        (conj tbody-base
+                              [:tr [:td.form-group.total {:col-span 2}
+                                    [:label "Total"]
+                                    [:div.input-group
+                                     [:span.input-group-addon "$"]
+                                     [:input
+                                      {:type "text"
+                                       :disabled true
+                                       :value sum-val}]]]])))
         add-button [:a.btn.btn-success
                     {:on-click #(UPDATE vpath add-row row-template)}
                     [:i.fa.fa-plus]]
