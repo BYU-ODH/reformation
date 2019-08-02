@@ -216,8 +216,8 @@
 
 (defmethod render-application :atom
   [fm A & [pathv]]
-  (let [R (fn [pathv] (get-in @A pathv))
-        U (fn [pathv upd-fn] (swap! A update-in pathv upd-fn))
+  (let [R (partial get-in @A)
+        U (partial swap! A update-in)
         fn-map {:READ R :UPDATE U}]
     (render-application fm fn-map pathv)))
 

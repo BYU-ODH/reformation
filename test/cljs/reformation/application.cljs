@@ -60,7 +60,7 @@
     [:div.submission-form 
      [:form.form-control {:id form-id}
       (into [:div.form-contents]
-            (rfc/render-application test-form my-atom #_{:READ (partial get-in @my-atom)
+            (rfc/render-application test-form #_my-atom {:READ (partial get-in @my-atom)
                                                :UPDATE (partial swap! my-atom update-in)}))]]))
 
 (defn app-page []
