@@ -27,7 +27,7 @@
                                 :id :mymulti
                                 :required? true
                                 :type :multi-table
-                                :min-rows 3
+                                :min-rows 2
                                 :subtext "Indicate any expenses involved in carrying out your request, including a reason for each expense"
                                 :value-path [:my-multitable]
                                 :sum-field :amount
@@ -60,7 +60,7 @@
     [:div.submission-form 
      [:form.form-control {:id form-id}
       (into [:div.form-contents]
-            (rfc/render-application test-form {:READ (partial get-in @my-atom)
+            (rfc/render-application test-form my-atom #_{:READ (partial get-in @my-atom)
                                                :UPDATE (partial swap! my-atom update-in)}))]]))
 
 (defn app-page []
