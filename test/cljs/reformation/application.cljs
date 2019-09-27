@@ -19,7 +19,9 @@
 
 (def FILE (r/atom nil))
 
-(def test-form [:mydefault-text {:type :text
+(def test-form [:myhidden-text {:type :hidden
+                                :value "whisper"}
+                :mydefault-text {:type :text
                                  :label "default text"
                                  :value "something good"
                                  :disabled true}

@@ -133,6 +133,13 @@
                 (assoc transition-style :height (if checked? open-height "0em")))}
       (render-application content opt-map)]]))
 
+(defn hidden-input 
+  "Generate a hidden input"
+  [input-map]
+  (let [{:keys [value id]} input-map]
+    [:input {:type "hidden"
+             :name id :id id
+             :value value}]))
 
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
@@ -159,8 +166,8 @@
                           :id id
                           :name id
                           :on-change changefn
-                          :default-value default-value}
-                         {:value input-value}
+                          :default-value default-value
+                          :value input-value}
                          (when disabled
                            {:disabled disabled})
                          (when required?
@@ -168,25 +175,28 @@
         invalid-feedback (when invalid-feedback
                            [:div.invalid-feedback invalid-feedback])
         input (condp = type
-                :select (select-box (merge (select-keys opt-map [:options :required?])
+                :select [select-box (merge (select-keys opt-map [:options :required?])
                                            {:on-change changefn
-                                            :id id}))
-                :multi-table (multi-table fn-map opt-map)
-                :textarea (text-area (assoc input-map :changefn changefn))
+                                            :id id})]
+                :multi-table [multi-table fn-map opt-map]
+                :textarea [text-area (assoc input-map :changefn changefn)]
                 :togglebox [togglebox (merge (assoc fn-map :valpath valpath) opt-map)]
                 :checkbox [checkbox (assoc fn-map :valpath valpath) input-map]
                 :file [file-upload opt-map]
+                :hidden [hidden-input input-map]
                 ;; default
                 [:input.form-control input-map])]
-    [:div.field
-     {:class [(str id "_group") (when hidden "hidden")]}
-     [render-label {:for-id id
-                    :label-text  (:label opt-map id)}]
-     (when subtext
-       [:p.help subtext])
-     [:div.control      
-      input
-      invalid-feedback]]))
+    (case type
+      :hidden input
+      [:div.field
+       {:class [(str id "_group") (when hidden "hidden")]}
+       [render-label {:for-id id
+                      :label-text  (:label opt-map id)}]
+       (when subtext
+         [:p.help subtext])
+       [:div.control      
+        input
+        invalid-feedback]])))
 
 (defn atom?
   "ducktype an atom as something dereferable"
