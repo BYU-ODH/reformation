@@ -19,7 +19,11 @@
 
 (def FILE (r/atom nil))
 
-(def test-form [:mytext {:type :text
+(def test-form [:mydefault-text {:type :text
+                                 :label "default text"
+                                 :value "something good"
+                                 :disabled true}
+                :mytext {:type :text
                          :label "My text"}
                 :mytextarea {:type :textarea
                              :label "My textarea"}
@@ -63,7 +67,7 @@
             (rfc/render-application test-form #_my-atom {:READ (partial get-in @my-atom)
                                                :UPDATE (partial swap! my-atom update-in)}))]]))
 
-(defn app-page []
+ (defn app-page []
   (shared/page-template {:header-title "Reformation Application"
                          :contents [:div.mycontent
                                     [generate-form]

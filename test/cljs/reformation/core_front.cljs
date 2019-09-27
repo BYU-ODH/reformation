@@ -4,12 +4,9 @@
             [reformation.ajax :refer [load-interceptors!]]
             [reformation.shared-test :refer [page-template] :as shared]
             [reformation.routes :as routes]
-            [reformation.status :as status]
             [reformation.application :as app]
-            [secretary.core :as secretary :include-macros true]
             [accountant.core :as accountant]
-            [reformation.review-front :as review]
-            [ajax.core :refer [GET POST]]))
+            [reformation.review-front :as review]))
 
 (defn home-page []
   [page-template {:jumbo-title "Reformation"
@@ -19,8 +16,8 @@
                               [:a {:href (routes/applicant-route)
                                    :data-toggle "tooltip"
                                    :data-placement "top"
-                                   :alt "Propose an International Study Program"
-                                   :title "Propose an International Study Program"}
+                                   :alt "Proposal Form"
+                                   :title "Propose Form"}
                                [:i.fa.fa-pencil-square-o]
                                [:span "Propose"]]]]}])
 
