@@ -137,6 +137,7 @@
   "Generate a hidden input"
   [input-map]
   (let [{:keys [value id]} input-map]
+    ;; TODO set value in map
     [:input {:type "hidden"
              :name id :id id
              :value value}]))
