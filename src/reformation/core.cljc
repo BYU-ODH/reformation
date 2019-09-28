@@ -218,22 +218,8 @@
       (atom? atom-or-map) :atom
       :default (throw (ex-info "Unsupported arg for atom-or-map" {:atom-or-map atom-or-map})))))
 
-(defn init-defaults!
-  "Initialize default values"
-  [fm {:as fn-map :keys [READ UPDATE]} &[pathv]]
-  (dorun
-   (for [[k v] (partition 2 fm) :let [path (conj (vec pathv) k)]]
-     (cond
-       (sequential? v) (init-defaults! v fn-map path)
-       (map? v) (when-let [dv (:default-value v)]
-                  (when-not (READ path)
-                    (UPDATE path (constantly dv))))
-       :default (throw (ex-info "Failed to initialize" {:key k :val v :path path}))))))
-
-
 (defmethod render-application :map
   [fm {:keys [READ UPDATE] :as fn-map} & [pathv]]
-  ;(init-defaults! fm fn-map)
   (for [[k v] (partition 2 fm) :let [path (conj (vec pathv) k)]]
     (cond
       (sequential? v) (render-application v fn-map path)
