@@ -20,10 +20,10 @@
 (def FILE (r/atom nil))
 
 (def test-form [:myhidden-text {:type :hidden
-                                :value "whisper"}
+                                :default-value "whisper"}
                 :mydefault-text {:type :text
                                  :label "default text"
-                                 :value "something good"
+                                 :default-value "something good"
                                  :disabled true}
                 :mytext {:type :text
                          :label "My text"}
@@ -66,8 +66,9 @@
     [:div.submission-form 
      [:form.form-control {:id form-id}
       (into [:div.form-contents]
-            (rfc/render-application test-form #_my-atom {:READ (partial get-in @my-atom)
-                                               :UPDATE (partial swap! my-atom update-in)}))]]))
+            (rfc/render-application test-form #_my-atom
+                                    {:READ (partial get-in @my-atom)
+                                     :UPDATE (partial swap! my-atom update-in)}))]]))
 
  (defn app-page []
   (shared/page-template {:header-title "Reformation Application"

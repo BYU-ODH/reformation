@@ -137,7 +137,6 @@
   "Generate a hidden input"
   [input-map]
   (let [{:keys [value id]} input-map]
-    ;; TODO set value in map
     [:input {:type "hidden"
              :name id :id id
              :value value}]))
@@ -145,12 +144,14 @@
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
   [{:keys [READ UPDATE] :as fn-map} valpath & [opt-map]]
-  (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden class contingent value]
+  (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden class contingent]
          :or {id (str/join " " (map name valpath))
               type "text"}} opt-map
         {:keys [limit enforce?]} char-count
         {:keys [field-key contingent-fn]} contingent
-        input-value (or value (READ valpath))
+        _init (when (and default-value (not (READ valpath)))
+                (UPDATE valpath (constantly default-value)))
+        input-value (or (READ valpath) default-value)
         changefn1 (fn [e] (UPDATE valpath #(shared/get-value-from-change e)))
         validation-function (when-let [vf validation-function]
                               (to-validation vf invalid-feedback))
@@ -175,7 +176,7 @@
                            {:required true}))
         invalid-feedback (when invalid-feedback
                            [:div.invalid-feedback invalid-feedback])
-        input (condp = type
+        input (case type
                 :select [select-box (merge (select-keys opt-map [:options :required?])
                                            {:on-change changefn
                                             :id id})]
@@ -217,8 +218,22 @@
       (atom? atom-or-map) :atom
       :default (throw (ex-info "Unsupported arg for atom-or-map" {:atom-or-map atom-or-map})))))
 
+(defn init-defaults!
+  "Initialize default values"
+  [fm {:as fn-map :keys [READ UPDATE]} &[pathv]]
+  (dorun
+   (for [[k v] (partition 2 fm) :let [path (conj (vec pathv) k)]]
+     (cond
+       (sequential? v) (init-defaults! v fn-map path)
+       (map? v) (when-let [dv (:default-value v)]
+                  (when-not (READ path)
+                    (UPDATE path (constantly dv))))
+       :default (throw (ex-info "Failed to initialize" {:key k :val v :path path}))))))
+
+
 (defmethod render-application :map
   [fm {:keys [READ UPDATE] :as fn-map} & [pathv]]
+  ;(init-defaults! fm fn-map)
   (for [[k v] (partition 2 fm) :let [path (conj (vec pathv) k)]]
     (cond
       (sequential? v) (render-application v fn-map path)
