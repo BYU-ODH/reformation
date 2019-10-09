@@ -48,6 +48,9 @@ As the second arg to =render-application= you can specify your read and update f
                                    :UPDATE (partial swap! my-atom update-in)})
 #+END_SRC
 
+** TODO "required" on regular input
+** TODO Format fn for date fields
+** TODO Default values for select boxes
 ** TODO Validation
 ** Prerequisites
    :PROPERTIES:
