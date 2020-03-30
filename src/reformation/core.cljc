@@ -32,10 +32,11 @@
    label-text])
 
 (defn select-box [m]
-  (let [{:keys [options id on-change required?]
+  (let [{:keys [options id on-change required? style-classes]
          :or {id "generic-select"
               options ["No :options provided"]}} m]
-    (into [:select.form-control {:id id
+    (into [:select.form-control {:class style-classes
+                                 :id id
                                  :name id
                                  :required required?
                                  :on-change on-change}]
@@ -46,11 +47,12 @@
               [:option o])))))
 
 (defn text-area [opt-map]
-  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count required]} opt-map
+  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count required style-classes]} opt-map
         {:keys [limit enforce?]} char-count
         
         textarea 
-        [:textarea.form-control {:id id 
+        [:textarea.form-control {:id id
+                                 :class style-classes
                                  :name id 
                                  :rows 5
                                  :default-value input-value
@@ -91,11 +93,11 @@
 (defn checkbox
   "Create a checkbox"
   [{:keys [READ UPDATE valpath] :as fn-map}
-   {:keys [validation-function disabled] :as input-map}]
+   {:keys [validation-function disabled style-classes] :as input-map}]
   (let [checked? (READ valpath)
         toggle-fn (comp (or validation-function identity)
                         #(UPDATE valpath not))]
-    [:input {:class (last valpath)
+    [:input {:class (into [(last valpath)] style-classes)
              :type "checkbox"
              :disabled disabled
              :checked checked?
@@ -113,7 +115,7 @@
 
 (defn togglebox
   "Builds a group which, when toggled, displays its `:content`"
-  [{:keys [label content valpath READ UPDATE default-value override-inline? open-height disabled]
+  [{:keys [label content valpath READ UPDATE default-value override-inline? open-height disabled style-classes]
     :or {open-height "5em"}
     :as opt-map}]
   (let [content-id "togglebox-content"
@@ -122,7 +124,7 @@
                           :transition "height 0.4s ease-in-out"
                           :overflow "hidden"}]
     [:div.togglebox
-     [tinput (select-keys opt-map [:READ :UPDATE]) valpath
+     [tinput (select-keys opt-map [:READ :UPDATE :style-classes]) valpath
       {:type :checkbox
        :checked checked?
        :disabled disabled
@@ -144,7 +146,7 @@
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
   [{:keys [READ UPDATE] :as fn-map} valpath & [opt-map]]
-  (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden class contingent]
+  (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden style-classes contingent]
          :or {id (str/join " " (map name valpath))
               type "text"}} opt-map
         {:keys [limit enforce?]} char-count
@@ -170,6 +172,8 @@
                           :on-change changefn
                           :default-value default-value
                           :value input-value}
+                         (when style-classes
+                           {:class style-classes})
                          (when disabled
                            {:disabled disabled})
                          (when required?

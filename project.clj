@@ -1,4 +1,4 @@
-(defproject reformation "5"
+(defproject reformation "6"
   :description "Generate and manipulate form datastructures in pure Clojure, which can be read with Reagent."
   :url "http://tech.toryanderson.com"
   :license {:name "Eclipse Public License"
@@ -82,5 +82,4 @@
                        :optimizations :none
                        :pretty-print true}}}}
                    :source-paths ["test/clj"]
-                   :repl-options {:init-ns user}}}
-  )
+                   :repl-options {:init-ns user}}})

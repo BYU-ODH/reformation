@@ -24,7 +24,8 @@
                 :mydefault-text {:type :text
                                  :label "default text"
                                  :default-value "something good"
-                                 :disabled true}
+                                 :disabled true
+                                 :style-classes "I-like-red"}
                 :mytext {:type :text
                          :label "My text"}
                 :mytextarea {:type :textarea
