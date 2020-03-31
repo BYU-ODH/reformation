@@ -5,7 +5,9 @@
             [reformation.shared-test :as shared]
             [accountant.core]
             [reformation.routes :as rt]
-            [reformation.core :as rfc]))
+            [reformation.core :as rfc]
+            [re-frame.core :as reframe]
+            [reformation.reframe]))
 
 (defn validate-and-submit "Validate the form and submit"
   [form-dom-id]
@@ -30,7 +32,7 @@
                          :label "My text"}
                 :mytextarea {:type :textarea
                              :label "My textarea"}
-                :mymultitable  {:label "My multitable"
+                #_#_:mymultitable  {:label "My multitable"
                                 :id :mymulti
                                 :required? true
                                 :type :multi-table
@@ -68,8 +70,15 @@
      [:form.form-control {:id form-id}
       (into [:div.form-contents]
             (rfc/render-application test-form #_my-atom
-                                    {:READ (partial get-in @my-atom)
-                                     :UPDATE (partial swap! my-atom update-in)}))]]))
+                                    {:READ
+                                     (fn [kv]
+                                       @(reframe/subscribe [:read-form-item kv]))
+                                     #_(partial get-in @my-atom)
+                                     :UPDATE
+                                     (fn [kv update-function]
+                                       ;; dispatch-sync is required here, because the defer involved in plain reframe/dispatch causes the synthetic event to be released and the fn breaks. 
+                                       (reframe/dispatch-sync [:update-form kv update-function]))
+                                     #_(partial swap! my-atom update-in)}))]]))
 
  (defn app-page []
   (shared/page-template {:header-title "Reformation Application"

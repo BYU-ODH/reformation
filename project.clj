@@ -9,10 +9,10 @@
                               :creds :gpg}]]
 
   :garden {:builds [{:id "style"
-                                      :source-path "test/clj/reformation/styles"
-                                      :stylesheet reformation.styles.main/main
-                                      :compiler {:output-to "test/resources/public/css/style.css"
-                                                 :pretty-print? true}}]}
+                     :source-path "test/clj/reformation/styles"
+                     :stylesheet reformation.styles.main/main
+                     :compiler {:output-to "test/resources/public/css/style.css"
+                                :pretty-print? true}}]}
   :profiles {:dev {:jvm-opts ["-server" "-Dconf=.lein-env"]
                    :resource-paths ["test/resources" "test/target/cljsbuild"]
                    :target-path "test/target/"
@@ -25,12 +25,6 @@
                    {:http-server-root "public"
                     :nrepl-port 7002
                     :css-dirs ["test/resources/public/css"]}
-
-                   ;; :garden {:builds [{:id "style"
-                   ;;                    :source-path "test/clj/reformation/styles"
-                   ;;                    :stylesheet reformation.styles.main/main
-                   ;;                    :compiler {:output-to "test/resources/public/css/style.css"
-                   ;;                               :pretty-print? true}}]}
                    :dependencies [[cheshire "5.8.1"]
                                   [binaryage/devtools "0.9.10"]
                                   [clj-http "3.9.1"]
@@ -62,6 +56,7 @@
                                   [ring-webjars "0.2.0"] ;; Web assetts & their routing
                                   [ring/ring-defaults "0.3.2"] ;; CLJ routing
                                   [secretary "1.2.3"] ;; CLJS routing
+                                  [re-frame "0.11.0"]
                                   [venantius/accountant "0.2.4"]]
                    :plugins [[com.jakemccrary/lein-test-refresh "0.14.0"]
                              [lein-doo "0.1.7"]
