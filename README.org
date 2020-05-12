@@ -1,19 +1,61 @@
-* reformation
-** Use
-Specify your vector to define your map, then process it with =(render-application)=, which can take a map specifying =:READ= and =:UPDATE= functions for how to handle changes, or else be provided an atom which it will put the form data into. 
+* Reformation
+** Overview
+Reformation is a library for building web forms.  More specifically, the library outputs Clojure data structures that can be easily rendered by Reagent.
 
-*** Example form-structure
+It has one main method, =render-application=, which takes two arguments:
+
+ - a data structure describing the form, 
+ - a place to store the data---either an atom, or a map with two keys, =:READ= and =:UPDATE=
+
+** A Small Reformation Example
 #+BEGIN_SRC clojure
+(ns example
+ (:require [reformation.core :as rfc]))
+
+(def example-atom (atom nil)
+(def easy-form [:example-element {:type :text
+                                   :label "Enter some text here"}])
+
+(rfc/render-application easy-form example-atom)
+#+END_SRC
+
+ 
+*** Diving Deeper
+A Reformation form is defined by two parts:  a vector of pairs describing the form, and a place to store the data.
+
+**** The Vector
+A form is specified by a vector of pairs.  The first part of each pair is a keyword.  You can use whatever keywords you want; the resulting data structure will store user input data under the same keys, e.g. a form described by =[:example-element {:type :text :label "Enter some text here"}]= would store the data as ={:example-element "user input for the text input lives here"}=.  
+
+The second part of each pair---={:type :text :label "Enter some text here"}= in the above example---describes a form element.  (See "A Bigger Form" below for examples).
+
+
+**** Data Storage
+Where does the data live?
+
+***** An Atom
+=render-application= can take an atom as a second argument and keep user input there.  The atom should either contain =nil= or a map.
+
+***** Custom Storage
+If you have more specific needs (a front-end db, etc), instead of an atom, you can pass =render-application= a map containing read and write functions for Reformation to use, under the keys =:READ= and =:WRITE=.  The function under =:READ= should take one argument: a vector of keys representing a path as in =get-in=.  The function under =:UPDATE= should take =[path new-val-f]=, where =new-val-f= is a zero-argument function that returns the new value.  
+
+
+
+***** A Bigger Form
+#+BEGIN_SRC clojure
+(ns example
+ (:require [reformation.core :as rfc]))
+
 (def test-form [:mytext {:type :text
                          :label "My text"}
                 :mytextarea {:type :textarea
                              :label "My textarea"}
-                :mymultitable  {:label "My multitable"
+                :mymultitable  {:type :multi-table
+		                :label "My multitable"
                                 :id :mymulti
                                 :required? true
-                                :type :multi-table
+
                                 :min-rows 3
-                                :subtext "Indicate any expenses involved in carryout out your research, including a reason for each expense."
+                                :subtext "Indicate any expenses involved in carrying out your research, including a reason for each expense."
                                 :value-path [:my-multitable]
                                 ;:sum-field :amount
                                 :columns [{:key :item
@@ -40,14 +82,14 @@ Specify your vector to define your map, then process it with =(render-applicatio
                                                :have-file "have-file"}}])
 #+END_SRC
 
-*** Example READ and UPDATE in the control map
-As the second arg to =render-application= you can specify your read and update functions, which will be called to get the value of a field and to update the value of a field. Each function will receive from Reformation =[:path :to :value]= and, for update, also =new-value=. The following example works if you are using a local atom; you can trivially adjust this function to work with re-frame. 
+
 
 #+BEGIN_SRC clojure
 (rfc/render-application test-form {:READ (partial get-in @my-atom)
                                    :UPDATE (partial swap! my-atom update-in)})
 #+END_SRC
 
+** TODO examples/docs of form elements (see =core.cljs=, line 184)
 ** TODO "required" on regular input
 ** TODO Format fn for date fields
 ** TODO Default values for select boxes
