@@ -23,8 +23,6 @@ It has one main method, =render-application=, which takes two arguments:
 *** Diving Deeper
 A Reformation form is defined by two parts:  a vector of pairs describing the form, and a place to store the data.  
 
-
-
 **** The Vector
 A form is specified by a vector of pairs.  The first part of each pair is a keyword.  You can use whatever keywords you want; the resulting data structure will store user input data under the same keys, e.g. a form described by =[:example-element {:type :text :label "Enter some text here"}]= would store the data as ={:example-element "user input for the text input lives here"}=.  
 
@@ -40,49 +38,71 @@ Where does the data live?
 If you have more specific needs (a front-end db, etc), instead of an atom, you can pass =render-application= a map containing read and write functions for Reformation to use, under the keys =:READ= and =:WRITE=.  The function under =:READ= should take one argument: a vector of keys representing a path as in =get-in=.  The function under =:UPDATE= should take =[path new-val-f]=, where =new-val-f= is a zero-argument function that returns the new value.  
 
 
-
-** Element-by-element API
+**Element and Attribute Reference
 
 *** universal keys
-**** `:type`
-indicates which element to create.  Can be any of: `:select` `:multi-table` `:textarea` `:togglebox` `:checkbox` `:file` `:hidden`
+**** =:type=
+indicates which element to create.  Can be any of: =:select= =:multi-table= =:textarea= =:togglebox= =:checkbox= =:file= =:hidden=
 
-**** subtext
-Explanatory or parenthetical text, appearing in smaller font under `:label`
+**** =:subtext=
+Explanatory or parenthetical text, appearing in smaller font under =:label=
 
-**** `:validation-function`
+**** =:validation-function=
 should be a predicate function that takes a value and determines whether it is a valid input for that form element
 
-****  `:invalid-feedback`
+**** =:invalid-feedback=
 If the input doesn't satisfy the validation function, this string will appear explaining why
 
+**** =:required?=
+a boolean flag indicating whether the element is required for form submission.  Not applicable to  =togglebox or =multi-table=
 
-
-**** `:required?`
-a boolean flag indicating whether the element is required for form submission.  Not applicable to  `togglebox or `multi-table`
-
-****  `:default-value` 
+**** =:default-value= 
 If you wish to set a default value, put it here
      
-**** disabled
+**** =:disabled=
 a binary flag for whether the element will be disabled
 
-**** `:id` 
- the `id` of the resulting element
-**** style-classes
-is set as `:class` of the resulting element
+**** =:id= 
+ the =id= of the resulting element
+**** =:style-classes=
+is set as =:class= of the resulting element
 
 
-*** select
-takes map:on-change :options (seq, either a {:value :content} map if you want them to be different, or just a value
+** Elements
 
-*** textarea
+*** =:select=
+**** =:on-change= equivalent to the __onChange__ attribute in HTML
+**** =:options= a sequence of options from which the user can select one.  An option can be either a value, or a map with two keys, =:content= and =:value=.  In this case, =:content= is displaye to the user, but the data read is that in =:value=.
 
-input-value (default-value)
+*** =:textarea=
 
- placeholder  value char-count (:limit enforce?} required style-classes
-*** togglebox
- [ content default-value
+ =:placeholder= as the HTML attribute.
+
+=:value= as the html attribute
+
+=:char-count= a map with two keys, =:limit= and =:enforce?=.  =:limit= is a character count limit and should be an integer, =:enforce?= is a boolean.
+
+
+*** checkbox
+a checkbox.
+
+*** file
+**** =:submit-text= Text instructing the user how to submit a file.  Defaults to  "Click or Drop a File Here"
+**** =:submit-button= a 
+**** =:submit-fn
+
+  [{:keys [ submit-text submit-fn error-text submit-button save-fn allowed-extensions-f]
+    :or {submit-text "Click or Drop a File Here"}
+    {:keys [drag-over inactive have-file]
+     :or {drag-over "dragover"
+          inactive "undragged"
+          have-file "have-file"}} :style-classes
+    :as opt-map}]
+
+
+
+*** togglebox  ---composite
+ [ content
 
  override-inline? not sure
 
@@ -91,23 +111,9 @@ input-value (default-value)
 ]
 
 
-*** checkbox
- [validation-function disabled style-classes]
-
-*** file
-  [{:keys [style-classes submit-text submit-fn error-text submit-button save-fn allowed-extensions-f]
-    :or {submit-text "Click or Drop a File Here"}
-    {:keys [drag-over inactive have-file]
-     :or {drag-over "dragover"
-          inactive "undragged"
-          have-file "have-file"}} :style-classes
-    :as opt-map}]
-
 *** multi-table
 
 *** hidden
-
-
 
 
 ***** A Bigger Form
