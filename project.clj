@@ -13,6 +13,8 @@
                      :stylesheet reformation.styles.main/main
                      :compiler {:output-to "test/resources/public/css/style.css"
                                 :pretty-print? true}}]}
+
+  :codox {:output-path "docs"}
   :profiles {:dev {:jvm-opts ["-server" "-Dconf=.lein-env"]
                    :resource-paths ["test/resources" "test/target/cljsbuild"]
                    :target-path "test/target/"
@@ -58,7 +60,8 @@
                                   [secretary "1.2.3"] ;; CLJS routing
                                   [re-frame "0.11.0"]
                                   [venantius/accountant "0.2.4"]]
-                   :plugins [[com.jakemccrary/lein-test-refresh "0.14.0"]
+                   :plugins [[lein-codox "0.10.7"]
+                             [com.jakemccrary/lein-test-refresh "0.14.0"]
                              [lein-doo "0.1.7"]
                              [lein-figwheel "0.5.12"]
                              [org.clojure/clojurescript "1.10.439"]
