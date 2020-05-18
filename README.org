@@ -89,9 +89,12 @@ a checkbox.
 *** file
 **** =:submit-text= Text instructing the user how to submit a file.  Defaults to  "Click or Drop a File Here"
 **** =:submit-button= a 
-**** =:submit-fn
+**** =:submit-fn=
+**** =:save-fn= should be a fn of one argument, the file
+**** =:allowed-extensions-f= a set of strings, each representing a file extension, e.g. #{"txt" "doc"}
 
-  [{:keys [ submit-text submit-fn error-text submit-button save-fn allowed-extensions-f]
+
+  [{:keys [ submit-text submit-fn error-text submit-button ]
     :or {submit-text "Click or Drop a File Here"}
     {:keys [drag-over inactive have-file]
      :or {drag-over "dragover"
