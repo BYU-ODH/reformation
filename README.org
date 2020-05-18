@@ -26,7 +26,7 @@ A Reformation form is defined by two parts:  a vector of pairs describing the fo
 **** The Vector
 A form is specified by a vector of pairs.  The first part of each pair is a keyword.  You can use whatever keywords you want; the resulting data structure will store user input data under the same keys, e.g. a form described by =[:example-element {:type :text :label "Enter some text here"}]= would store the data as ={:example-element "user input for the text input lives here"}=.  
 
-The second part of each pair---={:type :text :label "Enter some text here"}= in the above example---describes a form element.  (See "A Bigger Form" below for examples).
+The second part of each pair---={:type :text :label "Enter some text here"}= in the above example---describes a form element.  (See "A Bigger Form" below for examples, and "Element and Attribute Reference" below that).
 
 **** Data Storage
 Where does the data live?
@@ -37,8 +37,57 @@ Where does the data live?
 ***** Custom Storage
 If you have more specific needs (a front-end db, etc), instead of an atom, you can pass =render-application= a map containing read and write functions for Reformation to use, under the keys =:READ= and =:WRITE=.  The function under =:READ= should take one argument: a vector of keys representing a path as in =get-in=.  The function under =:UPDATE= should take =[path new-val-f]=, where =new-val-f= is a zero-argument function that returns the new value.  
 
+***** A Bigger Form
+#+BEGIN_SRC clojure
+(ns example
+ (:require [reformation.core :as rfc]))
 
-**Element and Attribute Reference
+(def test-form [:mytext {:type :text
+                         :label "My text"}
+                :mytextarea {:type :textarea
+                             :label "My textarea"}
+                :mymultitable  {:type :multi-table
+		                :label "My multitable"
+                                :id :mymulti
+                                :required? true
+
+                                :min-rows 3
+                                :subtext "Indicate any expenses involved in carrying out your research, including a reason for each expense."
+                                :value-path [:my-multitable]
+                                ;:sum-field :amount
+                                :columns [{:key :item
+                                           :title "Item"}
+                                          {:key :amount
+                                           :title "Amount"
+                                           :input-type "number"}
+                                          {:key :purpose
+                                           :title "Purpose"
+                                           :input-type "textarea"}]}
+                :mytoggle {:type :togglebox
+                           :label "My togglebox"
+                           :content [:test {:type :text :label "My toggled "}]}
+                :mycheckbox {:type :checkbox :label "My checkbox"}
+                :myfileupload {:type :file
+                               :label "My file"
+                               :submit-text "Click or Drop a File Here"
+                               :error-text "Maybe We had an error?"
+                               :submit-fn #(js/alert "Trying to submit:")
+                               :save-fn #(reset! FILE %)                               
+                               :allowed-extensions-f #{"txt"}
+                               :style-classes {:drag-over "dragover"
+                                               :inactive "undragged"
+                                               :have-file "have-file"}}])
+#+END_SRC
+
+
+
+#+BEGIN_SRC clojure
+(rfc/render-application test-form {:READ (partial get-in @my-atom)
+                                   :UPDATE (partial swap! my-atom update-in)})
+#+END_SRC
+
+
+** Element and Attribute Reference
 
 *** universal keys
 **** =:type=
@@ -118,55 +167,6 @@ a checkbox.
 
 *** hidden
 
-
-***** A Bigger Form
-#+BEGIN_SRC clojure
-(ns example
- (:require [reformation.core :as rfc]))
-
-(def test-form [:mytext {:type :text
-                         :label "My text"}
-                :mytextarea {:type :textarea
-                             :label "My textarea"}
-                :mymultitable  {:type :multi-table
-		                :label "My multitable"
-                                :id :mymulti
-                                :required? true
-
-                                :min-rows 3
-                                :subtext "Indicate any expenses involved in carrying out your research, including a reason for each expense."
-                                :value-path [:my-multitable]
-                                ;:sum-field :amount
-                                :columns [{:key :item
-                                           :title "Item"}
-                                          {:key :amount
-                                           :title "Amount"
-                                           :input-type "number"}
-                                          {:key :purpose
-                                           :title "Purpose"
-                                           :input-type "textarea"}]}
-                :mytoggle {:type :togglebox
-                           :label "My togglebox"
-                           :content [:test {:type :text :label "My toggled "}]}
-                :mycheckbox {:type :checkbox :label "My checkbox"}
-                :myfileupload {:type :file
-                               :label "My file"
-                               :submit-text "Click or Drop a File Here"
-                               :error-text "Maybe We had an error?"
-                               :submit-fn #(js/alert "Trying to submit:")
-                               :save-fn #(reset! FILE %)                               
-                               :allowed-extensions-f #{"txt"}
-                               :style-classes {:drag-over "dragover"
-                                               :inactive "undragged"
-                                               :have-file "have-file"}}])
-#+END_SRC
-
-
-
-#+BEGIN_SRC clojure
-(rfc/render-application test-form {:READ (partial get-in @my-atom)
-                                   :UPDATE (partial swap! my-atom update-in)})
-#+END_SRC
 
 ** TODO examples/docs of form elements (see =core.cljs=, line 184)
 ** TODO "required" on regular input
