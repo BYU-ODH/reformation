@@ -32,7 +32,7 @@
                          :label "My text"}
                 :mytextarea {:type :textarea
                              :label "My textarea"}
-                #_#_:mymultitable  {:label "My multitable"
+                :mymultitable  {:label "My multitable"
                                 :id :mymulti
                                 :required? true
                                 :type :multi-table
