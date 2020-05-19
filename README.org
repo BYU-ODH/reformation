@@ -1,4 +1,7 @@
 * Reformation
+
+auto-generated docs: https://byu-odh.github.io/reformation/
+
 ** Overview
 Reformation is a library for building web forms.  More specifically, the library outputs Clojure data structures that can be easily rendered by Reagent.
 
