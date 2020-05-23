@@ -7,7 +7,8 @@
             [reformation.routes :as rt]
             [reformation.core :as rfc]
             [re-frame.core :as reframe]
-            [reformation.reframe]))
+            [reformation.reframe]
+            [cljs.pprint :as pprint]))
 
 (defn validate-and-submit "Validate the form and submit"
   [form-dom-id]
@@ -48,6 +49,10 @@
                                           {:key :purpose
                                            :title "Purpose"
                                            :input-type "textarea"}]}
+
+                :myselect {:label "A select" :type :select :options [1 2 3]}
+                :myradio {:type :radio :options [1 2 {:value 3}]}
+                
                 :mytoggle {:type :togglebox
                            :label "My togglebox"
                            :content [:test {:type :text :label "My toggled "}]}
@@ -64,24 +69,43 @@
                                                :inactive "undragged"
                                                :have-file "have-file"}}])
 
+(def data-sources {:atom my-atom
+                   :map {:READ
+                         (fn [kv]
+                           @(reframe/subscribe [:read-form-item kv]))
+                         #_(partial get-in @my-atom)
+                         :UPDATE
+                         (fn [kv update-function]
+                           ;; dispatch-sync is required here, because the defer involved in plain reframe/dispatch causes the synthetic event to be released and the fn breaks. 
+                           (reframe/dispatch-sync [:update-form kv update-function]))
+                         #_(partial swap! my-atom update-in)}})
+
+(def chosen-datasource (r/atom :atom))
+
 (defn generate-form []
   (let [form-id "needs-validation"]
     [:div.submission-form 
      [:form.form-control {:id form-id}
       (into [:div.form-contents]
-            (rfc/render-application test-form #_my-atom
-                                    {:READ
-                                     (fn [kv]
-                                       @(reframe/subscribe [:read-form-item kv]))
-                                     #_(partial get-in @my-atom)
-                                     :UPDATE
-                                     (fn [kv update-function]
-                                       ;; dispatch-sync is required here, because the defer involved in plain reframe/dispatch causes the synthetic event to be released and the fn breaks. 
-                                       (reframe/dispatch-sync [:update-form kv update-function]))
-                                     #_(partial swap! my-atom update-in)}))]]))
+            (rfc/render-application test-form  (data-sources @chosen-datasource)))]]))
 
- (defn app-page []
+(defn datasource-panel []
+  [:div [:span {:on-click (fn [e]
+                            (swap! chosen-datasource #(do (println %)
+                                                          (case % :atom :map :map :atom))))}
+         (str "Chosen datasource (click to toggle): " @chosen-datasource)]])
+
+(defn data-panel []
+  [:div 
+   (case @chosen-datasource
+     :atom (str @(data-sources @chosen-datasource))
+     :map (str @(reframe/subscribe [:read-form-item []])))])
+
+(defn app-page []
   (shared/page-template {:header-title "Reformation Application"
                          :contents [:div.mycontent
                                     [generate-form]
+                                    [datasource-panel]
+                                    [data-panel]
+
                                     ]}))

@@ -46,6 +46,23 @@
                (:content o)]
               [:option o])))))
 
+
+(defn radio [{:keys [options on-change]}]
+  (into [:div.form-group]
+        (let [nom `name#]
+          (for [o options]
+            (let [v (cond (map? o) (or (:value o)
+                                       (:contents o))
+                          :default o)
+                  disp (cond (map? o) (or (:contents o)
+                                          (:value o))
+                             :default o)
+                  idsym (gensym v)]
+              [:div [:input.form-control {:id idsym :type "radio" :name nom :value v
+                                          :on-change on-change}]
+               [:label {:for idsym} disp]])))))
+
+
 (defn text-area [opt-map]
   (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count required style-classes]} opt-map
         {:keys [limit enforce?]} char-count
@@ -147,51 +164,58 @@
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
   [{:keys [READ UPDATE] :as fn-map} valpath & [opt-map]]
   (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden style-classes contingent]
-         :or {id (str/join " " (map name valpath))
-              type "text"}} opt-map
-        {:keys [limit enforce?]} char-count
-        {:keys [field-key contingent-fn]} contingent
-        _init (when (and default-value (not (READ valpath)))
-                (UPDATE valpath (constantly default-value)))
-        input-value (or (READ valpath) default-value)
-        changefn1 (fn [e] (UPDATE valpath #(shared/get-value-from-change e)))
-        validation-function (when-let [vf validation-function]
-                              (to-validation vf invalid-feedback))
-        changefn (cond
-                   validation-function (fn [e] (doto e changefn1 validation-function))
-                   enforce? (fn [e]
-                              (let [v (shared/get-value-from-change e)]
-                                (cond
-                                  (= limit (dec (count v))) identity
-                                  (< limit (count v)) #(UPDATE valpath (constantly (apply str (take limit v))))
-                                  :default (changefn1 e))))
-                   :default changefn1)
-        input-map (merge {:type type
-                          :id id
-                          :name id
-                          :on-change changefn
-                          :default-value default-value
-                          :value input-value}
-                         (when style-classes
-                           {:class style-classes})
-                         (when disabled
-                           {:disabled disabled})
-                         (when required?
-                           {:required true}))
-        invalid-feedback (when invalid-feedback
-                           [:div.invalid-feedback invalid-feedback])
-        input (case type
-                :select [select-box (merge (select-keys opt-map [:options :required?])
-                                           {:on-change changefn
-                                            :id id})]
-                :multi-table [multi-table fn-map opt-map]
-                :textarea [text-area (assoc input-map :changefn changefn)]
-                :togglebox [togglebox (merge (assoc fn-map :valpath valpath) opt-map)]
-                :checkbox [checkbox (assoc fn-map :valpath valpath) input-map]
-                :file [file-upload opt-map]
-                :hidden [hidden-input input-map]
-                ;; default
-                [:input.form-control input-map])]
+            :or {id (str/join " " (map name valpath))
+                 type "text"}} opt-map
+           {:keys [limit enforce?]} char-count
+           {:keys [field-key contingent-fn]} contingent
+           _init (when (and default-value (not (READ valpath)))
+                   (UPDATE valpath (constantly default-value)))
+           input-value (or (READ valpath) default-value)
+           changefn1 (fn [e] (UPDATE valpath #(shared/get-value-from-change e)))
+           validation-function (when-let [vf validation-function]
+                                 (to-validation vf invalid-feedback))
+           changefn (cond
+                      validation-function (fn [e] (doto e changefn1 validation-function))
+                      enforce? (fn [e]
+                                 (let [v (shared/get-value-from-change e)]
+                                   (cond
+                                     (= limit (dec (count v))) identity
+                                     (< limit (count v)) #(UPDATE valpath (constantly (apply str (take limit v))))
+                                     :default (changefn1 e))))
+                      :default changefn1)
+           input-map (merge {:type type
+                             :id id
+                             :name id
+                             :on-change changefn
+                             :default-value default-value
+                             :value input-value}
+                            (when style-classes
+                              {:class style-classes})
+                            (when disabled
+                              {:disabled disabled})
+                            (when required?
+                              {:required true}))
+           invalid-feedback (when invalid-feedback
+                              [:div.invalid-feedback invalid-feedback])
+           input (case type
+                   :radio [radio
+                    (merge (select-keys opt-map [:options :required?])
+
+                           {:on-change  (fn [& args]
+                                          (apply changefn args))
+                            :id id})]
+
+                   :select [select-box (merge (select-keys opt-map [:options :required?])
+                                              {:on-change changefn
+                                               :id id})]
+                   :multi-table [multi-table fn-map opt-map]
+                   :textarea [text-area (assoc input-map :changefn changefn)]
+                   :togglebox [togglebox (merge (assoc fn-map :valpath valpath) opt-map)]
+                   :checkbox [checkbox (assoc fn-map :valpath valpath) input-map]
+                   :file [file-upload opt-map]
+                   :hidden [hidden-input input-map]
+                   ;; default
+                   [:input.form-control input-map])]
     (case type
       :hidden input
       [:div.field

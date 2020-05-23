@@ -123,9 +123,9 @@ is set as =:class= of the resulting element
 ** Elements
 
 *** =:select=
-**** =:on-change= equivalent to the __onChange__ attribute in HTML
 **** =:options= a sequence of options from which the user can select one.  An option can be either a value, or a map with two keys, =:content= and =:value=.  In this case, =:content= is displaye to the user, but the data read is that in =:value=.
-
+*** =:radio= 
+**** =:options= a sequence of options from which the user can select one.  An option can be either a value, or a map with two keys, =:content= and =:value=.  In this case, =:content= is displaye to the user, but the data read is that in =:value=.
 *** =:textarea=
 
  =:placeholder= as the HTML attribute.
