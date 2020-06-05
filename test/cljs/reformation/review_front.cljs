@@ -8,7 +8,7 @@
             [reformation.application :as application]
             [reformation.core :as rfc]))
 
-(def hmeg-app-vals {:description "descriptoin here", :date-client #inst "2018-12-15T13:34:22.325-00:00", :faculty-participants "too many to say", :anticipated "out", :chair {:name "ma chair", :email "em@mail.com"}, :abstract "good stuff coming!", :qualifications "quals!", :simple-selectbox "Option 2", :next-reviewers {:reviewer1 {:name "dude 1", :email "dude1@place.com"}, :reviewer2 {:name "dude 2"}}, :varied-selectbox "4", :budget {"Number of undergraduate students" "3", "Budget for graduates" "1", "Budget for undergraduate students" "5", "Explanation of other items" "stuff", "Total budget" "900", "Budget for supplies" "0", "Budget for other items" "39", "Explanation of travel" "going places", "Explanation of supplies" "93", "Number of graduate students" "2", "Budget for travel" "20"}, :timeline "times are good", :hidden-field 15})
+(def hmeg-app-vals {:description "description here", :date-client #inst "2018-12-15T13:34:22.325-00:00", :faculty-participants "too many to say", :anticipated "out", :chair {:name "ma chair", :email "em@mail.com"}, :abstract "good stuff coming!", :qualifications "quals!", :simple-selectbox "Option 2", :next-reviewers {:reviewer1 {:name "dude 1", :email "dude1@place.com"}, :reviewer2 {:name "dude 2"}}, :varied-selectbox "4", :budget {"Number of undergraduate students" "3", "Budget for graduates" "1", "Budget for undergraduate students" "5", "Explanation of other items" "stuff", "Total budget" "900", "Budget for supplies" "0", "Budget for other items" "39", "Explanation of travel" "going places", "Explanation of supplies" "93", "Number of graduate students" "2", "Budget for travel" "20"}, :timeline "times are good", :hidden-field 15})
 
 ;;TODO: Validation
 (def app-vals {:outcomes-description "outcomes",
@@ -32,8 +32,7 @@
                :timetable "timetable"})
 
 (defn app-page []
-  ;; (shared/page-template {:jumbo-title "Form Review!"
-  ;;                        :contents (rfc/render-review application/humgrants-default app-vals)
-  ;;                        ;(rfc/render-review application/hmeg-default hmeg-app-vals)
-  ;;                        })
+ (rfc/render-review hmeg-app-vals application/my-atom)
+
+
   ) 

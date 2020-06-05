@@ -52,8 +52,8 @@
                                   [org.clojure/tools.logging "0.4.1"]
                                   [org.webjars.npm/bulma "0.7.5"]
                                   [org.webjars/font-awesome "4.7.0" :upgrade false]
-                                  [reagent "0.8.1"];; REACT 
-                                  [reagent-utils "0.3.2"];; & REACT
+                                  [reagent "1.0.0-alpha2"];; REACT 
+                                  [reagent-utils "0.3.3"];; & REACT
                                   [ring-middleware-format "0.7.3"] ;; CLJ Routing
                                   [ring-webjars "0.2.0"] ;; Web assetts & their routing
                                   [ring/ring-defaults "0.3.2"] ;; CLJ routing

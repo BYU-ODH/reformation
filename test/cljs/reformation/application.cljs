@@ -10,6 +10,24 @@
             [reformation.reframe]
             [cljs.pprint :as pprint]))
 
+
+
+;render-application returns a VECTOR with tinput at the front
+
+
+
+(def example-atom (atom nil))
+(def easy-form [:example-element {:type :text
+                                   :label "Enter some text here"}
+		:example-element2 {:type :checkbox
+ 		                   :label "Is it true?"}])
+
+
+(defn form-component []
+  [:div (rfc/render-application easy-form example-atom)])
+
+
+
 (defn validate-and-submit "Validate the form and submit"
   [form-dom-id]
   (let [form (.getElementById js/document form-dom-id)
@@ -46,9 +64,17 @@
                                           {:key :amount
                                            :title "Amount"
                                            :input-type "number"}
+
                                           {:key :purpose
                                            :title "Purpose"
-                                           :input-type "textarea"}]}
+                                           :input-type "textarea"}
+                                          {:key :justification
+                                           :title "Justification"
+                                           :input-type "radio"
+                                           :options ["I really want it"
+                                                     "Department needs it"
+                                                     "Have to use full budget or it will get cut"]}
+                                          ]}
 
                 :myselect {:label "A select" :type :select :options [1 2 3]}
                 :myradio {:type :radio :options [1 2 {:value 3}]}
@@ -102,10 +128,9 @@
      :map (str @(reframe/subscribe [:read-form-item []])))])
 
 (defn app-page []
-  (shared/page-template {:header-title "Reformation Application"
-                         :contents [:div.mycontent
-                                    [generate-form]
-                                    [datasource-panel]
-                                    [data-panel]
-
-                                    ]}))
+  [:div.container.mycontent
+   [generate-form]
+   [datasource-panel]
+   [data-panel]
+   #_[form-component]
+   ])

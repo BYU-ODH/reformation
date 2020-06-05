@@ -51,7 +51,13 @@
   (into [:div.form-group]
         (let [nom `name#]
           (for [o options]
-            (let [v (cond (map? o) (or (:value o)
+            (let [[v disp] (if (map? o)
+                             (let [{:keys [value contents]} o]
+                               [(or value contents)
+                                (or contents value)])
+                             [o o])
+
+                  v (cond (map? o) (or (:value o)
                                        (:contents o))
                           :default o)
                   disp (cond (map? o) (or (:contents o)
@@ -199,11 +205,11 @@
                               [:div.invalid-feedback invalid-feedback])
            input (case type
                    :radio [radio
-                    (merge (select-keys opt-map [:options :required?])
+                           (merge (select-keys opt-map [:options :required?])
 
-                           {:on-change  (fn [& args]
-                                          (apply changefn args))
-                            :id id})]
+                                  {:on-change (fn [& args]
+                                                (apply changefn args))
+                                   :id id})]
 
                    :select [select-box (merge (select-keys opt-map [:options :required?])
                                               {:on-change changefn
