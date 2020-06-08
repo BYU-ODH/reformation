@@ -101,7 +101,7 @@ Toggleboxes are upgraded checkboxes.  They contain their own content, which is o
 
 *** universal keys
 **** =:type=
-indicates which element to create.  Can be any of: =:select= =:multi-table= =:textarea= =:togglebox= =:checkbox= =:file= =:hidden=
+indicates which element to create.  Can be any of: =:select=, =:radio=, =:multi-table=, =:textarea=, =:togglebox=, =:checkbox=, =:file=, =:hidden=
 
 **** =:subtext=
 Explanatory or parenthetical text, appearing in smaller font under =:label=
@@ -130,9 +130,9 @@ is set as =:class= of the resulting element
 ** Elements
 
 *** =:select=
-**** =:options= a sequence of options from which the user can select one.  An option can be either a value, or a map with two keys, =:content= and =:value=.  In this case, =:content= is displaye to the user, but the data read is that in =:value=.
+**** =:options= a sequence of options from which the user can select one.  Each option has =:content= and =:value= attributes; you can provide a map with the appropriate keys or a string (in which case it will be used in both attributes).  If one key is missing, the value of the other will be used.
 *** =:radio= 
-**** =:options= a sequence of options from which the user can select one.  An option can be either a value, or a map with two keys, =:content= and =:value=.  In this case, =:content= is displaye to the user, but the data read is that in =:value=.
+**** =:options= a sequence of options from which the user can select one.  Each option has =:content= and =:value= attributes; you can provide a map with the appropriate keys or a string (in which case it will be used in both attributes).  If one key is missing, the value of the other will be used.
 *** =:textarea=
 
  =:placeholder= as the HTML attribute.
@@ -163,14 +163,13 @@ a checkbox.
 
 
 
-*** =:togglebox=  ---composite
- [ content
+*** =:togglebox= 
 
- override-inline? not sure
+**** =:content= The contents of a togglebox.  Should be in the same form as a form description vector, i.e. a vector alternating between keys and element-description maps.
 
- open-height not sure
+  override-inline? not sure
 
-]
+  open-height ---dictates height when open, is passed directly to =:height= in CSS.  Should be a string value
 
 
 *** =:multi-table=

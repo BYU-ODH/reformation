@@ -40,11 +40,10 @@
                                  :name id
                                  :required required?
                                  :on-change on-change}]
-          (for [o options]
-            (if (map? o)
-              [:option {:value (:value o)}
-               (:content o)]
-              [:option o])))))
+          (for [{:keys [content value] :as o} options]
+            (let [[c v] [(or content value o) (or value content o)]]
+              [:option {:value v}
+               (:content c)])))))
 
 
 (defn radio [{:keys [options on-change]}]
