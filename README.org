@@ -104,7 +104,7 @@ Toggleboxes are upgraded checkboxes.  They contain their own content, which is o
 indicates which element to create.  Can be any of: =:select=, =:radio=, =:multi-table=, =:textarea=, =:togglebox=, =:checkbox=, =:file=, =:hidden=
 
 **** =:subtext=
-Explanatory or parenthetical text, appearing in smaller font under =:label=
+Explanatory or parenthetical text, appearing under =:label=.  Adjust style by adding rules to =p.help= 
 
 **** =:validation-function=
 should be a predicate function that takes a value and determines whether it is a valid input for that form element
