@@ -11,75 +11,103 @@
   (cond-> multitable-map
     (> (count multitable-map) min-rows) pop))
 
+
+(defn make-radio [c attr-map]
+  (let [nom (gensym 'name)]
+    (for [{:keys [value contents] :as o} (:options c)]
+      (let [[v disp] [(or value contents o) (or contents value o)]
+            new-attr-map (merge attr-map {:id v :type "radio" :name nom :value v})]
+        [:div.form-group {:key v :style  {:text-align "right"}} 
+         [:div {:style {:text-align "left"}}
+          [:input.form-control new-attr-map]
+          [:label {:for v} disp]]]))))
+
+(defn make-column [i {:keys [title input-type input-class disabled
+                             placeholder default-value column-class] :as c}
+                   {vpath :vpath table-disabled :disabled
+                    {:keys [READ UPDATE]} :fn-map :as universals}]
+  (let [is-checkbox? (= "checkbox" input-type)
+        multi-vpath (conj vpath i (:key c))
+        nameval (str (shared/idify title))
+        on-change-fn-bind (fn [e] (UPDATE multi-vpath
+                                          (if is-checkbox? (constantly (-> e .-target .-checked))
+                                              (constantly (shared/get-value-from-change e)))))
+        
+        basic-attr-map {:type (or input-type "text")
+                        :class [input-class
+                                (if is-checkbox? "custom-control-input")
+                                (when disabled "disabled")]
+                        :disabled (or disabled table-disabled)
+                        :placeholder placeholder
+                        :name nameval
+                        :on-change on-change-fn-bind
+                        :value (let [v (READ multi-vpath)]
+                                 (println (str "v is nil:" (= v nil)) )
+                                 (or v default-value))}]
+
+    [:td {:key title :class [column-class nameval (str nameval "_" i)]}
+     [:label.custom-control.custom-checkbox
+      (cond
+        (= "textarea" input-type) [:textarea.textarea basic-attr-map]
+        (  =  "radio" input-type) (make-radio c basic-attr-map)
+        (not (#{"textarea" "radio"} input-type)) [:input basic-attr-map])
+      (if is-checkbox? [:span.custom-control-indicator])]]))
+
+(defn make-add-button [UPDATE vpath row-template]
+  [:a.btn.btn-success
+   {:on-click #(UPDATE vpath add-row row-template)}
+   [:i.fa.fa-plus]])
+
+(defn make-delete-button [UPDATE vpath min-rows]
+  [:a.btn.btn-danger
+   {:on-click #(UPDATE vpath delete-row min-rows)}
+   [:i.fa.fa-minus]])
+
+(defn sum-field-component [sum-field {vpath :vpath
+                                      {:keys [READ UPDATE]} :fn-map}]
+  (let [sum-key (-> sum-field name (str "-total") keyword)       
+        total (reduce + (for [c (READ vpath)]
+                         (if-let [c (sum-field c)]
+                           #?(:cljs (js/parseInt c) :clj (Integer/parseInt c))
+                           0)))]
+    (UPDATE [sum-key] (constantly total))
+    [:tr [:td.form-group.total {:col-span 2}
+          [:label "Total"]
+          [:div.input-group
+           [:span.input-group-addon "$"]
+           [:input {:type "text"
+                    :disabled true
+                    :value (or (READ [sum-key]) "")}]]]]))
+
 (defn multi-table [{:keys [READ UPDATE] :as fn-map}
-                   {:keys [label id subtext columns min-rows vpath sum-field disabled]
+                   {:keys [label id subtext columns min-rows vpath sum-field disabled style-classes]
                     :or {id "generic-id"
                          subtext nil
                          vpath [(keyword id)]
-                         min-rows 1}
-                    :as m}]
-  (let [row-template (into {} (for [c columns] [(c :key) nil]))
+                         min-rows 1} :as m}]
+  (let [row-template (zipmap (map :key columns) (repeat nil))
         sub (when subtext
               [:small.form-text.text-muted {:id (str "sub_" id)} subtext])
         _init-table! (when (< (count (READ vpath)) min-rows)
                        (UPDATE vpath add-row row-template))
-        headers [:thead (into [:tr] (for [c columns] [:th {:class (when (:disabled c) "disabled")}(:title c)]))]
-        tbody-base (into [:tbody] (for [[i m] (map-indexed vector (READ vpath))]
-                               (into [:tr]
-                                     (for [c columns]
-                                       (let [nameval (str (shared/idify (:title c)))
-                                             nameval_num (str nameval "_" i)
-                                             if-checkbox (fn [v &[e]] (if (= "checkbox" (:input-type c)) v e))
-                                             multi-vpath (conj vpath i (:key c))
-                                             on-change-function
-                                             (fn [e]
-                                               (UPDATE multi-vpath
-                                                (if-checkbox (constantly (-> e .-target .-checked))
-                                                  (constantly (shared/get-value-from-change e)))))]
-                                         [:td {:class [nameval nameval_num (:column-class c)]}
-                                          [:label.custom-control.custom-checkbox
-                                           [(if (= "textarea" (:input-type c)) :textarea.textarea
-                                                :input)
-                                            {:type (or (:input-type c) "text")
-                                             :class [(:input-class c)
-                                                     (if-checkbox "custom-control-input")
-                                                     (when (:disabled c) "disabled")]
-                                             :disabled (or (:disabled c) disabled)
-                                             :placeholder (c :placeholder)
-                                             :default-value (c :default-value)
-                                             :on-change on-change-function
-                                             :name nameval
-                                             :value (READ multi-vpath)}]
-                                           (if-checkbox [:span.custom-control-indicator])]])))))
-        tbody (if-not sum-field tbody-base
-                      (let [sum-key (-> sum-field name (str "-total") keyword)
-                            sum-val (READ [sum-key])
-                            total (apply + (for [c (READ vpath)]
-                                             #?(:cljs (if-let [c (sum-field c)]
-                                                        (js/parseInt c)
-                                                        0)
-                                                :clj (if-let [c (sum-field c)]
-                                                       (Integer/parseInt c)
-                                                       0))))]
-                        (UPDATE [sum-key] (constantly total))
-                        (conj tbody-base
-                              [:tr [:td.form-group.total {:col-span 2}
-                                    [:label "Total"]
-                                    [:div.input-group
-                                     [:span.input-group-addon "$"]
-                                     [:input
-                                      {:type "text"
-                                       :disabled true
-                                       :value sum-val}]]]])))
-        add-button [:a.btn.btn-success
-                    {:on-click #(UPDATE vpath add-row row-template)}
-                    [:i.fa.fa-plus]]
-        delete-button [:a.btn.btn-danger
-                       {:on-click #(UPDATE vpath delete-row min-rows)}
-                       [:i.fa.fa-minus]]]
+
+        universals {:vpath vpath :fn-map fn-map :disabled disabled}
+        headers [:thead [:tr
+                         [:<> (for [{:keys [disabled title]} columns]
+                                [:th {:class (str disabled) :key title}
+                                 title])]]]
+        tbody [:tbody
+               [:<> (for [i (range (count (READ vpath)))]
+                      [:tr {:key i}
+                       [:<> (for [c columns]
+                              (make-column i c universals))]])]
+               (when sum-field [sum-field-component sum-field universals])]]
+    
     [:div.multi-table
-     (into [:table.table.is-striped.is-fullwidth.is-hoverable
-            headers
-            tbody])
-     (when-not disabled
-       [:div.control-buttons add-button delete-button])]))
+     [:table.table {:class style-classes}
+      headers
+      tbody 
+      (when-not disabled
+        [:div.control-buttons
+         (make-add-button UPDATE vpath row-template)
+         (make-delete-button UPDATE vpath min-rows)])]]))

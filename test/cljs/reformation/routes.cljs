@@ -14,9 +14,6 @@
 (secretary/defroute applicant-route "/applicant" []
   (session/put! :page :app))
 
-;; (secretary/defroute status-route "/status" []
-;;   (session/put! :page :status))
-
 (secretary/defroute review-route "/review" []
   (session/put! :page :review))
 

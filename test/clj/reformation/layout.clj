@@ -52,9 +52,7 @@
 (defn cljs-includes []
   [:div
    (hp/include-js (context-path script-path "app.js") ;; must precede the goog.require
-                  (context-path assets-path "jquery/jquery.min.js")
-                  (context-path assets-path "tether/dist/js/tether.min.js")
-                  (context-path assets-path "bootstrap/js/bootstrap.min.js"))
+)
    [:script {:type "text/javascript"} "goog.require('reformation.app')"]])
 
 (defn hiccup-render-cljs-base
