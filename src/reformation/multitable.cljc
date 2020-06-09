@@ -80,7 +80,7 @@
                     :value (or (READ [sum-key]) "")}]]]]))
 
 (defn multi-table [{:keys [READ UPDATE] :as fn-map}
-                   {:keys [label id subtext columns min-rows vpath sum-field disabled]
+                   {:keys [label id subtext columns min-rows vpath sum-field disabled style-classes]
                     :or {id "generic-id"
                          subtext nil
                          vpath [(keyword id)]
@@ -104,7 +104,7 @@
                (when sum-field [sum-field-component sum-field universals])]]
     
     [:div.multi-table
-     [:table.table.is-striped.is-fullwidth.is-hoverable
+     [:table.table {:class style-classes}
       headers
       tbody 
       (when-not disabled

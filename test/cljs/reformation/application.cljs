@@ -55,6 +55,7 @@
                                 :id :mymulti
                                 :required? true
                                 :type :multi-table
+                                :style-classes ["is-striped" "is-fullwidth" "is-hoverable"]
                                 :min-rows 2
                                 :subtext "Indicate any expenses involved in carrying out your request, including a reason for each expense"
                                 :value-path [:my-multitable]
