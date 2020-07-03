@@ -177,14 +177,14 @@ An expandable table.  A common task for forms is a list of an indefinite number 
 **** =:min-rows= The minimum acceptable number of rows.  Not required.
 **** =:sum-field= the name of the field to sum
 **** =:columns= a vector of maps (?).  Each column is represented by a map with keys:
-***** =:key=
-***** =:title= 
-***** =:input-type=
-***** =:column-class=
-***** =:input-class=
-***** =:disabled=
-***** =:placeholder=
-***** =:default-value=     --------------also add radio support to multitable
+***** =:key= the =key= attribute React uses to order the columns.  If none is provided, =:title= will be used
+***** =:title= Title of the column
+***** =:input-type= The input element.  All elements used outside of multitable (except =:file=, =:togglebox=, and 
+***** =:column-class= is added to the =:class= of the column
+***** =:input-class= is added to the =:class= of the input elements
+***** =:disabled= Set this to =true= to disable the column.  Defaults to =false=
+***** =:placeholder= For text inputs, the =placeholder= attribute
+***** =:default-value= For text inputs, the initial value
 *** hidden
 
 ** TODO "required" on regular input

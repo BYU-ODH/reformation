@@ -14,7 +14,8 @@
                      :compiler {:output-to "test/resources/public/css/style.css"
                                 :pretty-print? true}}]}
 
-  :codox {:output-path "docs"}
+  :codox {:output-path "docs"
+          :source-paths ["src"]}
   :profiles {:dev {:jvm-opts ["-server" "-Dconf=.lein-env"]
                    :resource-paths ["test/resources" "test/target/cljsbuild"]
                    :target-path "test/target/"

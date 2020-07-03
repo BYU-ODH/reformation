@@ -2,8 +2,11 @@
   (:require [reformation.multitable :refer [multi-table] :as mt]
             [reformation.fileupload :refer [file-upload]]
             [reformation.shared :as shared]
+            [reformation.validation :as vali]
             #?(:cljs [reagent.core :refer [atom]])
-            [clojure.string :as str]))
+            [clojure.string :as str]
+
+            ))
 (declare tinput render-application render-review)
 
 (defn map-structure
@@ -122,7 +125,6 @@
     [:input {:class (into [(last valpath)] style-classes)
              :type "checkbox"
              :disabled disabled
-             :checked checked?
              :on-change toggle-fn}]))
 
 (defn checkset
@@ -169,58 +171,58 @@
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
   [{:keys [READ UPDATE] :as fn-map} valpath & [opt-map]]
   (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden style-classes contingent]
-            :or {id (str/join " " (map name valpath))
-                 type "text"}} opt-map
-           {:keys [limit enforce?]} char-count
-           {:keys [field-key contingent-fn]} contingent
-           _init (when (and default-value (not (READ valpath)))
-                   (UPDATE valpath (constantly default-value)))
-           input-value (or (READ valpath) default-value)
-           changefn1 (fn [e] (UPDATE valpath #(shared/get-value-from-change e)))
-           validation-function (when-let [vf validation-function]
-                                 (to-validation vf invalid-feedback))
-           changefn (cond
-                      validation-function (fn [e] (doto e changefn1 validation-function))
-                      enforce? (fn [e]
-                                 (let [v (shared/get-value-from-change e)]
-                                   (cond
-                                     (= limit (dec (count v))) identity
-                                     (< limit (count v)) #(UPDATE valpath (constantly (apply str (take limit v))))
-                                     :default (changefn1 e))))
-                      :default changefn1)
-           input-map (merge {:type type
-                             :id id
-                             :name id
-                             :on-change changefn
-                             :default-value default-value
-                             :value input-value}
-                            (when style-classes
-                              {:class style-classes})
-                            (when disabled
-                              {:disabled disabled})
-                            (when required?
-                              {:required true}))
-           invalid-feedback (when invalid-feedback
-                              [:div.invalid-feedback invalid-feedback])
-           input (case type
-                   :radio [radio
-                           (merge (select-keys opt-map [:options :required?])
+         :or {id (str/join " " (map name valpath))
+              type "text"}} opt-map
+        {:keys [limit enforce?]} char-count
+        {:keys [field-key contingent-fn]} contingent
+        _init (when (and default-value (not (READ valpath)))
+                (UPDATE valpath (constantly default-value)))
+        input-value (or (READ valpath) default-value)
+        changefn1 (fn [e] (UPDATE valpath #(shared/get-value-from-change e)))
+        validation-function (when-let [vf validation-function]
+                              (to-validation vf invalid-feedback))
+        changefn (cond
+                   validation-function (fn [e] (doto e changefn1 validation-function))
+                   enforce? (fn [e]
+                              (let [v (shared/get-value-from-change e)]
+                                (cond
+                                  (= limit (dec (count v))) identity
+                                  (< limit (count v)) #(UPDATE valpath (constantly (apply str (take limit v))))
+                                  :default (changefn1 e))))
+                   :default changefn1)
+        input-map (merge {:type type
+                          :id id
+                          :name id
+                          :on-change changefn
+                          :default-value default-value
+                          :value input-value}
+                         (when style-classes
+                           {:class style-classes})
+                         (when disabled
+                           {:disabled disabled})
+                         (when required?
+                           {:required true}))
+        invalid-feedback (when invalid-feedback
+                           [:div.invalid-feedback invalid-feedback])
+        input (case type
+                :radio [radio
+                        (merge (select-keys opt-map [:options :required?])
 
-                                  {:on-change (fn [& args]
-                                                (apply changefn args))
-                                   :id id})]
+                               {:on-change (fn [& args]
+                                             (apply changefn args))
+                                :id id})]
 
-                   :select [select-box (merge (select-keys opt-map [:options :required?])
-                                              {:on-change changefn
-                                               :id id})]
-                   :multi-table [multi-table fn-map opt-map]
-                   :textarea [text-area (assoc input-map :changefn changefn)]
-                   :togglebox [togglebox (merge (assoc fn-map :valpath valpath) opt-map)]
-                   :checkbox [checkbox (assoc fn-map :valpath valpath) input-map]
-                   :file [file-upload opt-map]
-                   :hidden [hidden-input input-map]
-                   ;; default
-                   [:input.form-control input-map])]
+                :select [select-box (merge (select-keys opt-map [:options :required?])
+                                           {:on-change changefn
+                                            :id id})]
+                :multi-table [multi-table fn-map opt-map]
+                :textarea [text-area (assoc input-map :changefn changefn)]
+                :togglebox [togglebox (merge (assoc fn-map :valpath valpath) opt-map)]
+                :checkbox [checkbox (assoc fn-map :valpath valpath) input-map]
+                :file [file-upload opt-map]
+                :hidden [hidden-input input-map]
+                ;; default
+                [:input.form-control input-map])]
     (case type
       :hidden input
       [:div.field
@@ -239,32 +241,23 @@
   (try (do (deref a) true)
        (catch #?(:clj Exception :cljs js/Error) _ false)))
 
-(defmulti render-application
-  "Render an (default) editable application, receiving either an atom or a CRUD-map.
+(defn render-application [fm fn-map & [pathv]]
+  (cond (atom? fn-map)
+    (let [R (partial get-in @fn-map)
+          U (partial swap! fn-map update-in)
+          fn-map {:READ R :UPDATE U}]
+      (render-application fm fn-map pathv))
+    
+    (map? fn-map)
+    (for [[k v] (partition 2 fm)
+          :let [path (conj (vec pathv) k)]]
+      (cond
+        (sequential? v) (render-application v fn-map path)
+        (map? v) ^{:key v} [tinput fn-map path v]
 
-  The map requires analogous fns which will receive pathv and (if applicable) new-val
-     `{:READ get-in
-       :UPDATE update-in}`"
-  (fn [_fm atom-or-map & [pathv]]
-    (cond
-      (map? atom-or-map) :map
-      (atom? atom-or-map) :atom
-      :default (throw (ex-info "Unsupported arg for atom-or-map" {:atom-or-map atom-or-map})))))
+        :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)]))
+    :else (throw (ex-info "Unsupported arg for atom-or-map" {:atom-or-map fn-map}))))
 
-(defmethod render-application :map
-  [fm {:keys [READ UPDATE] :as fn-map} & [pathv]]
-  (for [[k v] (partition 2 fm) :let [path (conj (vec pathv) k)]]
-    (cond
-      (sequential? v) (render-application v fn-map path)
-      (map? v) ^{:key v} [tinput fn-map path v]
-      :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)])))
-
-(defmethod render-application :atom
-  [fm A & [pathv]]
-  (let [R (partial get-in @A)
-        U (partial swap! A update-in)
-        fn-map {:READ R :UPDATE U}]
-    (render-application fm fn-map pathv)))
 
 (defn render-review
   "Parse the application map and render the review based on the ordered `schema` of the application, with values in `application` expected to be as given by `render-application`.

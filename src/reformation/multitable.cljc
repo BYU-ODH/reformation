@@ -23,7 +23,9 @@
           [:label {:for v} disp]]]))))
 
 (defn make-column [i {:keys [title input-type input-class disabled
-                             placeholder default-value column-class] :as c}
+                             placeholder default-value column-class]
+                      k :key
+                      :as c}
                    {vpath :vpath table-disabled :disabled
                     {:keys [READ UPDATE]} :fn-map :as universals}]
   (let [is-checkbox? (= "checkbox" input-type)
@@ -45,13 +47,12 @@
                                  (println (str "v is nil:" (= v nil)) )
                                  (or v default-value))}]
 
-    [:td {:key title :class [column-class nameval (str nameval "_" i)]}
-     [:label.custom-control.custom-checkbox
-      (cond
-        (= "textarea" input-type) [:textarea.textarea basic-attr-map]
-        (  =  "radio" input-type) (make-radio c basic-attr-map)
-        (not (#{"textarea" "radio"} input-type)) [:input basic-attr-map])
-      (if is-checkbox? [:span.custom-control-indicator])]]))
+    [:td {:key (or k title) :class [column-class nameval (str nameval "_" i)]}
+     (if is-checkbox? [:label.custom-control.custom-checkbox])
+     (cond (= "textarea" input-type) [:textarea.textarea basic-attr-map]
+           (= "radio" input-type) (make-radio c basic-attr-map)
+           (not (#{"textarea" "radio"} input-type)) [:input basic-attr-map])
+     (if is-checkbox? [:span.custom-control-indicator])]))
 
 (defn make-add-button [UPDATE vpath row-template]
   [:a.btn.btn-success
@@ -106,8 +107,8 @@
     [:div.multi-table
      [:table.table {:class style-classes}
       headers
-      tbody 
-      (when-not disabled
-        [:div.control-buttons
-         (make-add-button UPDATE vpath row-template)
-         (make-delete-button UPDATE vpath min-rows)])]]))
+      tbody]
+     (when-not disabled
+       [:div.control-buttons
+        (make-add-button UPDATE vpath row-template)
+        (make-delete-button UPDATE vpath min-rows)])]))

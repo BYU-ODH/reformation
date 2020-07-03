@@ -24,7 +24,9 @@
 
 
 (defn form-component []
-  [:div (rfc/render-application easy-form example-atom)])
+  [:div
+   [rfc/render-application easy-form example-atom]
+   #_(rfc/render-application easy-form example-atom)])
 
 
 
