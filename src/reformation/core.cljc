@@ -71,21 +71,20 @@
                [:label {:for idsym} disp]])))))
 
 
-(defn text-area [opt-map]
+(defn text-area [opt-map {:keys [READ UPDATE valpath]}]
   (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count required style-classes]} opt-map
         {:keys [limit enforce?]} char-count
         
-        textarea 
-        [:textarea.form-control {:id id
-                                 :class style-classes
-                                 :name id 
-                                 :rows 5
-                                 :default-value input-value
-                                 :value value
-                                 :on-change changefn
-                                 :required required
-                                 :placeholder placeholder
-                                 :disabled disabled}]]
+        textarea [:textarea.form-control {:id id
+                                          :class style-classes
+                                          :name id 
+                                          :rows 5
+                                          :default-value input-value
+                                          :value value
+                                          :on-change changefn
+                                          :required required
+                                          :placeholder placeholder
+                                          :disabled disabled}]]
     [:div.form-group
      textarea
      (when char-count
@@ -216,7 +215,7 @@
                                            {:on-change changefn
                                             :id id})]
                 :multi-table [multi-table fn-map opt-map]
-                :textarea [text-area (assoc input-map :changefn changefn)]
+                :textarea [text-area (assoc input-map :changefn changefn :char-count char-count)]
                 :togglebox [togglebox (merge (assoc fn-map :valpath valpath) opt-map)]
                 :checkbox [checkbox (assoc fn-map :valpath valpath) input-map]
                 :file [file-upload opt-map]

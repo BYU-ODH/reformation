@@ -52,7 +52,9 @@
                 :mytext {:type :text
                          :label "My text"}
                 :mytextarea {:type :textarea
-                             :label "My textarea"}
+                             :label "My textarea"
+                             :char-count {:limit 500
+                                          :enforce? true}}
                 :mymultitable  {:label "My multitable"
                                 :id :mymulti
                                 :required? true
