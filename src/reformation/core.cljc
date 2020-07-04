@@ -4,9 +4,8 @@
             [reformation.shared :as shared]
             [reformation.validation :as vali]
             #?(:cljs [reagent.core :refer [atom]])
-            [clojure.string :as str]
+            [clojure.string :as string]))
 
-            ))
 (declare tinput render-application render-review)
 
 (defn map-structure
@@ -71,8 +70,8 @@
                [:label {:for idsym} disp]])))))
 
 
-(defn text-area [opt-map {:keys [READ UPDATE valpath]}]
-  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count required style-classes]} opt-map
+(defn text-area [opt-map ] #_{:keys [READ UPDATE valpath]}
+  (let [{:keys [id input-value placeholder disabled label valpath value char-count on-change required style-classes]} opt-map
         {:keys [limit enforce?]} char-count
         
         textarea [:textarea.form-control {:id id
@@ -81,7 +80,7 @@
                                           :rows 5
                                           :default-value input-value
                                           :value value
-                                          :on-change changefn
+                                          :on-change on-change
                                           :required required
                                           :placeholder placeholder
                                           :disabled disabled}]]
@@ -128,7 +127,7 @@
 
 (defn checkset
   "If a checkbox value is nil, set it; otherwise, return it."
-  [{:keys [READ UPDATE  valpath default-value]}]
+  [{:keys [READ UPDATE valpath default-value]}]
   (let [v (READ valpath)
         dv (boolean default-value)]
     (if (boolean? v)
@@ -166,20 +165,25 @@
              :name id :id id
              :value value}]))
 
+(defn invalid-feedback-el [invalid-feedback]
+   [:div.invalid-feedback invalid-feedback])
+
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
   [{:keys [READ UPDATE] :as fn-map} valpath & [opt-map]]
-  (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden style-classes contingent]
-         :or {id (str/join " " (map name valpath))
+  (let [{:keys [char-count contingent default-value disabled hidden id invalid-feedback required? style-classes subtext type validation-function]
+         :or {id (string/join " " (map name valpath))
               type "text"}} opt-map
         {:keys [limit enforce?]} char-count
         {:keys [field-key contingent-fn]} contingent
         _init (when (and default-value (not (READ valpath)))
                 (UPDATE valpath (constantly default-value)))
         input-value (or (READ valpath) default-value)
+
         changefn1 (fn [e] (UPDATE valpath #(shared/get-value-from-change e)))
         validation-function (when-let [vf validation-function]
                               (to-validation vf invalid-feedback))
+
         changefn (cond
                    validation-function (fn [e] (doto e changefn1 validation-function))
                    enforce? (fn [e]
@@ -189,39 +193,29 @@
                                   (< limit (count v)) #(UPDATE valpath (constantly (apply str (take limit v))))
                                   :default (changefn1 e))))
                    :default changefn1)
-        input-map (merge {:type type
-                          :id id
-                          :name id
-                          :on-change changefn
-                          :default-value default-value
-                          :value input-value}
-                         (when style-classes
-                           {:class style-classes})
-                         (when disabled
-                           {:disabled disabled})
-                         (when required?
-                           {:required true}))
-        invalid-feedback (when invalid-feedback
-                           [:div.invalid-feedback invalid-feedback])
+        opt-map (merge opt-map {:name id
+                                :on-change changefn
+                                :value input-value
+                                :required required?})
+        
+;autres attributes for input-map: :options, :required? :on-change fn-map char-count
+;
+        
+
+ 
         input (case type
-                :radio [radio
-                        (merge (select-keys opt-map [:options :required?])
-
-                               {:on-change (fn [& args]
-                                             (apply changefn args))
-                                :id id})]
-
-                :select [select-box (merge (select-keys opt-map [:options :required?])
-                                           {:on-change changefn
-                                            :id id})]
+                :radio [radio opt-map]
+                :select [select-box opt-map]
                 :multi-table [multi-table fn-map opt-map]
-                :textarea [text-area (assoc input-map :changefn changefn :char-count char-count)]
                 :togglebox [togglebox (merge (assoc fn-map :valpath valpath) opt-map)]
-                :checkbox [checkbox (assoc fn-map :valpath valpath) input-map]
                 :file [file-upload opt-map]
-                :hidden [hidden-input input-map]
+                :textarea [text-area opt-map]
+                :checkbox [checkbox (assoc fn-map :valpath valpath) opt-map]
+
+                :hidden [hidden-input opt-map]
                 ;; default
-                [:input.form-control input-map])]
+                [:input.form-control opt-map])]
+
     (case type
       :hidden input
       [:div.field
@@ -232,7 +226,16 @@
          [:p.help subtext])
        [:div.control      
         input
-        invalid-feedback]])))
+        (when invalid-feedback
+          [:div.invalid-feedback invalid-feedback])]])))
+
+
+
+
+
+
+
+
 
 (defn atom?
   "ducktype an atom as something dereferable"
