@@ -34,13 +34,13 @@
    label-text])
 
 (defn select-box [m]
-  (let [{:keys [options id on-change required? style-classes]
+  (let [{:keys [options id on-change required style-classes]
          :or {id "generic-select"
               options ["No :options provided"]}} m]
     (into [:select.form-control {:class style-classes
                                  :id id
                                  :name id
-                                 :required required?
+                                 :required required
                                  :on-change on-change}]
           (for [{:keys [content value] :as o} options]
             (let [[c v] [(or content value o) (or value content o)]]
@@ -134,7 +134,6 @@
       v
       (UPDATE valpath (constantly dv)))))
 
-
 (defn togglebox
   "Builds a group which, when toggled, displays its `:content`"
   [{:keys [label content valpath READ UPDATE default-value override-inline? open-height disabled style-classes]
@@ -193,16 +192,12 @@
                                   (< limit (count v)) #(UPDATE valpath (constantly (apply str (take limit v))))
                                   :default (changefn1 e))))
                    :default changefn1)
+
         opt-map (merge opt-map {:name id
                                 :on-change changefn
                                 :value input-value
                                 :required required?})
         
-;autres attributes for input-map: :options, :required? :on-change fn-map char-count
-;
-        
-
- 
         input (case type
                 :radio [radio opt-map]
                 :select [select-box opt-map]
@@ -211,7 +206,6 @@
                 :file [file-upload opt-map]
                 :textarea [text-area opt-map]
                 :checkbox [checkbox (assoc fn-map :valpath valpath) opt-map]
-
                 :hidden [hidden-input opt-map]
                 ;; default
                 [:input.form-control opt-map])]
