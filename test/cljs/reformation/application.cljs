@@ -1,4 +1,4 @@
-(ns reformation.application
+(ns ^:figwheel-always reformation.application
   "The application with which users fill out the form to make or edit an application"
   (:require [reagent.core :as r]
             [reagent.session :as session]
@@ -42,7 +42,10 @@
 
 (def FILE (r/atom nil))
 
-(def test-form [:myhidden-text {:type :hidden
+(def test-form [:mycustom {:type :custom
+                           :fn (fn [fn-map opt-map]
+                                 [:input {:on-change (:on-change opt-map)}])}
+                :myhidden-text {:type :hidden
                                 :default-value "whisper"}
                 :mydefault-text {:type :text
                                  :label "default text"
@@ -54,7 +57,10 @@
                 :mytextarea {:type :textarea
                              :label "My textarea"
                              :char-count {:limit 500
-                                          :enforce? true}}
+                                          :enforce? true}
+                             :style-classes ["dumb-class" "other-class"]
+
+                             }
                 :mymultitable  {:label "My multitable"
                                 :id :mymulti
                                 :required? true

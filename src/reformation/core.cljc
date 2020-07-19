@@ -1,12 +1,15 @@
 (ns reformation.core
-  (:require [reformation.multitable :refer [multi-table] :as mt]
+  (:require [reformation.components :refer [checkbox select-box radio text-area]]
+            [reformation.multitable :refer [multi-table] :as mt]
             [reformation.fileupload :refer [file-upload]]
             [reformation.shared :as shared]
             [reformation.validation :as vali]
+            [clojure.spec.alpha :as s]
             #?(:cljs [reagent.core :refer [atom]])
             [clojure.string :as string]))
 
 (declare tinput render-application render-review)
+
 
 (defn map-structure
   "Produce a map with the same key-structure from the vector"
@@ -33,66 +36,7 @@
   [:label.label {:for for-id}
    label-text])
 
-(defn select-box [m]
-  (let [{:keys [options id on-change required style-classes]
-         :or {id "generic-select"
-              options ["No :options provided"]}} m]
-    (into [:select.form-control {:class style-classes
-                                 :id id
-                                 :name id
-                                 :required required
-                                 :on-change on-change}]
-          (for [{:keys [content value] :as o} options]
-            (let [[c v] [(or content value o) (or value content o)]]
-              [:option {:value v}
-               (:content c)])))))
 
-
-(defn radio [{:keys [options on-change]}]
-  (into [:div.form-group]
-        (let [nom `name#]
-          (for [o options]
-            (let [[v disp] (if (map? o)
-                             (let [{:keys [value contents]} o]
-                               [(or value contents)
-                                (or contents value)])
-                             [o o])
-
-                  v (cond (map? o) (or (:value o)
-                                       (:contents o))
-                          :default o)
-                  disp (cond (map? o) (or (:contents o)
-                                          (:value o))
-                             :default o)
-                  idsym (gensym v)]
-              [:div [:input.form-control {:id idsym :type "radio" :name nom :value v
-                                          :on-change on-change}]
-               [:label {:for idsym} disp]])))))
-
-
-(defn text-area [opt-map ] #_{:keys [READ UPDATE valpath]}
-  (let [{:keys [id input-value placeholder disabled label valpath value char-count on-change required style-classes]} opt-map
-        {:keys [limit enforce?]} char-count
-        
-        textarea [:textarea.form-control {:id id
-                                          :class style-classes
-                                          :name id 
-                                          :rows 5
-                                          :default-value input-value
-                                          :value value
-                                          :on-change on-change
-                                          :required required
-                                          :placeholder placeholder
-                                          :disabled disabled}]]
-    [:div.form-group
-     textarea
-     (when char-count
-       (let [ccount (count value)
-             class (if (< ccount limit)
-                     "conforms"
-                     "exceeded")]
-         [:div.char-limit {:class class}
-          (str ccount "/" limit " characters")]))]))
 
 (defn validation-function?
   [f]
@@ -111,19 +55,6 @@
                      (if (f v)
                        (.setCustomValidity dom-element "")
                        (.setCustomValidity dom-element error-message)))) {:validation-function? true})))
-
-
-(defn checkbox
-  "Create a checkbox"
-  [{:keys [READ UPDATE valpath] :as fn-map}
-   {:keys [validation-function disabled style-classes] :as input-map}]
-  (let [checked? (READ valpath)
-        toggle-fn (comp (or validation-function identity)
-                        #(UPDATE valpath not))]
-    [:input {:class (into [(last valpath)] style-classes)
-             :type "checkbox"
-             :disabled disabled
-             :on-change toggle-fn}]))
 
 (defn checkset
   "If a checkbox value is nil, set it; otherwise, return it."
@@ -167,14 +98,20 @@
 (defn invalid-feedback-el [invalid-feedback]
    [:div.invalid-feedback invalid-feedback])
 
+
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
-  [{:keys [READ UPDATE] :as fn-map} valpath & [opt-map]]
-  (let [{:keys [char-count contingent default-value disabled hidden id invalid-feedback required? style-classes subtext type validation-function]
+  [fn-map valpath & [opt-map]]
+  (let [{:keys [READ UPDATE]} fn-map
+
+        {:keys [attrs char-count contingent default-value disabled
+                hidden id invalid-feedback required? subtext type validation-function]
          :or {id (string/join " " (map name valpath))
-              type "text"}} opt-map
+              type "text"}}                         opt-map
+        
         {:keys [limit enforce?]} char-count
         {:keys [field-key contingent-fn]} contingent
+
         _init (when (and default-value (not (READ valpath)))
                 (UPDATE valpath (constantly default-value)))
         input-value (or (READ valpath) default-value)
@@ -200,20 +137,22 @@
         
         input (case type
                 :radio [radio opt-map]
-                :select [select-box opt-map]
-                :multi-table [multi-table fn-map opt-map]
+                :select [select-box fn-map opt-map ]
+                :multi-table [multi-table fn-map opt-map ]
                 :togglebox [togglebox (merge (assoc fn-map :valpath valpath) opt-map)]
                 :file [file-upload opt-map]
                 :textarea [text-area opt-map]
                 :checkbox [checkbox (assoc fn-map :valpath valpath) opt-map]
                 :hidden [hidden-input opt-map]
+                :custom [(opt-map :fn) fn-map opt-map]
+                
                 ;; default
                 [:input.form-control opt-map])]
 
     (case type
       :hidden input
       [:div.field
-       {:class [(str id "_group") (when hidden "hidden")]}
+       {:class [(str id "_group") (when (opt-map :hidden) "hidden")]}
        [render-label {:for-id id
                       :label-text  (:label opt-map id)}]
        (when subtext
@@ -222,11 +161,6 @@
         input
         (when invalid-feedback
           [:div.invalid-feedback invalid-feedback])]])))
-
-
-
-
-
 
 
 
