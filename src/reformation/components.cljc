@@ -5,11 +5,11 @@
 
 ;-----------------------------------------------
 
-
 (s/def ::fn-map (s/keys :req-un [::READ ::UPDATE ::valpath]))
+(defn mk-spec [opt-map-spec]
+  (s/cat :fn-map ::fn-map :opt-map opt-map-spec))
 
 
-map?
 (defn checkbox
   "Create a checkbox"
   [{:keys [READ UPDATE valpath]}
@@ -23,9 +23,7 @@ map?
              :on-change toggle-fn}]))
 
 
-
-[::options]
-(defn select-box
+(defn select
   [fn-map m]
   (let [{:keys [options id on-change required style-classes disabled]
          :or {id "generic-select"
@@ -41,8 +39,7 @@ map?
               [:option {:value v}
                (:content c)])))))
 
-[::options]
-(defn radio [{:keys [options on-change disabled]}]
+(defn radio [fn-map {:keys [options on-change disabled]}]
   (into [:div.form-group]
         (let [nom`name#]
           (for [o options]
@@ -63,8 +60,9 @@ map?
                                           :on-change on-change}]
                [:label {:for idsym} disp]])))))
 
-[]
-(defn text-area [opt-map] #_{:keys [READ UPDATE valpath]}
+
+
+(defn textarea [fn-map opt-map] 
   (let [{:keys [id input-value placeholder disabled value char-count on-change required style-classes]} opt-map
         {:keys [limit enforce?]} char-count
         
@@ -87,3 +85,28 @@ map?
                      "exceeded")]
          [:div.char-limit {:class class}
           (str ccount "/" limit " characters")]))]))
+
+
+(defn hidden-input 
+  "Generate a hidden input"
+  [fn-map input-map]
+  (let [{:keys [value id]} input-map]
+    [:input {:type "hidden"
+             :name id
+             :id id
+             :value value}]))
+
+(def components {:checkbox   {:spec map?
+                              :fn checkbox}
+
+                 :select {:spec (s/keys :req-un [::options])
+                              :fn select}
+
+                 :radio      {:spec (s/keys :req-un [::options])
+                              :fn radio}
+
+                 :textarea   {:spec map?
+                              :fn textarea}
+
+                 :hidden     {:spec map?
+                              :fn hidden-input}})

@@ -1,5 +1,5 @@
 (ns reformation.core
-  (:require [reformation.components :refer [checkbox select-box radio text-area]]
+  (:require [reformation.components :refer [components]]
             [reformation.multitable :refer [multi-table] :as mt]
             [reformation.fileupload :refer [file-upload]]
             [reformation.shared :as shared]
@@ -7,6 +7,14 @@
             [clojure.spec.alpha :as s]
             #?(:cljs [reagent.core :refer [atom]])
             [clojure.string :as string]))
+
+(def dev-mode (atom true))
+
+(defn set-dev-mode!
+  ([arg]
+   (reset! dev-mode (case arg
+                      :on true
+                      :off false))))
 
 (declare tinput render-application render-review)
 
@@ -87,22 +95,26 @@
                 (assoc transition-style :height (if checked? open-height "0em")))}
       (render-application content opt-map)]]))
 
-(defn hidden-input 
-  "Generate a hidden input"
-  [input-map]
-  (let [{:keys [value id]} input-map]
-    [:input {:type "hidden"
-             :name id :id id
-             :value value}]))
+
 
 (defn invalid-feedback-el [invalid-feedback]
    [:div.invalid-feedback invalid-feedback])
+
+(defn grab [kw og]
+  (let [f (-> components kw :fn)]
+    (if-not @dev-mode
+      f
+      (fn [& args]
+        (s/explain (-> components kw :spec) og)
+        (apply f args)))))
 
 
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
   [fn-map valpath & [opt-map]]
-  (let [{:keys [READ UPDATE]} fn-map
+  (let [og opt-map  ;og for "original"
+
+        {:keys [READ UPDATE]} fn-map
 
         {:keys [attrs char-count contingent default-value disabled
                 hidden id invalid-feedback required? subtext type validation-function]
@@ -134,20 +146,25 @@
                                 :on-change changefn
                                 :value input-value
                                 :required required?})
+        fn-map (assoc fn-map :valpath valpath)
         
-        input (case type
-                :radio [radio opt-map]
-                :select [select-box fn-map opt-map ]
-                :multi-table [multi-table fn-map opt-map ]
-                :togglebox [togglebox (merge (assoc fn-map :valpath valpath) opt-map)]
-                :file [file-upload opt-map]
-                :textarea [text-area opt-map]
-                :checkbox [checkbox (assoc fn-map :valpath valpath) opt-map]
-                :hidden [hidden-input opt-map]
-                :custom [(opt-map :fn) fn-map opt-map]
+        
+        input  (case type
+                   :checkbox [(grab :checkbox og) fn-map opt-map]
+                   :select   [(grab :select og) fn-map opt-map ]
+                   :radio    [(grab :radio og) fn-map opt-map]
+                   :textarea [(grab :textarea og) fn-map opt-map]
+                   :hidden   [(grab :hidden og) fn-map opt-map]
+
+                   :custom [(opt-map :fn) fn-map opt-map]
+                   :multi-table [multi-table fn-map opt-map ]
+                   :togglebox [togglebox (merge fn-map opt-map)]
+                   :file [file-upload opt-map]
+
+
                 
-                ;; default
-                [:input.form-control opt-map])]
+                   ;; default
+                   [:input.form-control opt-map])]
 
     (case type
       :hidden input

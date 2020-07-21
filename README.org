@@ -3,27 +3,37 @@
 auto-generated docs: https://byu-odh.github.io/reformation/
 
 ** Overview
-Reformation is a library for building web forms.  More specifically, the library outputs Clojure data structures that can be easily rendered by Reagent.
+Reformation is a library for building web forms.
 
-Forms are specified by a simple, hiccup-like language.  A form is described by a vector, alternating between keywords and attribute maps.  Each pair represents a form element; the element is named by the keyword, and described by the map of attributes.
-
-`render-application` is the main call you'll be making.  It takes two arguments: a vector describing the form, and a place to store the data(see "Data Storage" below).
-
-** A Small Reformation Example
 #+BEGIN_SRC clojure
 (ns example
  (:require [reformation.core :as rfc]))
 
 (def example-atom (atom nil))
+
 (def easy-form [:example-element {:type :text
                                    :label "Enter some text here"}
 		:example-element2 {:type :checkbox
  		                   :label "Is it true?"}])
 (defn form-component []
   [:div (rfc/render-application easy-form example-atom)])
+
 #+END_SRC
 
-![What it looks like](docs/simpleform.png)
+
+The main entry point for the library is `render-application, whic takes as its first argument a form specification---`easy-form` in the example above.
+
+A form specification is just a vector of pairs.  The first member is a key, the second is a map describing the particular element.
+
+
+#+BEGIN_SRC
+
+[:example-radio {:type :radio
+                 :options [{:content "first choice"}
+		           {:content "second choice"}]}]
+
+#+END_SRC
+
 
 
 ** Data Storage
@@ -186,6 +196,47 @@ An expandable table.  A common task for forms is a list of an indefinite number 
 ***** =:placeholder= For text inputs, the =placeholder= attribute
 ***** =:default-value= For text inputs, the initial value
 *** hidden
+
+
+
+
+
+** Custom form elements
+Reformation ships with some pre-made form elements, but you can specify your own.  
+
+#+BEGIN_SRC
+
+[:example-custom {:type :custom
+                  :fn (fn [fn-map {:keys [label on-change]}]
+		        [:label {:for label}[:input {:on-change on-change 
+
+
+#+END_SRC
+
+
+Simply set `:type` to `:custom`, and provide a render function, and away you go!
+
+The render function is just like any Reagent component function---it returns hiccup.  
+
+Where it gets a bit more involved is the arguments it *receives*.
+
+`[{:keys [READ UPDATE valpath] opt-map}]`
+
+`READ` and `UPDATE` are both functions; `(READ valpath)` will return the value at the path associated with the element, and `(UPDATE valpath f)` works similarly to `update-in`.  
+
+`opt-map` is simply a modified version of the form specification you've already passed in.  The one notable difference is that it includes `on-change`, which is simply
+
+#+BEGIN_SRC
+(defn on-change [event]
+   (UPDATE valpath) (.. event -target -value))
+#+END_SRC
+
+
+
+
+Forms are specified by a simple, hiccup-like language.  A form is described by a vector, alternating between keywords and attribute maps.  Each pair represents a form element; the element is named by the keyword, and described by the map of attributes.
+
+`render-application` is the main call you'll be making.  It takes two arguments: a vector describing the form, and a place to store the data(see "Data Storage" below).
 
 ** TODO "required" on regular input
 ** TODO Format fn for date fields
