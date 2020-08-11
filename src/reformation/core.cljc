@@ -2,7 +2,7 @@
   (:require [reformation.multitable :refer [multi-table] :as mt]
             [reformation.fileupload :refer [file-upload]]
             [reformation.shared :as shared]
-            [reformation.validation :as vali]
+            ;[reformation.validation :as vali]
             #?(:cljs [reagent.core :refer [atom]])
             [clojure.string :as str]
 
