@@ -71,15 +71,19 @@
                [:label {:for idsym} disp]])))))
 
 
-(defn text-area [opt-map]
-  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count required style-classes]} opt-map
+(defn text-area
+  "Renders `:type :textarea` elements. In addition to the usual
+  opts includes optional `:rows` for the html \"rows=\" attribute."
+  [opt-map]
+  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count required style-classes rows]
+         :or {rows 5}} opt-map
         {:keys [limit enforce?]} char-count
         
-        textarea 
+        textarea
         [:textarea.form-control {:id id
                                  :class style-classes
                                  :name id 
-                                 :rows 5
+                                 :rows rows
                                  :default-value input-value
                                  :value value
                                  :on-change changefn
@@ -170,8 +174,9 @@
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
   [{:keys [READ UPDATE] :as fn-map} valpath & [opt-map]]
-  (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden style-classes contingent]
-         :or {id (str/join " " (map name valpath))
+  (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden style-classes contingent name-separator]
+         :or {name-separator "-"
+              id (str/join "-" (map name valpath))
               type "text"}} opt-map
         {:keys [limit enforce?]} char-count
         {:keys [field-key contingent-fn]} contingent

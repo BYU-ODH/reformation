@@ -52,44 +52,46 @@ Toggleboxes are upgraded checkboxes.  They contain their own content, which is o
 
 ***** A Bigger Form
 #+BEGIN_SRC clojure
-(ns example
- (:require [reformation.core :as rfc]))
+  (ns example
+   (:require [reformation.core :as rfc]))
 
-(def test-form [:mytext {:type :text
-                         :label "My text"}
-                :mytextarea {:type :textarea
-                             :label "My textarea"}
-                :mymultitable  {:type :multi-table
-		                :label "My multitable"
-                                :id :mymulti
-                                :required? true
+  (def test-form [:mytext {:type :text
+			   :label "My text"
+			   :name-separator "_"}
+		  :mytextarea {:type :textarea
+			       :label "My textarea"
+			       :rows 5}
+		  :mymultitable  {:type :multi-table
+				  :label "My multitable"
+				  :id :mymulti
+				  :required? true
 
-                                :min-rows 3
-                                :subtext "Indicate any expenses involved in carrying out your research, including a reason for each expense."
-                                :value-path [:my-multitable]
-                                :sum-field :amount
-                                :columns [{:key :item
-                                           :title "Item"}
-                                          {:key :amount
-                                           :title "Amount"
-                                           :input-type "number"}
-                                          {:key :purpose
-                                           :title "Purpose"
-                                           :input-type "textarea"}]}
-                :mytoggle {:type :togglebox
-                           :label "My togglebox"
-                           :content [:test {:type :text :label "My toggled "}]}
-                :mycheckbox {:type :checkbox :label "My checkbox"}
-                :myfileupload {:type :file
-                               :label "My file"
-                               :submit-text "Click or Drop a File Here"
-                               :error-text "Maybe We had an error?"
-                               :submit-fn #(js/alert "Trying to submit:")
-                               :save-fn #(reset! FILE %)                               
-                               :allowed-extensions-f #{"txt"}
-                               :style-classes {:drag-over "dragover"
-                                               :inactive "undragged"
-                                               :have-file "have-file"}}])
+				  :min-rows 3
+				  :subtext "Indicate any expenses involved in carrying out your research, including a reason for each expense."
+				  :value-path [:my-multitable]
+				  :sum-field :amount
+				  :columns [{:key :item
+					     :title "Item"}
+					    {:key :amount
+					     :title "Amount"
+					     :input-type "number"}
+					    {:key :purpose
+					     :title "Purpose"
+					     :input-type "textarea"}]}
+		  :mytoggle {:type :togglebox
+			     :label "My togglebox"
+			     :content [:test {:type :text :label "My toggled "}]}
+		  :mycheckbox {:type :checkbox :label "My checkbox"}
+		  :myfileupload {:type :file
+				 :label "My file"
+				 :submit-text "Click or Drop a File Here"
+				 :error-text "Maybe We had an error?"
+				 :submit-fn #(js/alert "Trying to submit:")
+				 :save-fn #(reset! FILE %)                               
+				 :allowed-extensions-f #{"txt"}
+				 :style-classes {:drag-over "dragover"
+						 :inactive "undragged"
+						 :have-file "have-file"}}])
 #+END_SRC
 
 
