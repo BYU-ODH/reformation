@@ -75,13 +75,13 @@
   "Renders `:type :textarea` elements. In addition to the usual
   opts includes optional `:rows` for the html \"rows=\" attribute."
   [opt-map]
-  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count required style-classes rows]
+  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count required class rows]
          :or {rows 5}} opt-map
         {:keys [limit enforce?]} char-count
         
         textarea
         [:textarea.form-control {:id id
-                                 :class style-classes
+                                 :class class
                                  :name id 
                                  :rows rows
                                  :default-value input-value
@@ -174,7 +174,7 @@
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
   [{:keys [READ UPDATE] :as fn-map} valpath & [opt-map]]
-  (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden style-classes contingent name-separator]
+  (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden style-classes contingent rows name-separator]
          :or {name-separator "-"
               id (str/join "-" (map name valpath))
               type "text"}} opt-map
@@ -206,7 +206,9 @@
                          (when disabled
                            {:disabled disabled})
                          (when required?
-                           {:required true}))
+                           {:required true})
+                         (when rows
+                           {:rows rows}))
         invalid-feedback (when invalid-feedback
                            [:div.invalid-feedback invalid-feedback])
         input (case type
