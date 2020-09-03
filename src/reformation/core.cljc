@@ -275,3 +275,57 @@
   (render-application
    (shared/reviewify schema)
    (atom application)))
+
+(defn editable-input
+  "Takes a schema and displays it for edit."
+  [{:keys [READ UPDATE] :as fn-map} valpath & [opt-map]]
+  (let [{:keys [id required? default-value disabled subtext invalid-feedback char-count hidden contingent rows placeholder name-separator]
+         :or {name-separator "-"
+              id (str/join "-" (map name valpath))
+              type "text"}} opt-map
+        input-value (or (READ valpath) default-value) ;; TODO value that will be changed (label)
+        changefn (fn [e] (UPDATE valpath #(shared/get-value-from-change e)))
+        invalid-feedback (when invalid-feedback
+                           [:div.invalid-feedback invalid-feedback])]
+    [:div.field
+     {:class [(str id "_group") (when hidden "hidden")]}
+     [:input {:label-text (:label opt-map id)}]
+     ;; TODO enter the editable label here
+     ;; TODO enter the editable subtext here 
+     [:input {:disabled true}]])
+  )
+
+(defn initialize-editable-store ;; TODO move function at the beginning of `render-editable` to here
+  ""
+  [fm fn-map & [pathv]]
+  (for [[k v] (partition 2 fm)
+        :let [path (conj (vec pathv) k)]]
+    (cond
+        (sequential? v) (initialize-editable-store v fn-map path)
+        (map? v) ^{:label v} [editable-input fn-map path v]
+        :else [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)]))
+  )
+
+
+(defn render-editable
+  "Take a valid schema (valid meaning it can be used by `render-application` or `render-review`)
+   and make it editable: a front-end UI will enable users to change existing features
+   and submit another valid schema."
+  [fm fn-map & [pathv]]
+  (initialize-editable-store fm fn-map)
+  (cond (atom? fn-map)
+    (let [R (partial get-in @fn-map)
+          U (partial swap! fn-map update-in)
+          fn-map {:READ R :UPDATE U}]
+      (render-editable fm fn-map pathv))
+    
+    (map? fn-map)
+    (for [[k v] (partition 2 fm)
+          :let [path (conj (vec pathv) k)]]
+      (cond
+        (sequential? v) (render-editable v fn-map path)
+        (map? v) ^{:key v} [editable-input fn-map path v]
+
+        :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)]))
+    :else (throw (ex-info "Unsupported arg for atom-or-map" {:atom-or-map fn-map})))
+  )

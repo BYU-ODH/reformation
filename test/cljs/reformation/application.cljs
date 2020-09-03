@@ -118,6 +118,17 @@
       (into [:div.form-contents]
             (rfc/render-application test-form  (data-sources @chosen-datasource)))]]))
 
+(defn generate-editable
+  ""
+  []
+  (let [form-id "needs-validation"]
+    [:div.submission-form 
+     [:form.form-control {:id form-id}
+      (into [:div.form-contents]
+            (rfc/render-editable test-form  (data-sources @chosen-datasource)))]])
+  )
+
+
 (defn datasource-panel []
   [:div [:span {:on-click (fn [e]
                             (swap! chosen-datasource #(do (println %)
@@ -132,8 +143,9 @@
 
 (defn app-page []
   [:div.container.mycontent
-   [generate-form]
-   [datasource-panel]
-   [data-panel]
+   [generate-editable]
+   #_[generate-form]
+   #_[datasource-panel]
+   #_[data-panel]
    #_[form-component]
    ])
