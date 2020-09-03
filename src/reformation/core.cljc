@@ -279,20 +279,23 @@
 (defn editable-input
   "Takes a schema and displays it for edit."
   [{:keys [READ UPDATE] :as fn-map} valpath & [opt-map]]
-  (let [{:keys [id required? default-value disabled subtext invalid-feedback char-count hidden contingent rows placeholder name-separator]
+  (let [{:keys [id required? default-value disabled label subtext invalid-feedback char-count hidden contingent rows placeholder name-separator]
          :or {name-separator "-"
               id (str/join "-" (map name valpath))
               type "text"}} opt-map
-        input-value (or (READ valpath) default-value) ;; TODO value that will be changed (label)
+        input-value (or (READ valpath) label) ;; TODO make this work for subtext
         changefn (fn [e] (UPDATE valpath #(shared/get-value-from-change e)))
         invalid-feedback (when invalid-feedback
                            [:div.invalid-feedback invalid-feedback])]
     [:div.field
      {:class [(str id "_group") (when hidden "hidden")]}
-     [:input {:label-text (:label opt-map id)}]
-     ;; TODO enter the editable label here
-     ;; TODO enter the editable subtext here 
-     [:input {:disabled true}]])
+     [:input {:value input-value
+              :on-change changefn}]
+     (when subtext
+       [:input {:value (:subtext opt-map id)
+                :on-change changefn}])
+     [:input {:disabled true
+              :value default-value}]])
   )
 
 (defn initialize-editable-store ;; TODO move function at the beginning of `render-editable` to here
@@ -325,7 +328,6 @@
       (cond
         (sequential? v) (render-editable v fn-map path)
         (map? v) ^{:key v} [editable-input fn-map path v]
-
         :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)]))
     :else (throw (ex-info "Unsupported arg for atom-or-map" {:atom-or-map fn-map})))
   )

@@ -1,7 +1,7 @@
 ;; -*- eval: (rainbow-mode) -*-
 (ns reformation.styles.comments
   (:require [garden.def :refer [defstylesheet defstyles defkeyframes]]
-            [garden.units :as u :refer [px em rem]]
+            [garden.units :as u :refer [px em]]
             [garden.color :as c :refer [hex->hsl hsl->hex]]
             [garden.selectors :as s :refer [nth-child]]
             [reformation.styles.definitions :as defs]))
