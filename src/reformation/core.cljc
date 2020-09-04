@@ -4,9 +4,7 @@
             [reformation.shared :as shared]
             ;[reformation.validation :as vali]
             #?(:cljs [reagent.core :refer [atom]])
-            [clojure.string :as str]
-
-            ))
+            [clojure.string :as str]))
 (declare tinput render-application render-review)
 
 (defn map-structure
@@ -283,20 +281,27 @@
          :or {name-separator "-"
               id (str/join "-" (map name valpath))
               type "text"}} opt-map
-        input-value (or (READ valpath) label) ;; TODO make this work for subtext
-        changefn (fn [e] (UPDATE valpath #(shared/get-value-from-change e)))
+        input-value (or (READ (conj valpath :label)) label)          ;; TODO make this work for subtext
+        input-value-sub (or (READ (conj valpath :subtext)) subtext) 
+        changefn (fn [e] (UPDATE (conj valpath :label) #(shared/get-value-from-change e)))
+        changefn-sub (fn [e] (UPDATE (conj valpath :subtext) #(shared/get-value-from-change e)))
         invalid-feedback (when invalid-feedback
                            [:div.invalid-feedback invalid-feedback])]
+    (println (str "Here " valpath " End"))
     [:div.field
      {:class [(str id "_group") (when hidden "hidden")]}
+     [:h2 "Label"]
      [:input {:value input-value
               :on-change changefn}]
      (when subtext
-       [:input {:value (:subtext opt-map id)
-                :on-change changefn}])
+       [:div
+        [:h2 "Subtext"]
+        [:input {:value input-value-sub
+                 :on-change changefn-sub}]])
+     [:h2 "Field"]
      [:input {:disabled true
-              :value default-value}]])
-  )
+              :value default-value}]
+     [:br][:br]]))
 
 (defn initialize-editable-store ;; TODO move function at the beginning of `render-editable` to here
   ""
@@ -305,7 +310,7 @@
         :let [path (conj (vec pathv) k)]]
     (cond
         (sequential? v) (initialize-editable-store v fn-map path)
-        (map? v) ^{:label v} [editable-input fn-map path v]
+        (map? v) ^{:key v} [editable-input fn-map path v]
         :else [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)]))
   )
 
