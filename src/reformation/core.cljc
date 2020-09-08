@@ -287,7 +287,7 @@
         changefn-sub (fn [e] (UPDATE (conj valpath :subtext) #(shared/get-value-from-change e)))
         invalid-feedback (when invalid-feedback
                            [:div.invalid-feedback invalid-feedback])]
-    (println (str "Here " valpath " End"))
+    #_(println (str "Here " valpath " End"))
     [:div.field
      {:class [(str id "_group") (when hidden "hidden")]}
      [:h2 "Label"]
