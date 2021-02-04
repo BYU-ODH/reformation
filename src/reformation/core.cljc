@@ -46,7 +46,7 @@
           (for [{:keys [content value] :as o} options]
             (let [[c v] [(or content value o) (or value content o)]]
               [:option {:value v}
-               (:content c)])))))
+               c])))))
 
 
 (defn radio [{:keys [options on-change]}]
@@ -249,7 +249,12 @@
   (try (do (deref a) true)
        (catch #?(:clj Exception :cljs js/Error) _ false)))
 
-(defn render-application [fm fn-map & [pathv]]
+(defn render-application
+  "Render teh editable application.
+
+  `fm` is the schema of the application, a vector laying out the fields and their attributes.
+  `fn-map` is either an Atom to hold the information a user inputs, or a map "
+  [fm fn-map & [pathv]]
   (cond (atom? fn-map)
     (let [R (partial get-in @fn-map)
           U (partial swap! fn-map update-in)
