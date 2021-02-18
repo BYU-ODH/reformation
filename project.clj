@@ -64,7 +64,7 @@
                    :plugins [[lein-codox "0.10.7"]
                              [com.jakemccrary/lein-test-refresh "0.14.0"]
                              [lein-doo "0.1.7"]
-                             [lein-figwheel "0.5.12"]
+                             [lein-figwheel "0.5.18"]
                              [org.clojure/clojurescript "1.10.439"]
                              [lein-cprop "1.0.1"]
                              [migratus-lein "0.4.3"]

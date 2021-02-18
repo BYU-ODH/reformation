@@ -2,43 +2,67 @@
   "The application with which users fill out the form to make or edit an application"
   (:require [reagent.core :as r]
             [reagent.session :as session]
-            [reformation.shared-test :as shared]
+            ;[reformation.shared-test :as shared]
             [accountant.core]
-            [reformation.routes :as rt]
+            ;[reformation.routes :as rt]
             [reformation.core :as rfc]
             [re-frame.core :as reframe]
-            [reformation.reframe]
+            ;[reformation.reframe]
             [cljs.pprint :as pprint]))
 
 
 
 ;render-application returns a VECTOR with tinput at the front
 
-
+(def simplefn #(if (> (count %) 5)
+                 true
+                 nil))
 
 (def example-atom (atom nil))
-(def easy-form [:example-element {:type :text
-                                   :label "Enter some text here"}
-		:example-element2 {:type :checkbox
- 		                   :label "Is it true?"}])
 
+
+
+(def easy-form [:example-element {:type :text
+                                  :validation-function? simplefn
+                                  :invalid-feedback "Incorrect Input..."
+                                  :label "Enter some text here"
+                                  :id "example1"}
+                ])
+(def id "example1")
+
+(defn check-valid-fn
+  [id]
+  (.reportValidity
+    (.getElementById js/document id)))
+
+(defn add-red-outline-fn
+  [id]
+  (. (.getElementById js/document id) setAttribute "style" "border: 2px solid #FF0000"))
+
+;(check-valid-fn "example1")
+;(add-red-outline-fn "example1")
 
 (defn form-component []
   [:div
    [rfc/render-application easy-form example-atom]
    #_(rfc/render-application easy-form example-atom)])
 
-
+;;(. (. js/document getElementById "example1") -value) 
 
 (defn validate-and-submit "Validate the form and submit"
   [form-dom-id]
-  (let [form (.getElementById js/document form-dom-id)
-        update-id (session/get :application)]
-    (-> form .-classList (.add "was-validated"))
+  (let [form (.getElementById js/document "example1")
+        ;update-id (session/get :application)
+        ]
+    ;(-> form .-classList (.add "was-validated"))
     (if (.checkValidity form)
-      (js/alert "You have errors in your form. Please correct them before submitting."))))
+      (js/alert "Passes validation")
+      (js/alert "Didn't Pass Validation"))))
 
-(def my-atom (r/atom {:mything "hello"}))
+
+
+(def my-atom (r/atom nil;{:mything "hello"}
+              ))
 
 (def FILE (r/atom nil))
 
@@ -111,12 +135,24 @@
 
 (def chosen-datasource (r/atom :atom))
 
+(defn save-button
+  []
+  [:div {:style {:margin-top "10px"}}
+   [:a.button {:id "Save"
+               :alt "Save"
+               :title "Save"
+               :on-click validate-and-submit
+               :href nil}
+    "Save"]])
+
 (defn generate-form []
   (let [form-id "needs-validation"]
     [:div.submission-form 
      [:form.form-control {:id form-id}
       (into [:div.form-contents]
-            (rfc/render-application test-form  (data-sources @chosen-datasource)))]]))
+            (rfc/render-application easy-form (data-sources @chosen-datasource))
+            ;(rfc/render-application test-form  (data-sources @chosen-datasource))
+            )]]))
 
 (defn datasource-panel []
   [:div [:span {:on-click (fn [e]
@@ -136,4 +172,5 @@
    [datasource-panel]
    [data-panel]
    #_[form-component]
+   [save-button]
    ])
