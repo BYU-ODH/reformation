@@ -4,7 +4,7 @@
             [reformation.shared :as shared]
             ;[reformation.validation :as vali]
             #?(:cljs [reagent.core :refer [atom]])
-            [clojure.string :as str]
+            [clojure.string :as string]
 
             ))
 (declare tinput render-application render-review)
@@ -35,13 +35,13 @@
    label-text])
 
 (defn select-box [m]
-  (let [{:keys [options id on-change required? style-classes]
+  (let [{:keys [options id on-change required style-classes]
          :or {id "generic-select"
               options ["No :options provided"]}} m]
     (into [:select.form-control {:class style-classes
                                  :id id
                                  :name id
-                                 :required required?
+                                 :required required
                                  :on-change on-change}]
           (for [{:keys [content value] :as o} options]
             (let [[c v] [(or content value o) (or value content o)]]
@@ -71,11 +71,11 @@
                [:label {:for idsym} disp]])))))
 
 
-(defn text-area
+(defn text-area 
   "Renders `:type :textarea` elements. In addition to the usual
   opts includes optional `:rows` for the html \"rows=\" attribute."
   [opt-map]
-  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count required class rows]
+  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count on-change required class rows]
          :or {rows 5}} opt-map
         {:keys [limit enforce?]} char-count
         
@@ -86,7 +86,7 @@
                                  :rows rows
                                  :default-value input-value
                                  :value value
-                                 :on-change changefn
+                                 :on-change on-change
                                  :required required
                                  :placeholder placeholder
                                  :disabled disabled}]]
@@ -117,7 +117,6 @@
                      (if (f v)
                        (.setCustomValidity dom-element "")
                        (.setCustomValidity dom-element error-message)))) {:validation-function? true})))
-
 
 (defn checkbox
   "Create a checkbox"
@@ -171,23 +170,42 @@
              :name id :id id
              :value value}]))
 
+(defn invalid-feedback-el [invalid-feedback]
+  [:div.invalid-feedback invalid-feedback])
+
+;id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden style-classes contingent rows placeholder name-separator
+;;]
+;:or
+#_{name-separator "-"
+   id (string/join "-" (map name valpath))
+   type "text
+;"} ;} opt-map
+
+
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
   [{:keys [READ UPDATE] :as fn-map} valpath & [opt-map]]
-  (let [{:keys [id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden style-classes contingent rows placeholder name-separator]
+  (let [{:keys [char-count contingent default-value disabled hidden id invalid-feedback required? style-classes subtext type validation-function rows placeholder name-separator]
          :or {name-separator "-"
-              id (str/join "-" (map name valpath))
+              id (string/join "-" (map name valpath))
               type "text"}} opt-map
         {:keys [limit enforce?]} char-count
         {:keys [field-key contingent-fn]} contingent
         _init (when (and default-value (not (READ valpath)))
                 (UPDATE valpath (constantly default-value)))
         input-value (or (READ valpath) default-value)
-        changefn1 (fn [e] (UPDATE valpath #(shared/get-value-from-change e)))
-        validation-function (when-let [vf validation-function]
-                              (to-validation vf invalid-feedback))
+        changefn1 (fn [e] (UPDATE valpath #(shared/get-value-from-change e))) ;if changes update val
+        call-validation-function (when-let [vf validation-function]
+                                   (to-validation vf invalid-feedback))
+        test-atom (atom nil)
+        pass (fn [e]
+               (if (to-validation-2 (shared/get-value-from-change e))
+                 true
+                 false))
         changefn (cond
-                   validation-function (fn [e] (doto e changefn1 validation-function))
+                   validation-function (fn [e] (doto e
+                                                 changefn1
+                                                 call-validation-function))
                    enforce? (fn [e]
                               (let [v (shared/get-value-from-change e)]
                                 (cond
@@ -195,7 +213,11 @@
                                   (< limit (count v)) #(UPDATE valpath (constantly (apply str (take limit v))))
                                   :default (changefn1 e))))
                    :default changefn1)
-        input-map (merge {:type type
+        opt-map (merge opt-map {:name id
+                                :on-change changefn
+                                :value input-value
+                                :required required?})
+        #_#_input-map (merge {:type type
                           :id id
                           :name id
                           :on-change changefn
@@ -210,27 +232,22 @@
                            {:required true})
                          (when rows
                            {:rows rows}))
-        invalid-feedback (when invalid-feedback
-                           [:div.invalid-feedback invalid-feedback])
+        
         input (case type
-                :radio [radio
-                        (merge (select-keys opt-map [:options :required?])
-
-                               {:on-change (fn [& args]
-                                             (apply changefn args))
-                                :id id})]
-
-                :select [select-box (merge (select-keys opt-map [:options :required?])
-                                           {:on-change changefn
-                                            :id id})]
+                :radio [radio opt-map]
+                :select [select-box opt-map]
                 :multi-table [multi-table fn-map opt-map]
-                :textarea [text-area (assoc input-map :changefn changefn)]
+                :textarea [text-area opt-map]
                 :togglebox [togglebox (merge (assoc fn-map :valpath valpath) opt-map)]
-                :checkbox [checkbox (assoc fn-map :valpath valpath) input-map]
+                :checkbox [checkbox (assoc fn-map :valpath valpath) opt-map]
                 :file [file-upload opt-map]
-                :hidden [hidden-input input-map]
+                :hidden [hidden-input opt-map]
                 ;; default
-                [:input.form-control input-map])]
+                [:input.form-control opt-map])]
+    
+    (println (str "\nFn-map:\n" fn-map))
+    (println (str "\nVal-path:\n" valpath))
+    (println (str "\nOpt-map:\n" opt-map))
     (case type
       :hidden input
       [:div.field
@@ -241,7 +258,11 @@
          [:p.help subtext])
        [:div.control      
         input
-        invalid-feedback]])))
+        (when invalid-feedback
+          [:div.invalid-feedback invalid-feedback])
+        (when (pass)
+          [:div.test
+           [:p (str "This works" pass)]])]])))
 
 (defn atom?
   "ducktype an atom as something dereferable"
@@ -250,7 +271,7 @@
        (catch #?(:clj Exception :cljs js/Error) _ false)))
 
 (defn render-application
-  "Render teh editable application.
+  "Render the editable application.
 
   `fm` is the schema of the application, a vector laying out the fields and their attributes.
   `fn-map` is either an Atom to hold the information a user inputs, or a map "

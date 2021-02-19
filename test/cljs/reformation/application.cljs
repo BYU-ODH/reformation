@@ -14,20 +14,20 @@
 
 ;render-application returns a VECTOR with tinput at the front
 
-(def simplefn #(if (> (count %) 5)
+(def f #(if (> (count %) 5)
                  true
                  nil))
+(f "12345")
 
 (def example-atom (atom nil))
 
 
 
 (def easy-form [:example-element {:type :text
-                                  :validation-function? simplefn
+                                  :validation-function? f
                                   :invalid-feedback "Incorrect Input..."
                                   :label "Enter some text here"
-                                  :id "example1"}
-                ])
+                                  :id "example1"}])
 (def id "example1")
 
 (defn check-valid-fn
@@ -61,6 +61,30 @@
 
 
 
+(defn validation-function?
+  [f]
+  (:validation-function? (meta f)))
+
+(defn to-validation 
+  "Given a predicate, wrap it properly to be a validation function for tinput.
+
+  Validation function runs on the input at every change, altering the validity of the element as prescribed. It waits for .checkValidity on the input to explain the error"
+  [f & [error-message]]
+  (if (validation-function? f) f 
+      (with-meta (fn [click]
+                   (let [v (. (. js/document getElementById "example1") -value) 
+                         dom-element (. js/document getElementById "example1")
+                         ;v (.. click -target -value)
+                         ;dom-element (.. click -target)
+                         error-message (or error-message "Invalid input")]
+                     (if (f v)
+                       (.setCustomValidity dom-element "")
+                       (.setCustomValidity dom-element error-message)))) {:validation-function? true}
+        )
+     ) (println (str "VALIDATION FN:\n" (:validation-function (meta f)))))
+
+
+
 (def my-atom (r/atom nil;{:mything "hello"}
               ))
 
@@ -76,7 +100,9 @@
                 :mytext {:type :text
                          :label "My text"}
                 :mytextarea {:type :textarea
-                             :label "My textarea"}
+                             :label "My textarea"
+                             :char-count {:limit 500
+                                          :enforce? true}}
                 :mymultitable  {:label "My multitable"
                                 :id :mymulti
                                 :required? true
