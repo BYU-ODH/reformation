@@ -9,6 +9,7 @@
             ))
 (declare tinput render-application render-review)
 
+
 (defn map-structure
   "Produce a map with the same key-structure from the vector"
   [v]
@@ -111,12 +112,19 @@
   [f & [error-message]]
   (if (validation-function? f) f 
       (with-meta (fn [click]
+                   (println "Got here")
                    (let [v (.. click -target -value)
                          dom-element (.. click -target)
                          error-message (or error-message "Invalid input")]
                      (if (f v)
-                       (.setCustomValidity dom-element "")
-                       (.setCustomValidity dom-element error-message)))) {:validation-function? true})))
+                       (do
+                         (.setCustomValidity dom-element "")
+                         (.reportValidity dom-element)
+                         )
+                       (do
+                         (.setCustomValidity dom-element error-message)
+                         (.reportValidity dom-element)
+                         )))) {:validation-function? true})))
 
 (defn checkbox
   "Create a checkbox"
@@ -197,11 +205,6 @@
         changefn1 (fn [e] (UPDATE valpath #(shared/get-value-from-change e))) ;if changes update val
         call-validation-function (when-let [vf validation-function]
                                    (to-validation vf invalid-feedback))
-        test-atom (atom nil)
-        pass (fn [e]
-               (if (to-validation-2 (shared/get-value-from-change e))
-                 true
-                 false))
         changefn (cond
                    validation-function (fn [e] (doto e
                                                  changefn1
@@ -256,13 +259,12 @@
                       :label-text  (:label opt-map id)}]
        (when subtext
          [:p.help subtext])
-       [:div.control      
+       [:div.control 
+        
         input
         (when invalid-feedback
           [:div.invalid-feedback invalid-feedback])
-        (when (pass)
-          [:div.test
-           [:p (str "This works" pass)]])]])))
+        ]])))
 
 (defn atom?
   "ducktype an atom as something dereferable"
@@ -281,7 +283,7 @@
           U (partial swap! fn-map update-in)
           fn-map {:READ R :UPDATE U}]
       (render-application fm fn-map pathv))
-    
+
     (map? fn-map)
     (for [[k v] (partition 2 fm)
           :let [path (conj (vec pathv) k)]]
@@ -295,8 +297,7 @@
 
 (defn render-review
   "Parse the application map and render the review based on the ordered `schema` of the application, with values in `application` expected to be as given by `render-application`.
-  
-  Resulting form will be read-only with no changes possible."
+   Resulting form will be read-only with no changes possible."
   [schema application]
   (render-application
    (shared/reviewify schema)

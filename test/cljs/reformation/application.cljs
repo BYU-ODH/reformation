@@ -24,18 +24,18 @@
 
 
 (def easy-form [:example-element {:type :text
-                                  :validation-function? f
-                                  :invalid-feedback "Incorrect Input..."
+                                  :validation-function f
+                                  :invalid-feedback "Needs more than 5 characters..."
                                   :label "Enter some text here"
                                   :id "example1"}])
 (def id "example1")
 
-(defn check-valid-fn
+#_(defn check-valid-fn
   [id]
   (.reportValidity
     (.getElementById js/document id)))
 
-(defn add-red-outline-fn
+#_(defn add-red-outline-fn
   [id]
   (. (.getElementById js/document id) setAttribute "style" "border: 2px solid #FF0000"))
 
@@ -52,10 +52,10 @@
 (defn validate-and-submit "Validate the form and submit"
   [form-dom-id]
   (let [form (.getElementById js/document "example1")
-        ;update-id (session/get :application)
+        update-id (session/get :application)
         ]
-    ;(-> form .-classList (.add "was-validated"))
-    (if (.checkValidity form)
+    (-> form .-classList (.add "was-validated"))
+    #_(if (.checkValidity form)
       (js/alert "Passes validation")
       (js/alert "Didn't Pass Validation"))))
 
