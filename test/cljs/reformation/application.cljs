@@ -42,13 +42,13 @@
 
 (def FILE (r/atom nil))
 
-(def test-form [:myhidden-text {:type :hidden
-                                :default-value "whisper"}
-                :mydefault-text {:type :text
-                                 :label "default text"
-                                 :default-value "something good"
-                                 :disabled true
-                                 :style-classes "I-like-red"}
+(def test-form [;; :myhidden-text {:type :hidden
+                ;;                 :default-value "whisper"}
+                ;; :mydefault-text {:type :text
+                ;;                  :label "default text"
+                ;;                  :default-value "something good"
+                ;;                  :disabled true
+                ;;                  :style-classes "I-like-red"}
                 :mytext {:type :text
                          :label "My text"}
                 :mytextarea {:type :textarea
@@ -82,9 +82,9 @@
                 :myselect {:label "A select" :type :select :options [1 2 3]}
                 :myradio {:type :radio :options [1 2 {:value 3}]}
                 
-                :mytoggle {:type :togglebox
-                           :label "My togglebox"
-                           :content [:test {:type :text :label "My toggled "}]}
+                ;; :mytoggle {:type :togglebox
+                ;;            :label "My togglebox"
+                ;;            :content [:test {:type :text :label "My toggled "}]}
                 :mycheckbox {:type :checkbox :label "My checkbox" :default-value true}
                 :myfileupload {:type :file
                                :label "My file"
