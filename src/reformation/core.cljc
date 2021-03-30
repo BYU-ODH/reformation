@@ -5,8 +5,7 @@
             ;[reformation.validation :as vali]
             #?(:cljs [reagent.core :refer [atom]])
             [clojure.string :as str]
-
-            ))
+            [taoensso.timbre :as log]))
 (declare tinput render-application render-review)
 
 (defn map-structure
@@ -118,19 +117,6 @@
                        (.setCustomValidity dom-element "")
                        (.setCustomValidity dom-element error-message)))) {:validation-function? true})))
 
-
-(defn checkbox
-  "Create a checkbox"
-  [{:keys [READ UPDATE valpath] :as fn-map}
-   {:keys [validation-function disabled style-classes] :as input-map}]
-  (let [checked? (READ valpath)
-        toggle-fn (comp (or validation-function identity)
-                        #(UPDATE valpath not))]
-    [:input {:class (into [(last valpath)] style-classes)
-             :type "checkbox"
-             :disabled disabled
-             :on-change toggle-fn}]))
-
 (defn checkset
   "If a checkbox value is nil, set it; otherwise, return it."
   [{:keys [READ UPDATE  valpath default-value]}]
@@ -140,12 +126,26 @@
       v
       (UPDATE valpath (constantly dv)))))
 
+(defn checkbox
+  "Create a checkbox"
+  [{:keys [READ UPDATE valpath] :as fn-map}
+   {:keys [validation-function disabled style-classes default-value] :as input-map}]
+  (log/info (:value input-map))
+  (let [checked? (checkset (merge fn-map {:default-value default-value})) ;;(READ valpath)
+        toggle-fn (comp (or validation-function identity)
+                        #(UPDATE valpath not))]
+    [:input {:class (into [(last valpath)] style-classes)
+             :type "checkbox"
+             :checked checked?
+             :disabled disabled
+             :on-change toggle-fn}]))
 
 (defn togglebox
   "Builds a group which, when toggled, displays its `:content`"
   [{:keys [label content valpath READ UPDATE default-value override-inline? open-height disabled style-classes]
     :or {open-height "5em"}
     :as opt-map}]
+  (log/info (str "TOGGLE!! " opt-map))
   (let [content-id "togglebox-content"
         checked? (checkset opt-map)
         transition-style {:-webkit-transition "height 0.4s ease-in-out"
