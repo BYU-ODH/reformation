@@ -1,14 +1,15 @@
 (ns reformation.application
   "The application with which users fill out the form to make or edit an application"
-  (:require [reagent.core :as r]
-            [reagent.session :as session]
-            [reformation.shared-test :as shared]
-            [accountant.core]
-            [reformation.routes :as rt]
-            [reformation.core :as rfc]
+  (:require [accountant.core]
+            [cljs.pprint :as pprint]
             [re-frame.core :as reframe]
+            [reagent.core :as r]
+            [reagent.session :as session]
+            [reformation.core :as rfc]
             [reformation.reframe]
-            [cljs.pprint :as pprint]))
+            [reformation.routes :as rt]
+            [reformation.shared-test :as shared]
+            [taoensso.timbre :as log]))
 
 
 
@@ -82,10 +83,10 @@
                 :myselect {:label "A select" :type :select :options [1 2 3]}
                 :myradio {:type :radio :options [1 2 {:value 3}]}
                 
-                ;; :mytoggle {:type :togglebox
-                ;;            :label "My togglebox"
-                ;;            :content [:test {:type :text :label "My toggled "}]}
-                :mycheckbox {:type :checkbox :label "My checkbox" :default-value true}
+                :mytoggle {:type :togglebox
+                           :label "My togglebox"
+                           :content [:test {:type :text :label "My toggled "}]}
+                :mycheckbox {:type :checkbox :label "My checkbox"}
                 :myfileupload {:type :file
                                :label "My file"
                                :submit-text "Click or Drop a File Here"

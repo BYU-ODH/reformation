@@ -122,6 +122,7 @@
   [{:keys [READ UPDATE  valpath default-value]}]
   (let [v (READ valpath)
         dv (boolean default-value)]
+    (log/info (str "v & dv = " v " & " dv))
     (if (boolean? v)
       v
       (UPDATE valpath (constantly dv)))))
@@ -130,13 +131,13 @@
   "Create a checkbox"
   [{:keys [READ UPDATE valpath] :as fn-map}
    {:keys [validation-function disabled style-classes default-value] :as input-map}]
-  (log/info (str "RIGHT NOW VALUE IS:" (READ valpath)))
-  (let [checked? (if default-value {:default-value default-value} false)
+  (let [checked? (checkset (merge fn-map {:default-value default-value}))
         toggle-fn (comp (or validation-function identity)
                         #(UPDATE valpath not))]
     [:input {:class (into [(last valpath)] style-classes)
              :type "checkbox"
-             :defaultChecked checked?
+             ;;:defaultChecked default-value
+             :checked checked?
              :disabled disabled
              :on-change toggle-fn}]))
 
@@ -145,13 +146,14 @@
   [{:keys [label content valpath READ UPDATE default-value override-inline? open-height disabled style-classes]
     :or {open-height "5em"}
     :as opt-map}]
+  (log/info opt-map)
   (let [content-id "togglebox-content"
         checked? (checkset opt-map)
         transition-style {:-webkit-transition "height 0.4s ease-in-out"
                           :transition "height 0.4s ease-in-out"
                           :overflow "hidden"}]
     [:div.togglebox
-     [tinput (select-keys opt-map [:READ :UPDATE :style-classes]) valpath
+     [tinput (select-keys opt-map [:READ :UPDATE :default-value :style-classes]) valpath
       {:type :checkbox
        :checked checked?
        :disabled disabled
