@@ -122,6 +122,7 @@
   [{:keys [READ UPDATE  valpath default-value]}]
   (let [v (READ valpath)
         dv (boolean default-value)]
+    (log/info (str "IS V BOOLEAN?: " v))
     (if (boolean? v)
       v
       (UPDATE valpath (constantly dv)))))
@@ -130,13 +131,13 @@
   "Create a checkbox"
   [{:keys [READ UPDATE valpath] :as fn-map}
    {:keys [validation-function disabled style-classes default-value] :as input-map}]
-  (log/info (str "valpath: " valpath))
-  (let [checked? (checkset (merge fn-map {:default-value default-value})) ;;(READ valpath)
+  (log/info (str "RIGHT NOW VALUE IS:" (READ valpath)))
+  (let [checked? (if default-value {:default-value default-value} false)
         toggle-fn (comp (or validation-function identity)
                         #(UPDATE valpath not))]
     [:input {:class (into [(last valpath)] style-classes)
              :type "checkbox"
-             :checked checked? ;;TODO this overwrites on-change, so it's always default-value
+             :defaultChecked checked?
              :disabled disabled
              :on-change toggle-fn}]))
 
