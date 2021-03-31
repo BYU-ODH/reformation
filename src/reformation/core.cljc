@@ -122,7 +122,6 @@
   [{:keys [READ UPDATE  valpath default-value]}]
   (let [v (READ valpath)
         dv (boolean default-value)]
-    (log/info (str "IS V BOOLEAN?: " v))
     (if (boolean? v)
       v
       (UPDATE valpath (constantly dv)))))
