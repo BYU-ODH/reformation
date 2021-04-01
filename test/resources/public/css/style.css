@@ -219,6 +219,12 @@ div.submission-form form div.upload.dragover {
   border-width: 10px;
 }
 
+.invalid {
+  border-color: #dc3545;
+  border-radius: 5px;
+  border-width: 2px;
+}
+
 div.submission-form form div.upload .error {
   display: block;
   bottom: -20px;
@@ -233,6 +239,8 @@ div.submission-form form .invalid-feedback {
 .was-validated .form-control:invalid ~ .invalid-feedback {
   display: block;
 }
+
+
 
 .review-page review-application {
   background-color: #fff;

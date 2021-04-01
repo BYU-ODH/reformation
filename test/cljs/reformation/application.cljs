@@ -14,20 +14,38 @@
 
 ;render-application returns a VECTOR with tinput at the front
 
-(def f #(if (> (count %) 5)
+(def f1 #(if (> (count %) 5)
                  true
                  nil))
-(f "12345")
+(f1 "12345")
+(def f2 #(if (= "@" %)
+           true
+           nil))
 
 (def example-atom (atom nil))
 
-
+(defn built-in-email-constraint
+  []
+  [:div
+   [:input {:type "text"
+           :value ""
+           :on-change #()}]
+   ])
 
 (def easy-form [:example-element {:type :text
-                                  :validation-function f
+                                  :validation-function f1
                                   :invalid-feedback "Needs more than 5 characters..."
-                                  :label "Enter some text here"
-                                  :id "example1"}])
+                                  :label "Enter more than 5 characters"
+                                  :id "example1"}
+                :example_element2 {:type :text
+                                   :validation-function f2
+                                   :invalid-feedback "Just type @..."
+                                   :label "Enter the @ symbol"
+                                   :id "example2"}
+                #_#_:example_email {:type :email
+                                :label "Enter email"
+                                :is "email"}
+                ])
 (def id "example1")
 
 #_(defn check-valid-fn
@@ -47,15 +65,16 @@
    [rfc/render-application easy-form example-atom]
    #_(rfc/render-application easy-form example-atom)])
 
-;;(. (. js/document getElementById "example1") -value) 
+;;(. (. js/document getElementById "example1") -value)
+(comment (def form-dom-id "example1"))
 
 (defn validate-and-submit "Validate the form and submit"
   [form-dom-id]
-  (let [form (.getElementById js/document "example1")
-        update-id (session/get :application)
+  (let [form (.getElementById js/document form-dom-id)
+        ;update-id (session/get :application)
         ]
-    (-> form .-classList (.add "was-validated"))
-    #_(if (.checkValidity form)
+    (-> form .-classList (.add "invalid"))
+    (if (.checkValidity form)
       (js/alert "Passes validation")
       (js/alert "Didn't Pass Validation"))))
 
@@ -146,7 +165,14 @@
                                :allowed-extensions-f #{"txt"}
                                :style-classes {:drag-over "dragover"
                                                :inactive "undragged"
-                                               :have-file "have-file"}}])
+                                               :have-file "have-file"}}
+                [:a.button {:id "Save"
+                            :alt "Save"
+                            :type :submit
+                            :title "Save"
+                            ;;:on-click validate-and-submit
+                            :href nil}
+                 "Save"]])
 
 (def data-sources {:atom my-atom
                    :map {:READ
@@ -166,8 +192,10 @@
   [:div {:style {:margin-top "10px"}}
    [:a.button {:id "Save"
                :alt "Save"
-               :title "Save"
-               :on-click validate-and-submit
+               :type :submit
+               :title "Submit form"
+               :form "needs-validation"
+               :on-click #(validate-and-submit "needs-validation")
                :href nil}
     "Save"]])
 
@@ -179,6 +207,7 @@
             (rfc/render-application easy-form (data-sources @chosen-datasource))
             ;(rfc/render-application test-form  (data-sources @chosen-datasource))
             )]]))
+
 
 (defn datasource-panel []
   [:div [:span {:on-click (fn [e]

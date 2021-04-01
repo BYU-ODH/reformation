@@ -120,10 +120,12 @@
                        (do
                          (.setCustomValidity dom-element "")
                          (.reportValidity dom-element)
+                         (-> dom-element .-classList (.remove "invalid"))
                          )
                        (do
                          (.setCustomValidity dom-element error-message)
                          (.reportValidity dom-element)
+                         (-> dom-element .-classList (.add "invalid"))
                          )))) {:validation-function? true})))
 
 (defn checkbox
