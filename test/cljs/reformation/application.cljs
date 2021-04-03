@@ -43,13 +43,13 @@
 
 (def FILE (r/atom nil))
 
-(def test-form [;; :myhidden-text {:type :hidden
-                ;;                 :default-value "whisper"}
-                ;; :mydefault-text {:type :text
-                ;;                  :label "default text"
-                ;;                  :default-value "something good"
-                ;;                  :disabled true
-                ;;                  :style-classes "I-like-red"}
+(def test-form [:myhidden-text {:type :hidden
+                                :default-value "whisper"}
+                :mydefault-text {:type :text
+                                 :label "default text"
+                                 :default-value "something good"
+                                 :disabled true
+                                 :style-classes "I-like-red"}
                 :mytext {:type :text
                          :label "My text"}
                 :mytextarea {:type :textarea
@@ -86,7 +86,7 @@
                 :mytoggle {:type :togglebox
                            :label "My togglebox"
                            :content [:test {:type :text :label "My toggled "}]}
-                :mycheckbox {:type :checkbox :label "My checkbox"}
+                :mycheckbox {:type :checkbox :label "My checkbox" :default-value true}
                 :myfileupload {:type :file
                                :label "My file"
                                :submit-text "Click or Drop a File Here"

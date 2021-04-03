@@ -122,21 +122,21 @@
   [{:keys [READ UPDATE  valpath default-value]}]
   (let [v (READ valpath)
         dv (boolean default-value)]
-    (log/info (str "v & dv = " v " & " dv))
     (if (boolean? v)
       v
-      (UPDATE valpath (constantly dv)))))
+      (do
+        #(UPDATE valpath (constantly dv))
+        dv))))
 
 (defn checkbox
   "Create a checkbox"
-  [{:keys [READ UPDATE valpath] :as fn-map}
-   {:keys [validation-function disabled style-classes default-value] :as input-map}]
+  [{:keys [_READ UPDATE valpath] :as fn-map}
+   {:keys [validation-function disabled style-classes default-value] :as _input-map}]
   (let [checked? (checkset (merge fn-map {:default-value default-value}))
         toggle-fn (comp (or validation-function identity)
                         #(UPDATE valpath not))]
     [:input {:class (into [(last valpath)] style-classes)
              :type "checkbox"
-             ;;:defaultChecked default-value
              :checked checked?
              :disabled disabled
              :on-change toggle-fn}]))
@@ -146,7 +146,6 @@
   [{:keys [label content valpath READ UPDATE default-value override-inline? open-height disabled style-classes]
     :or {open-height "5em"}
     :as opt-map}]
-  (log/info opt-map)
   (let [content-id "togglebox-content"
         checked? (checkset opt-map)
         transition-style {:-webkit-transition "height 0.4s ease-in-out"
@@ -181,7 +180,7 @@
               type "text"}} opt-map
         {:keys [limit enforce?]} char-count
         {:keys [field-key contingent-fn]} contingent
-        _init (when (and default-value (not (READ valpath)))
+        _init (when (and default-value (nil? (READ valpath)))
                 (UPDATE valpath (constantly default-value)))
         input-value (or (READ valpath) default-value)
         changefn1 (fn [e] (UPDATE valpath #(shared/get-value-from-change e)))
