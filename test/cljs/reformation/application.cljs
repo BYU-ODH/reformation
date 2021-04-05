@@ -156,5 +156,4 @@
    [datasource-panel]
    [data-panel]
    #_[form-component]
-   [save-button]
-   ])
+   [save-button]])
