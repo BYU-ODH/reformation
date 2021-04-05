@@ -120,20 +120,13 @@
 
 (defn save-button
   []
-  [:div {:style {:margin-top "10px"}}
-   [:a.button {:id "Save"
-               :alt "Save"
-               :type :submit
-               :title "Submit form"
-               :form "needs-validation"
-               :on-click #(if (rfc/check-form-validation)
-                            (do
-                              (js/alert "Passed Validation")
-                              (reset! my-atom nil))
-                            (js/alert "Please fill out all fields properly."))
-                                        
-               :href nil}
-    "Save"]])
+  [:a.button {:id "Save"
+              :title "Submit form"
+              :on-click #(if (rfc/check-form-validation)
+                           (js/alert "Passed")
+                           (js/alert "Failed"))
+              :href nil} "Save"])
+
 
 (defn generate-form []
   (let [form-id "needs-validation"]
