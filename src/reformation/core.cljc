@@ -4,8 +4,7 @@
             [reformation.shared :as shared]
             ;[reformation.validation :as vali]
             #?(:cljs [reagent.core :refer [atom]])
-            [clojure.string :as str]
-            [taoensso.timbre :as log]))
+            [clojure.string :as str]))
 (declare tinput render-application render-review)
 
 (defn map-structure

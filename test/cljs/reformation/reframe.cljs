@@ -1,6 +1,5 @@
 (ns reformation.reframe
-  (:require [re-frame.core :as rfc]
-            [taoensso.timbre :as log]))
+  (:require [re-frame.core :as rfc]))
 
 (rfc/reg-event-db
  :update-form

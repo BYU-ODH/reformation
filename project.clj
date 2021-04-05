@@ -38,7 +38,6 @@
                                   [cljsjs/react-dom "16.8.1-0"]
                                   [cljsjs/react-dom-server "16.8.1-0"]
                                   [com.andrewmcveigh/cljs-time "0.5.2"]
-                                  [com.taoensso/timbre "5.1.2"]
                                   [compojure "1.6.1"]
                                   [cprop "0.1.13"]
                                   [figwheel-sidecar "0.5.18"]

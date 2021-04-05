@@ -8,8 +8,7 @@
             [reformation.core :as rfc]
             [reformation.reframe]
             [reformation.routes :as rt]
-            [reformation.shared-test :as shared]
-            [taoensso.timbre :as log]))
+            [reformation.shared-test :as shared]))
 
 
 
