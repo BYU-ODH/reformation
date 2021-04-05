@@ -195,7 +195,8 @@
                :type :submit
                :title "Submit form"
                :form "needs-validation"
-               :on-click #(validate-and-submit "needs-validation")
+               :on-click #(rfc/check-form-validation)
+                                        ;#(validate-and-submit "needs-validation")
                :href nil}
     "Save"]])
 

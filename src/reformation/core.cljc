@@ -1,13 +1,16 @@
 (ns reformation.core
   (:require [reformation.multitable :refer [multi-table] :as mt]
             [reformation.fileupload :refer [file-upload]]
+            [reformation.validateform :refer [validate-form]]
             [reformation.shared :as shared]
             ;[reformation.validation :as vali]
             #?(:cljs [reagent.core :refer [atom]])
-            [clojure.string :as string]
+            [clojure.string :as string]))
 
-            ))
 (declare tinput render-application render-review)
+
+(defn check-form-validation []
+  (validate-form))
 
 
 (defn map-structure
