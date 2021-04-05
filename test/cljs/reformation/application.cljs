@@ -23,15 +23,17 @@
 
 (def example-atom (atom nil))
 
-(def easy-form [:example-element {:type :text
+(def text-form [:example-element {:type :text
                                   :validation-function f1
                                   :invalid-feedback "Needs more than 5 characters..."
                                   :label "Enter more than 5 characters"
+                                  :required true 
                                   :id "example1"}
                 :example_element2 {:type :text
                                    :validation-function f2
                                    :invalid-feedback "Just type @..."
                                    :label "Enter the @ symbol"
+                                   :required true
                                    :id "example2"}])
 
 (def my-atom (r/atom nil))
@@ -125,8 +127,9 @@
                :title "Submit form"
                :form "needs-validation"
                :on-click #(if (rfc/check-form-validation)
-                            ;(js/alert "We did it")
-                            (reframe/dispatch [:reset])
+                            (do
+                              (js/alert "Passed Validation")
+                              (reset! my-atom nil))
                             (js/alert "Please fill out all fields properly."))
                                         
                :href nil}
@@ -137,7 +140,7 @@
     [:div.submission-form 
      [:form.form-control {:id form-id}
       (into [:div.form-contents]
-            (rfc/render-application easy-form (data-sources @chosen-datasource))
+            (rfc/render-application text-form (data-sources @chosen-datasource))
             ;(rfc/render-application test-form  (data-sources @chosen-datasource))
             )]]))
 

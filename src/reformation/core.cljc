@@ -188,7 +188,7 @@
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
   [{:keys [READ UPDATE] :as fn-map} valpath & [opt-map]]
-  (let [{:keys [char-count contingent default-value disabled hidden id invalid-feedback required? style-classes subtext type validation-function rows placeholder name-separator]
+  (let [{:keys [char-count contingent default-value disabled hidden id invalid-feedback required style-classes subtext type validation-function rows placeholder name-separator]
          :or {name-separator "-"
               id (string/join "-" (map name valpath))
               type "text"}} opt-map
@@ -214,7 +214,7 @@
         opt-map (merge opt-map {:name id
                                 :on-change changefn
                                 :value input-value
-                                :required required?})
+                                :required required})
         input (case type
                 :radio [radio opt-map]
                 :select [select-box opt-map]
