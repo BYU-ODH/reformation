@@ -103,30 +103,30 @@ Toggleboxes are upgraded checkboxes.  They contain their own content, which is o
 
 *** universal keys
 **** =:type=
-indicates which element to create.  Can be any of: =:select=, =:radio=, =:multi-table=, =:textarea=, =:togglebox=, =:checkbox=, =:file=, =:hidden=
+Indicates which element to create.  Can be any of: =:select=, =:radio=, =:multi-table=, =:textarea=, =:togglebox=, =:checkbox=, =:file=, =:hidden=
 
 **** =:subtext=
 Explanatory or parenthetical text, appearing under =:label=.  Adjust style by adding rules to =p.help= 
 
 **** =:validation-function=
-should be a predicate function that takes a value and determines whether it is a valid input for that form element
+Should be a predicate function that takes a value and determines whether it is a valid input for that form element
 
 **** =:invalid-feedback=
 If the input doesn't satisfy the validation function, this string will appear explaining why
 
 **** =:required?=
-a boolean flag indicating whether the element is required for form submission.  Not applicable to  =togglebox or =multi-table=
+A boolean flag indicating whether the element is required for form submission.  Not applicable to  =togglebox or =multi-table=
 
 **** =:default-value= 
 If you wish to set a default value, put it here
      
 **** =:disabled=
-a binary flag for whether the element will be disabled
+A binary flag for whether the element will be disabled
 
 **** =:id= 
  the =id= of the resulting element
 **** =:style-classes=
-is set as =:class= of the resulting element
+Is set as =:class= of the resulting element
 
 
 ** Elements
@@ -192,7 +192,38 @@ An expandable table.  A common task for forms is a list of an indefinite number 
 ** TODO "required" on regular input
 ** TODO Format fn for date fields
 ** TODO Default values for select boxes
-** TODO Validation
+** Validation
+#+BEGIN_SRC clojure
+(rfc/check-form-validation)
+#+END_SRC
+A predicate function that will check the validity of every element in your form. Returns false if any do not pass the validation requirements.
+Currently supports the use of one form per page. 
+
+
+#+BEGIN_SRC clojure
+(ns example
+   (:require [reformation.core :as rfc]))
+
+(def f1 #(if (> (count %) 5)
+                 true
+                 nil))
+
+(def text-form [:example-element {:type :text
+                                  	:validation-function f1
+                                  	:invalid-feedback "Needs more than 5 characters..."
+                                  	:label "Enter more than 5 characters"	
+                                  	:id "example1"})
+
+(defn save-button
+  []
+	[:a.button {:id "submit"
+               :title "Submit form"
+               :on-click #(if (rfc/check-form-validation)
+                            (js/alert "Passed")
+                            (js/alert "Failed"))            
+               :href nil} "Submit"]])
+#+END_SRC
+
 ** Prerequisites
    :PROPERTIES:
    :CUSTOM_ID: prerequisites

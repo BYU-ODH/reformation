@@ -1,4 +1,4 @@
-(defproject byu-odh/reformation "10"
+(defproject byu-odh/reformation "11"
   :description "Generate and manipulate form datastructures in pure Clojure, which can be read with Reagent."
   :url "http://tech.toryanderson.com"
   :license {:name "Eclipse Public License"
@@ -64,7 +64,7 @@
                    :plugins [[lein-codox "0.10.7"]
                              [com.jakemccrary/lein-test-refresh "0.14.0"]
                              [lein-doo "0.1.7"]
-                             [lein-figwheel "0.5.12"]
+                             [lein-figwheel "0.5.18"]
                              [org.clojure/clojurescript "1.10.439"]
                              [lein-cprop "1.0.1"]
                              [migratus-lein "0.4.3"]

@@ -1,44 +1,42 @@
 (ns reformation.application
   "The application with which users fill out the form to make or edit an application"
-  (:require [accountant.core]
-            [cljs.pprint :as pprint]
-            [re-frame.core :as reframe]
-            [reagent.core :as r]
+  (:require [reagent.core :as r]
             [reagent.session :as session]
+            ;[reformation.shared-test :as shared]
+            [accountant.core]
+            ;[reformation.routes :as rt]
             [reformation.core :as rfc]
-            [reformation.reframe]
-            [reformation.routes :as rt]
-            [reformation.shared-test :as shared]))
+            [re-frame.core :as reframe]
+            ;[reformation.reframe]
+            [cljs.pprint :as pprint]))
 
 
 
 ;render-application returns a VECTOR with tinput at the front
 
-
+(def f1 #(if (> (count %) 5)
+                 true
+                 nil))
+(def f2 #(if (= "@" %)
+           true
+           nil))
 
 (def example-atom (atom nil))
-(def easy-form [:example-element {:type :text
-                                   :label "Enter some text here"}
-		:example-element2 {:type :checkbox
- 		                   :label "Is it true?"}])
 
+(def text-form [:example-element {:type :text
+                                  :validation-function f1
+                                  :invalid-feedback "Needs more than 5 characters..."
+                                  :label "Enter more than 5 characters"
+                                  :required true 
+                                  :id "example1"}
+                :example_element2 {:type :text
+                                   :validation-function f2
+                                   :invalid-feedback "Just type @..."
+                                   :label "Enter the @ symbol"
+                                   :required true
+                                   :id "example2"}])
 
-(defn form-component []
-  [:div
-   [rfc/render-application easy-form example-atom]
-   #_(rfc/render-application easy-form example-atom)])
-
-
-
-(defn validate-and-submit "Validate the form and submit"
-  [form-dom-id]
-  (let [form (.getElementById js/document form-dom-id)
-        update-id (session/get :application)]
-    (-> form .-classList (.add "was-validated"))
-    (if (.checkValidity form)
-      (js/alert "You have errors in your form. Please correct them before submitting."))))
-
-(def my-atom (r/atom {:mything "hello"}))
+(def my-atom (r/atom nil))
 
 (def FILE (r/atom nil))
 
@@ -52,7 +50,9 @@
                 :mytext {:type :text
                          :label "My text"}
                 :mytextarea {:type :textarea
-                             :label "My textarea"}
+                             :label "My textarea"
+                             :char-count {:limit 500
+                                          :enforce? true}}
                 :mymultitable  {:label "My multitable"
                                 :id :mymulti
                                 :required? true
@@ -96,7 +96,14 @@
                                :allowed-extensions-f #{"txt"}
                                :style-classes {:drag-over "dragover"
                                                :inactive "undragged"
-                                               :have-file "have-file"}}])
+                                               :have-file "have-file"}}
+                [:a.button {:id "Save"
+                            :alt "Save"
+                            :type :submit
+                            :title "Save"
+                            ;;:on-click validate-and-submit
+                            :href nil}
+                 "Save"]])
 
 (def data-sources {:atom my-atom
                    :map {:READ
@@ -111,12 +118,25 @@
 
 (def chosen-datasource (r/atom :atom))
 
+(defn save-button
+  []
+  [:a.button {:id "Save"
+              :title "Submit form"
+              :on-click #(if (rfc/check-form-validation)
+                           (js/alert "Passed")
+                           (js/alert "Failed"))
+              :href nil} "Save"])
+
+
 (defn generate-form []
   (let [form-id "needs-validation"]
     [:div.submission-form 
      [:form.form-control {:id form-id}
       (into [:div.form-contents]
-            (rfc/render-application test-form  (data-sources @chosen-datasource)))]]))
+            (rfc/render-application text-form (data-sources @chosen-datasource))
+            ;(rfc/render-application test-form  (data-sources @chosen-datasource))
+            )]]))
+
 
 (defn datasource-panel []
   [:div [:span {:on-click (fn [e]
@@ -136,4 +156,5 @@
    [datasource-panel]
    [data-panel]
    #_[form-component]
+   [save-button]
    ])
