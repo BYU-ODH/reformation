@@ -12,3 +12,8 @@
  (fn [db [_ kv]]
    (let [path (into [:form] kv)]
      (get-in db path))))
+
+(rfc/reg-event-db
+ :reset
+ (fn reset [db [_]]
+   (assoc-in db [:form] nil)))

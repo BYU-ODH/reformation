@@ -17,20 +17,11 @@
 (def f1 #(if (> (count %) 5)
                  true
                  nil))
-(f1 "12345")
 (def f2 #(if (= "@" %)
            true
            nil))
 
 (def example-atom (atom nil))
-
-(defn built-in-email-constraint
-  []
-  [:div
-   [:input {:type "text"
-           :value ""
-           :on-change #()}]
-   ])
 
 (def easy-form [:example-element {:type :text
                                   :validation-function f1
@@ -41,71 +32,9 @@
                                    :validation-function f2
                                    :invalid-feedback "Just type @..."
                                    :label "Enter the @ symbol"
-                                   :id "example2"}
-                #_#_:example_email {:type :email
-                                :label "Enter email"
-                                :is "email"}
-                ])
-(def id "example1")
+                                   :id "example2"}])
 
-#_(defn check-valid-fn
-  [id]
-  (.reportValidity
-    (.getElementById js/document id)))
-
-#_(defn add-red-outline-fn
-  [id]
-  (. (.getElementById js/document id) setAttribute "style" "border: 2px solid #FF0000"))
-
-;(check-valid-fn "example1")
-;(add-red-outline-fn "example1")
-
-(defn form-component []
-  [:div
-   [rfc/render-application easy-form example-atom]
-   #_(rfc/render-application easy-form example-atom)])
-
-;;(. (. js/document getElementById "example1") -value)
-(comment (def form-dom-id "example1"))
-
-(defn validate-and-submit "Validate the form and submit"
-  [form-dom-id]
-  (let [form (.getElementById js/document form-dom-id)
-        ;update-id (session/get :application)
-        ]
-    (-> form .-classList (.add "invalid"))
-    (if (.checkValidity form)
-      (js/alert "Passes validation")
-      (js/alert "Didn't Pass Validation"))))
-
-
-
-(defn validation-function?
-  [f]
-  (:validation-function? (meta f)))
-
-(defn to-validation 
-  "Given a predicate, wrap it properly to be a validation function for tinput.
-
-  Validation function runs on the input at every change, altering the validity of the element as prescribed. It waits for .checkValidity on the input to explain the error"
-  [f & [error-message]]
-  (if (validation-function? f) f 
-      (with-meta (fn [click]
-                   (let [v (. (. js/document getElementById "example1") -value) 
-                         dom-element (. js/document getElementById "example1")
-                         ;v (.. click -target -value)
-                         ;dom-element (.. click -target)
-                         error-message (or error-message "Invalid input")]
-                     (if (f v)
-                       (.setCustomValidity dom-element "")
-                       (.setCustomValidity dom-element error-message)))) {:validation-function? true}
-        )
-     ) (println (str "VALIDATION FN:\n" (:validation-function (meta f)))))
-
-
-
-(def my-atom (r/atom nil;{:mything "hello"}
-              ))
+(def my-atom (r/atom nil))
 
 (def FILE (r/atom nil))
 
@@ -195,8 +124,11 @@
                :type :submit
                :title "Submit form"
                :form "needs-validation"
-               :on-click #(rfc/check-form-validation)
-                                        ;#(validate-and-submit "needs-validation")
+               :on-click #(if (rfc/check-form-validation)
+                            ;(js/alert "We did it")
+                            (reframe/dispatch [:reset])
+                            (js/alert "Please fill out all fields properly."))
+                                        
                :href nil}
     "Save"]])
 

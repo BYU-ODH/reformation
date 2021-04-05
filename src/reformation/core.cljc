@@ -115,7 +115,6 @@
   [f & [error-message]]
   (if (validation-function? f) f 
       (with-meta (fn [click]
-                   (println "Got here")
                    (let [v (.. click -target -value)
                          dom-element (.. click -target)
                          error-message (or error-message "Invalid input")]
@@ -186,15 +185,6 @@
 (defn invalid-feedback-el [invalid-feedback]
   [:div.invalid-feedback invalid-feedback])
 
-;id validation-function required? type default-value disabled subtext invalid-feedback char-count hidden style-classes contingent rows placeholder name-separator
-;;]
-;:or
-#_{name-separator "-"
-   id (string/join "-" (map name valpath))
-   type "text
-;"} ;} opt-map
-
-
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
   [{:keys [READ UPDATE] :as fn-map} valpath & [opt-map]]
@@ -204,7 +194,7 @@
               type "text"}} opt-map
         {:keys [limit enforce?]} char-count
         {:keys [field-key contingent-fn]} contingent
-        _init (when (and default-value (not (READ valpath)))
+        _init (when (and default-value (nil? (READ valpath)))
                 (UPDATE valpath (constantly default-value)))
         input-value (or (READ valpath) default-value)
         changefn1 (fn [e] (UPDATE valpath #(shared/get-value-from-change e))) ;if changes update val
@@ -225,22 +215,6 @@
                                 :on-change changefn
                                 :value input-value
                                 :required required?})
-        #_#_input-map (merge {:type type
-                          :id id
-                          :name id
-                          :on-change changefn
-                          :default-value default-value
-                          :placholder placeholder
-                          :value input-value}
-                         (when style-classes
-                           {:class style-classes})
-                         (when disabled
-                           {:disabled disabled})
-                         (when required?
-                           {:required true})
-                         (when rows
-                           {:rows rows}))
-        
         input (case type
                 :radio [radio opt-map]
                 :select [select-box opt-map]
@@ -252,10 +226,6 @@
                 :hidden [hidden-input opt-map]
                 ;; default
                 [:input.form-control opt-map])]
-    
-    (println (str "\nFn-map:\n" fn-map))
-    (println (str "\nVal-path:\n" valpath))
-    (println (str "\nOpt-map:\n" opt-map))
     (case type
       :hidden input
       [:div.field
