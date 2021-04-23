@@ -85,7 +85,7 @@
                 :mytoggle {:type :togglebox
                            :label "My togglebox"
                            :content [:test {:type :text :label "My toggled "}]}
-                :mycheckbox {:type :checkbox :label "My checkbox"}
+                :mycheckbox {:type :checkbox :label "My checkbox" :default-value true}
                 :myfileupload {:type :file
                                :label "My file"
                                :submit-text "Click or Drop a File Here"
@@ -156,5 +156,4 @@
    [datasource-panel]
    [data-panel]
    #_[form-component]
-   [save-button]
-   ])
+   [save-button]])

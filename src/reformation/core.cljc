@@ -110,7 +110,6 @@
 
 (defn to-validation 
   "Given a predicate, wrap it properly to be a validation function for tinput.
-
   Validation function runs on the input at every change, altering the validity of the element as prescribed. It waits for .checkValidity on the input to explain the error"
   [f & [error-message]]
   (if (validation-function? f) f 
@@ -130,18 +129,6 @@
                          (-> dom-element .-classList (.add "invalid"))
                          )))) {:validation-function? true})))
 
-(defn checkbox
-  "Create a checkbox"
-  [{:keys [READ UPDATE valpath] :as fn-map}
-   {:keys [validation-function disabled style-classes] :as input-map}]
-  (let [checked? (READ valpath)
-        toggle-fn (comp (or validation-function identity)
-                        #(UPDATE valpath not))]
-    [:input {:class (into [(last valpath)] style-classes)
-             :type "checkbox"
-             :disabled disabled
-             :on-change toggle-fn}]))
-
 (defn checkset
   "If a checkbox value is nil, set it; otherwise, return it."
   [{:keys [READ UPDATE  valpath default-value]}]
@@ -149,21 +136,35 @@
         dv (boolean default-value)]
     (if (boolean? v)
       v
-      (UPDATE valpath (constantly dv)))))
+      (do
+        #(UPDATE valpath (constantly dv))
+        dv))))
 
+(defn checkbox
+  "Create a checkbox"
+  [{:keys [_READ UPDATE valpath] :as fn-map}
+   {:keys [validation-function disabled style-classes default-value] :as _input-map}]
+  (let [checked? (checkset (merge fn-map {:default-value default-value}))
+        toggle-fn (comp (or validation-function identity)
+                        #(UPDATE valpath not))]
+    [:input {:class (into [(last valpath)] style-classes)
+             :type "checkbox"
+             :checked checked?
+             :disabled disabled
+             :on-change toggle-fn}]))
 
 (defn togglebox
   "Builds a group which, when toggled, displays its `:content`"
-  [{:keys [label content valpath READ UPDATE default-value override-inline? open-height disabled style-classes]
+  [{:keys [_label content valpath _READ _UPDATE _default-value override-inline? open-height disabled _style-classes]
     :or {open-height "5em"}
     :as opt-map}]
-  (let [content-id "togglebox-content"
+  (let [_content-id "togglebox-content"
         checked? (checkset opt-map)
         transition-style {:-webkit-transition "height 0.4s ease-in-out"
                           :transition "height 0.4s ease-in-out"
                           :overflow "hidden"}]
     [:div.togglebox
-     [tinput (select-keys opt-map [:READ :UPDATE :style-classes]) valpath
+     [tinput (select-keys opt-map [:READ :UPDATE :default-value :style-classes]) valpath
       {:type :checkbox
        :checked checked?
        :disabled disabled
