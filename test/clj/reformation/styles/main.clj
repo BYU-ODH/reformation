@@ -139,7 +139,9 @@
                :bottom (px -20)
                :color "#dc3545"}]]
     [:.invalid-feedback {:display "none"
-                         :color "#dc3545"}]]])
+                         :color "#dc3545"}]
+    [:.invalid {:border-color "#dc3545"}]]])
+
 
 (def form-validity
   [:.was-validated
