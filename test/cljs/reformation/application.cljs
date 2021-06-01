@@ -24,14 +24,12 @@
 (def example-atom (atom nil))
 
 (def text-form [:example-element {:type :text
-                                  :validation-function f1
                                   :validation {:timing :on-blur
                                                :validation-function f1
-                                               :validation-feedback "Needs more than 5 characters..."}
+                                               :invalid-feedback "Needs more than 5 characters..."}
                                         ;on-submit, on-change, on-blur
                                         ;invalid-feedback and validation-function should be supported where they are, and in validation map
                                         ;documentation should show them as deprecated outside of valdation map
-                                  :invalid-feedback "Needs more than 5 characters..."
                                   :label "Enter more than 5 characters"
                                   :required true
                                   :id "example1"}
@@ -129,8 +127,7 @@
   [:a.button {:id "Save"
               :title "Submit form"
               :on-click #(if (rfc/report-form-validation)
-                           (js/alert "Passed")
-                           (js/alert "Failed"))
+                           (js/alert "Passed"))
               :href nil} "Save"])
 
 (defn generate-form []

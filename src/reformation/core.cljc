@@ -13,7 +13,7 @@
   (vf/validate-form))
 
 (defn report-form-validation
-  "Creates a popup informing the user what fields are filled in improperly, doesn't work unless render-application has been called first."
+  "Creates a popup informing the user which 'required' fields are filled in improperly, doesn't work unless render-application has been called first."
   []
   (vf/validate-form-feedback @fm-map-atom))
 
@@ -133,7 +133,6 @@
                          (-> dom-element .-classList (.add "invalid"))
                          )))) {:validation-function? true})))
 
-
 (defn checkset
   "If a checkbox value is nil, set it; otherwise, return it."
   [{:keys [READ UPDATE  valpath default-value]}]
@@ -191,15 +190,20 @@
 (defn invalid-feedback-el [invalid-feedback]
   [:div.invalid-feedback invalid-feedback])
 
+;using validation-function and invalid-feedback outside of the validation map is deprecated functionality
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
   [{:keys [READ UPDATE] :as fn-map} valpath & [opt-map]]
-  (let [{:keys [char-count contingent default-value disabled hidden id invalid-feedback required style-classes subtext type validation-function rows placeholder name-separator validation]
+  (let [{:keys [char-count contingent default-value disabled hidden id required style-classes subtext type rows placeholder name-separator validation]
          :or {name-separator "-"
               id (string/join "-" (map name valpath))
               type "text"
               default-value ""}} opt-map
-        {:keys [timing] :or {timing :on-change}} validation
+        {:keys [timing validation-function invalid-feedback]
+         :or {timing :on-change
+              validation-function (:validation-function opt-map)
+                                        ;putting validation-function of invalid feedback outside of the validation map is deprecated behaviour 
+              invalid-feedback (:invalid-feedback opt-map)}} validation
         {:keys [limit enforce?]} char-count
         {:keys [field-key contingent-fn]} contingent
         _init (when (and default-value (nil? (READ valpath)))
@@ -220,7 +224,7 @@
                                   :default (changefn1 e))))
                    :default changefn1)
         opt-map (merge opt-map (merge {:name id
-                                 timing changefn
+                                       timing changefn
                                        :required required}
                                       (when (= timing :on-change) {:value input-value})))
         input (case type
