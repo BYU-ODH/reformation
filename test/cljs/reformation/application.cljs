@@ -24,12 +24,9 @@
 (def example-atom (atom nil))
 
 (def text-form [:example-element {:type :text
-                                  :validation {:timing :on-blur
+                                  :validation {:timing :on-blur ;on-change, on-blur
                                                :validation-function f1
                                                :invalid-feedback "Needs more than 5 characters..."}
-                                        ;on-submit, on-change, on-blur
-                                        ;invalid-feedback and validation-function should be supported where they are, and in validation map
-                                        ;documentation should show them as deprecated outside of valdation map
                                   :label "Enter more than 5 characters"
                                   :required true
                                   :id "example1"}
