@@ -24,10 +24,11 @@
 (def example-atom (atom nil))
 
 (def text-form [:example-element {:type :text
-                                  :validation-function f1
-                                  :invalid-feedback "Needs more than 5 characters..."
+                                  :validation {:timing :on-blur ;on-change, on-blur
+                                               :validation-function f1
+                                               :invalid-feedback "Needs more than 5 characters..."}
                                   :label "Enter more than 5 characters"
-                                  :required true 
+                                  :required true
                                   :id "example1"}
                 :example_element2 {:type :text
                                    :validation-function f2
@@ -122,11 +123,9 @@
   []
   [:a.button {:id "Save"
               :title "Submit form"
-              :on-click #(if (rfc/check-form-validation)
-                           (js/alert "Passed")
-                           (js/alert "Failed"))
+              :on-click #(if (rfc/report-form-validation)
+                           (js/alert "Passed"))
               :href nil} "Save"])
-
 
 (defn generate-form []
   (let [form-id "needs-validation"]
@@ -136,7 +135,6 @@
             (rfc/render-application text-form (data-sources @chosen-datasource))
             ;(rfc/render-application test-form  (data-sources @chosen-datasource))
             )]]))
-
 
 (defn datasource-panel []
   [:div [:span {:on-click (fn [e]
