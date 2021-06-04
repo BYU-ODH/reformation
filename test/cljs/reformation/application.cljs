@@ -23,8 +23,8 @@
 
 (def example-atom (atom nil))
 
-(def text-form [:example-element {:type :text
-                                  :validation {:timing :on-blur ;on-change, on-blur
+(def text-form "timng can be set to on-change and on-blur currently" [:example-element {:type :text
+                                  :validation {:timing :on-blur
                                                :validation-function f1
                                                :invalid-feedback "Needs more than 5 characters..."}
                                   :label "Enter more than 5 characters"
@@ -35,7 +35,13 @@
                                    :invalid-feedback "Just type @..."
                                    :label "Enter the @ symbol"
                                    :required true
-                                   :id "example2"}])
+                                   :id "example2"}
+                                                                      :example_element3 {:type :date
+                                                                                         :validation {:timing :on-blur
+                                                                                                      :validation-function #(not= % nil)}
+                                                                                         :label "Enter a date"
+                                                                                         :required true
+                                                                                         :id "example3"}])
 
 (def my-atom (r/atom nil))
 
@@ -51,9 +57,13 @@
                 :mytext {:type :text
                          :label "My text"}
                 :mytextarea {:type :textarea
+                             :rows 4
+                             :cols 100
                              :label "My textarea"
                              :char-count {:limit 500
-                                          :enforce? true}}
+                                          :enforce? true}
+                             :validation {:timing :on-blur
+                                          :validation-function #(= "@" %)}}
                 :mymultitable  {:label "My multitable"
                                 :id :mymulti
                                 :required? true
