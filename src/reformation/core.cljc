@@ -86,7 +86,7 @@
   opts includes optional `:rows` and `cols` for the html \"rows=\"
   and \"cols=\" attributes."
   [opt-map]
-  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count on-change required class rows cols validation]
+  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count on-change required class rows cols validation on-blur]
          :or {rows 5}} opt-map
         {:keys [limit enforce?]} char-count
         {:keys [timing] :or {timing :on-change}} validation 
@@ -99,6 +99,7 @@
                                  :default-value input-value
                                  :value value
                                  :on-change on-change
+                                 ;timing on-blur
                                  :required required
                                  :placeholder placeholder
                                  :disabled disabled}]]
@@ -203,7 +204,7 @@
               type "text"
               default-value ""}} opt-map
         {:keys [timing validation-function invalid-feedback]
-         :or {timing :on-change
+         :or {timing :on-blur
               validation-function (:validation-function opt-map)
               invalid-feedback (:invalid-feedback opt-map)}} validation
         {:keys [limit enforce?]} char-count
