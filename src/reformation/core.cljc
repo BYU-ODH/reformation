@@ -44,6 +44,13 @@
   [:label.label {:for for-id}
    label-text])
 
+(defn add-attribute
+  "Adds `attribute` to the `obj` map under `key` if it isn't nil, else returns the original map"
+  [obj attribute key]
+  (if attribute
+    (assoc obj key attribute)
+    obj))
+
 (defn select-box [m]
   (let [{:keys [options id on-change required style-classes]
          :or {id "generic-select"
@@ -53,9 +60,9 @@
                                  :name id
                                  :required required
                                  :on-change on-change}]
-          (for [{:keys [content value] :as o} options]
+          (for [{:keys [content value on-click] :as o} options]
             (let [[c v] [(or content value o) (or value content o)]]
-              [:option {:value v}
+              [:option (add-attribute {:value v} on-click :on-click)
                c])))))
 
 
@@ -268,7 +275,6 @@
   `fm` is the schema of the application, a vector laying out the fields and their attributes.
   `fn-map` is either an Atom to hold the information a user inputs, or a map "
   [fm fn-map & [pathv]]
-  ;why doesn't swap! work here?
   (reset! fm-map-atom fm)
   (cond (atom? fn-map)
     (let [R (partial get-in @fn-map)

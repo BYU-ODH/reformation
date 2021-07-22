@@ -23,25 +23,33 @@
 
 (def example-atom (atom nil))
 
-(def text-form "timng can be set to on-change and on-blur currently" [:example-element {:type :text
-                                  :validation {:timing :on-blur
-                                               :validation-function f1
-                                               :invalid-feedback "Needs more than 5 characters..."}
-                                  :label "Enter more than 5 characters"
-                                  :required true
-                                  :id "example1"}
-                :example_element2 {:type :text
-                                   :validation-function f2
-                                   :invalid-feedback "Just type @..."
-                                   :label "Enter the @ symbol"
-                                   :required true
-                                   :id "example2"}
-                                                                      :example_element3 {:type :date
-                                                                                         :validation {:timing :on-blur
-                                                                                                      :validation-function #(not= % nil)}
-                                                                                         :label "Enter a date"
-                                                                                         :required true
-                                                                                         :id "example3"}])
+(def text-form "timng can be set to on-change and on-blur currently"
+  [:example-element {:type :text
+                     :validation {:timing :on-blur
+                                  :validation-function f1
+                                  :invalid-feedback "Needs more than 5 characters..."}
+                     :label "Enter more than 5 characters"
+                     :required true
+                     :id "example1"}
+   :example_element2 {:type :text
+                      :validation-function f2
+                      :invalid-feedback "Just type @..."
+                      :label "Enter the @ symbol"
+                      :required true
+                      :id "example2"}
+   :example_element3 {:type :date
+                      :validation {:timing :on-blur
+                                   :validation-function #(not= % nil)}
+                      :label "Enter a date"
+                      :required true
+                      :id "example3"}
+   :example_element4 {:type :select
+                      :label "Select"
+                      :validation {:validation-function #(println "Howdy")}
+                      :required true
+                      :on-change #(js/alert "changed")
+                      :options [{:content "hi" :value "" :on-click #(js/alert "clicked")} "hello" "howdy"]
+                      :id "example4"}])
 
 (def my-atom (r/atom nil))
 
@@ -142,8 +150,8 @@
     [:div.submission-form 
      [:form.form-control {:id form-id}
       (into [:div.form-contents]
-            ;(rfc/render-application text-form (data-sources @chosen-datasource))
-            (rfc/render-application test-form  (data-sources @chosen-datasource))
+            (rfc/render-application text-form (data-sources @chosen-datasource))
+            ;(rfc/render-application test-form  (data-sources @chosen-datasource))
             )]]))
 
 (defn datasource-panel []
