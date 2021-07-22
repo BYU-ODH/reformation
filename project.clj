@@ -1,4 +1,4 @@
-(defproject byu-odh/reformation "12.1"
+(defproject byu-odh/reformation "12.2"
   :description "Generate and manipulate form datastructures in pure Clojure, which can be read with Reagent."
   :url "http://tech.toryanderson.com"
   :license {:name "Eclipse Public License"
