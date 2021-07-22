@@ -44,13 +44,6 @@
   [:label.label {:for for-id}
    label-text])
 
-(defn add-attribute
-  "Adds `attribute` to the `obj` map under `key` if it isn't nil, else returns the original map"
-  [obj attribute key]
-  (if attribute
-    (assoc obj key attribute)
-    obj))
-
 (defn select-box [m]
   (let [{:keys [options id on-change required style-classes]
          :or {id "generic-select"
@@ -62,7 +55,7 @@
                                  :on-change on-change}]
           (for [{:keys [content value on-click] :as o} options]
             (let [[c v] [(or content value o) (or value content o)]]
-              [:option (add-attribute {:value v} on-click :on-click)
+              [:option {:value v :on-click on-click}
                c])))))
 
 
