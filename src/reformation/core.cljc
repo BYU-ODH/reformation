@@ -7,7 +7,9 @@
             #?(:cljs [reagent.core :refer [atom]])
             [clojure.string :as string]))
 
-(declare tinput render-application render-review fm-map-atom)
+(declare tinput render-application render-review)
+
+(def fm-map-atom "This atom is set when render-application is called" (atom nil))
 
 (defn check-form-validation []
   (vf/validate-form))
@@ -51,9 +53,9 @@
                                  :name id
                                  :required required
                                  :on-change on-change}]
-          (for [{:keys [content value] :as o} options]
+          (for [{:keys [content value on-click] :as o} options]
             (let [[c v] [(or content value o) (or value content o)]]
-              [:option {:value v}
+              [:option {:value v :on-click on-click}
                c])))))
 
 
@@ -81,20 +83,23 @@
 
 (defn text-area 
   "Renders `:type :textarea` elements. In addition to the usual
-  opts includes optional `:rows` for the html \"rows=\" attribute."
+  opts includes optional `:rows` and `cols` for the html \"rows=\"
+  and \"cols=\" attributes."
   [opt-map]
-  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count on-change required class rows]
+  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count on-change required class rows cols validation on-blur]
          :or {rows 5}} opt-map
         {:keys [limit enforce?]} char-count
-        
+        {:keys [timing] :or {timing :on-change}} validation 
         textarea
         [:textarea.form-control {:id id
                                  :class class
                                  :name id 
                                  :rows rows
+                                 :cols cols
                                  :default-value input-value
                                  :value value
                                  :on-change on-change
+                                 ;timing on-blur
                                  :required required
                                  :placeholder placeholder
                                  :disabled disabled}]]
@@ -190,19 +195,17 @@
 (defn invalid-feedback-el [invalid-feedback]
   [:div.invalid-feedback invalid-feedback])
 
-;using validation-function and invalid-feedback outside of the validation map is deprecated functionality
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
   [{:keys [READ UPDATE] :as fn-map} valpath & [opt-map]]
-  (let [{:keys [char-count contingent default-value disabled hidden id required style-classes subtext type rows placeholder name-separator validation]
+  (let [{:keys [char-count contingent default-value disabled hidden id required style-classes subtext type placeholder name-separator validation]
          :or {name-separator "-"
               id (string/join "-" (map name valpath))
               type "text"
               default-value ""}} opt-map
         {:keys [timing validation-function invalid-feedback]
-         :or {timing :on-change
+         :or {timing :on-blur
               validation-function (:validation-function opt-map)
-                                        ;putting validation-function of invalid feedback outside of the validation map is deprecated behaviour 
               invalid-feedback (:invalid-feedback opt-map)}} validation
         {:keys [limit enforce?]} char-count
         {:keys [field-key contingent-fn]} contingent
@@ -259,15 +262,12 @@
   (try (do (deref a) true)
        (catch #?(:clj Exception :cljs js/Error) _ false)))
 
-(def fm-map-atom (atom nil))
-
 (defn render-application
   "Render the editable application.
 
   `fm` is the schema of the application, a vector laying out the fields and their attributes.
   `fn-map` is either an Atom to hold the information a user inputs, or a map "
   [fm fn-map & [pathv]]
-  ;why doesn't swap! work here?
   (reset! fm-map-atom fm)
   (cond (atom? fn-map)
     (let [R (partial get-in @fn-map)
