@@ -55,6 +55,23 @@
 
 (def FILE (r/atom nil))
 
+(def DICTIONARY {:example/input-kw {:type :text
+                                    :label "default kw-mapped text"
+                                    :default-value "something good"
+                                    :disabled true
+                                    :style-classes "I-like-red"}
+                 :example/default-scalar "Just a value from a keyword"
+                 :example/default-options ["option-1" "option-2" "option-3"]})
+
+(def test-form-with-map [:mydefault-text :example/input-kw
+                
+                :myselect {:label "A select"
+                           :type :select
+                           :options :example/default-options}
+                :mytext {:type :text
+                         :label :example/default-scalar}])
+
+
 (def test-form [:myhidden-text {:type :hidden
                                 :default-value "whisper"}
                 :mydefault-text {:type :text
@@ -125,15 +142,15 @@
                  "Save"]])
 
 (def data-sources {:atom my-atom
-                   :map {:READ
+                   :map {:DICTIONARY DICTIONARY
+                         :READ
                          (fn [kv]
                            @(reframe/subscribe [:read-form-item kv]))
                          #_(partial get-in @my-atom)
                          :UPDATE
                          (fn [kv update-function]
                            ;; dispatch-sync is required here, because the defer involved in plain reframe/dispatch causes the synthetic event to be released and the fn breaks. 
-                           (reframe/dispatch-sync [:update-form kv update-function]))
-                         #_(partial swap! my-atom update-in)}})
+                           (reframe/dispatch-sync [:update-form kv update-function]))}})
 
 (def chosen-datasource (r/atom :atom))
 
@@ -150,8 +167,9 @@
     [:div.submission-form 
      [:form.form-control {:id form-id}
       (into [:div.form-contents]
-            (rfc/render-application text-form (data-sources @chosen-datasource))
-            ;(rfc/render-application test-form  (data-sources @chosen-datasource))
+            #_(rfc/render-application text-form (data-sources @chosen-datasource))
+            #_(rfc/render-application test-form  (data-sources @chosen-datasource))
+            (rfc/render-application test-form-with-map (data-sources @chosen-datasource) DICTIONARY)
             )]]))
 
 (defn datasource-panel []

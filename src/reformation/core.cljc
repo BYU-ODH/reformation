@@ -197,7 +197,7 @@
 
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
-  [{:keys [READ UPDATE] :as fn-map} valpath & [opt-map]]
+  [{:keys [READ UPDATE DICTIONARY] :as fn-map} valpath & [opt-map]]
   (let [{:keys [char-count contingent default-value disabled hidden id required style-classes subtext type placeholder name-separator validation]
          :or {name-separator "-"
               id (string/join "-" (map name valpath))
@@ -262,11 +262,26 @@
   (try (do (deref a) true)
        (catch #?(:clj Exception :cljs js/Error) _ false)))
 
+(defn from-dictionary
+  "Make sure both `:DICTIONARY` and `k` exist in `fn-map`, throwing meaningful errors as needed"
+  [{dictionary :DICTIONARY
+    :as fn-map} k]
+  (println "fn-map is " fn-map)
+  (if-not dictionary
+    (throw (ex-info "No :DICTIONARY in fn-map" {:fn-map fn-map}))
+    (if-let [v (get dictionary k)] v
+            (throw (ex-info (str "No " k " in DICTIONARY") {:DICTIONARY dictionary})))))
+
 (defn render-application
   "Render the editable application.
 
   `fm` is the schema of the application, a vector laying out the fields and their attributes.
-  `fn-map` is either an Atom to hold the information a user inputs, or a map "
+  `fn-map` is either an Atom to hold the information a user inputs, or a map that must with:
+  
+  `:READ` a function that takes args with the same signature as get-in
+  `:UPDATE` a function that takes args with the same signature as update-in
+  `:DICTIONARY`(optional) a map of keyword to reformation-compatible structures
+  "
   [fm fn-map & [pathv]]
   (reset! fm-map-atom fm)
   (cond (atom? fn-map)
@@ -274,10 +289,12 @@
           U (partial swap! fn-map update-in)
           fn-map {:READ R :UPDATE U}]
       (render-application fm fn-map pathv))
-
+;;;;;;;;;;;;;;;;
     (map? fn-map)
     (for [[k v] (partition 2 fm)
-          :let [path (conj (vec pathv) k)]]
+          :let [path (conj (vec pathv) k)
+                v (if (keyword? v) (from-dictionary fn-map v)
+                    v)]]
       (cond
         (sequential? v) (render-application v fn-map path)
         (map? v) ^{:key v} [tinput fn-map path v]
