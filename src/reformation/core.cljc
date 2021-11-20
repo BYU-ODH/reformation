@@ -48,15 +48,18 @@
   (let [{:keys [options id on-change required style-classes]
          :or {id "generic-select"
               options ["No :options provided"]}} m]
-    (into [:select.form-control {:class style-classes
-                                 :id id
-                                 :name id
-                                 :required required
-                                 :on-change on-change}]
-          (for [{:keys [content value on-click] :as o} options]
-            (let [[c v] [(or content value o) (or value content o)]]
-              [:option {:value v :on-click on-click}
-               c])))))
+    (cond
+      (keyword? options) "need the dictionary"
+      (sequential? options)
+      (into [:select.form-control {:class style-classes
+                                   :id id
+                                   :name id
+                                   :required required
+                                   :on-change on-change}]
+            (for [{:keys [content value on-click] :as o} options]
+              (let [[c v] [(or content value o) (or value content o)]]
+                [:option {:value v :on-click on-click}
+                 c]))))))
 
 
 (defn radio [{:keys [options on-change]}]

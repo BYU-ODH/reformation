@@ -70,9 +70,9 @@
                                             :required true
                                             :id "example2"}
                          :mydefault-text :example/input-kw
-                         ;; :myselect {:label "A select"
-                         ;;            :type :select
-                         ;;            :options :example/default-options}
+                         :myselect {:label "A select"
+                                    :type :select
+                                    :options :example/default-options}
                          ;; :mytext {:type :text
                          ;;          :label :example/default-scalar}
                          ])
