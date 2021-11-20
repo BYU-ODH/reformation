@@ -269,8 +269,15 @@
   (println "fn-map is " fn-map)
   (if-not dictionary
     (throw (ex-info "No :DICTIONARY in fn-map" {:fn-map fn-map}))
-    (if-let [v (get dictionary k)] v
-            (throw (ex-info (str "No " k " in DICTIONARY") {:DICTIONARY dictionary})))))
+    (let [v (get dictionary k)]
+      (cond
+        (not v) (throw (ex-info (str "No " k " in DICTIONARY") {:DICTIONARY dictionary}))
+        (fn? v) (v)
+        ((some-fn vector? map?) v) v
+        :unknown (throw (ex-info (str "type of value in " k " not known")
+                                 {:type (type v)
+                                  :keyword k
+                                  :DICTIONARY dictionary}))))))
 
 (defn render-application
   "Render the editable application.
@@ -284,6 +291,10 @@
   "
   [fm fn-map & [pathv]]
   (reset! fm-map-atom fm)
+
+  (println ">>>>>>> fn-map")
+  (prn {:fn-map fn-map})
+
   (cond (atom? fn-map)
     (let [R (partial get-in @fn-map)
           U (partial swap! fn-map update-in)

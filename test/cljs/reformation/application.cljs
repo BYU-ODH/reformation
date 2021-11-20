@@ -7,7 +7,7 @@
             ;[reformation.routes :as rt]
             [reformation.core :as rfc]
             [re-frame.core :as reframe]
-            ;[reformation.reframe]
+            [reformation.reframe] ;; necessary for the re-frame tests
             [cljs.pprint :as pprint]))
 
 
@@ -63,13 +63,19 @@
                  :example/default-scalar "Just a value from a keyword"
                  :example/default-options ["option-1" "option-2" "option-3"]})
 
-(def test-form-with-map [:mydefault-text :example/input-kw
-                
-                :myselect {:label "A select"
-                           :type :select
-                           :options :example/default-options}
-                :mytext {:type :text
-                         :label :example/default-scalar}])
+(def test-form-with-map [:example_element2 {:type :text
+                                            :validation-function f2
+                                            :invalid-feedback "Just type @..."
+                                            :label "Enter the @ symbol"
+                                            :required true
+                                            :id "example2"}
+                         :mydefault-text :example/input-kw
+                         ;; :myselect {:label "A select"
+                         ;;            :type :select
+                         ;;            :options :example/default-options}
+                         ;; :mytext {:type :text
+                         ;;          :label :example/default-scalar}
+                         ])
 
 
 (def test-form [:myhidden-text {:type :hidden
@@ -152,7 +158,7 @@
                            ;; dispatch-sync is required here, because the defer involved in plain reframe/dispatch causes the synthetic event to be released and the fn breaks. 
                            (reframe/dispatch-sync [:update-form kv update-function]))}})
 
-(def chosen-datasource (r/atom :atom))
+(def chosen-datasource (r/atom :map))
 
 (defn save-button
   []
@@ -169,7 +175,7 @@
       (into [:div.form-contents]
             #_(rfc/render-application text-form (data-sources @chosen-datasource))
             #_(rfc/render-application test-form  (data-sources @chosen-datasource))
-            (rfc/render-application test-form-with-map (data-sources @chosen-datasource) DICTIONARY)
+            (rfc/render-application test-form-with-map (data-sources @chosen-datasource))
             )]]))
 
 (defn datasource-panel []
