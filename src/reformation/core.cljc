@@ -268,20 +268,17 @@
 
 (defn from-dictionary
   "Make sure both `:DICTIONARY` and `k` exist in `fn-map`, throwing meaningful errors as needed"
-  [{dictionary :DICTIONARY
-    :as fn-map} k]
-  (println "fn-map is " fn-map)
-  (if-not dictionary
-    (throw (ex-info "No :DICTIONARY in fn-map" {:fn-map fn-map}))
-    (let [v (get dictionary k)]
-      (cond
-        (not v) (throw (ex-info (str "No " k " in DICTIONARY") {:DICTIONARY dictionary}))
-        (fn? v) (v)
-        ((some-fn vector? map?) v) v
-        :unknown (throw (ex-info (str "type of value in " k " not known")
-                                 {:type (type v)
-                                  :keyword k
-                                  :DICTIONARY dictionary}))))))
+  [dictionary k]
+  (let [v (get dictionary k)]
+    (cond
+      ((complement qualified-keyword?) k) k ;; TODO should also log a warning about this
+      (not v) (throw (ex-info (str "No " k " in DICTIONARY") {:DICTIONARY dictionary}))
+      ((some-fn vector? map?) v) v
+      (fn? v) (v)
+      :unknown (throw (ex-info (str "type of value in " k " not known")
+                               {:type (type v)
+                                :keyword k
+                                :DICTIONARY dictionary})))))
 
 (defn keywordize-form
   "Transform all keyword values in the form `fm` into their `dictionary` lookups"
@@ -343,7 +340,13 @@
   ;; How to transform every keyword value?
   (let [DICTIONARY {:v1 "I was vee1"
                     :v3 "I was deep vee3"}
-        
+        real-d {:example/input-kw {:type :text
+                                    :label "default kw-mapped text"
+                                    :default-value "something good"
+                                    :disabled true
+                                    :style-classes "I-like-red"}
+                 :example/default-scalar "Just a value from a keyword"
+                 :example/default-options ["option-1" "option-2" "option-3"]}
         vm [{:k1 :v1
              :k2 "v2 string unchanged"
              :k3 [{:k3a :v3}]}]
@@ -371,7 +374,8 @@
                                   [s/LAST keyword?] [s/LAST] ;; if it's a keyword, select it
                                   [s/LAST vector?] [s/LAST s/ALL p] ;; if it's a vector, go recursive on it
                                   ;; if it's anything else, forget about it
-                                              )])]
+                                  )])
+        get-from-dictionary (partial from-dictionary real-d)]
     
     ;(s/select [s/ALL TreeValues] vm) ;; [:v1 :v3][:v1 :v3]
     ;(s/transform [s/ALL TreeValues] (constantly "KEYEE") vm)
@@ -381,6 +385,6 @@
     ;;(s/transform [s/ALL TreeValues] #(get DICTIONARY % "NOT FOUND IN DICT") vm2)
     ;; [{:k1 "I was vee1"} {:k2 "v2 string unchanged", :k3 [{:k3a "I was deep vee3"}]}]
     ;;(s/select [s/ALL map? #_TreeValues] vmreal)
-    (s/transform [s/ALL map? TreeValues] #(get DICTIONARY % "NOT FOUND IN DICT") vmreal)
+    (s/transform [s/ALL map? TreeValues] get-from-dictionary vmreal)
     )
   )
