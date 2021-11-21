@@ -283,6 +283,17 @@
                                   :keyword k
                                   :DICTIONARY dictionary}))))))
 
+(defn keywordize-form
+  "Transform all keyword values in the form `fm` into their `dictionary` lookups"
+  [fm dictionary]
+  (let [TreeValues
+(s/recursive-path [] p
+                  [s/ALL (s/cond-path [s/LAST keyword?] [s/LAST] 
+                                      [s/LAST vector?] [s/LAST s/ALL p])])
+        get-from-dictionary (partial from-dictionary dictionary)]
+    (s/transform [s/ALL TreeValues] get-from-dictionary fm)
+    ))
+
 (defn render-application
   "Render the editable application.
 
@@ -295,10 +306,6 @@
   "
   [fm fn-map & [pathv]]
   (reset! fm-map-atom fm)
-
-  (println ">>>>>>> fn-map")
-  (prn {:fn-map fn-map})
-
   (cond (atom? fn-map)
     (let [R (partial get-in @fn-map)
           U (partial swap! fn-map update-in)
@@ -306,15 +313,21 @@
       (render-application fm fn-map pathv))
 ;;;;;;;;;;;;;;;;
     (map? fn-map)
-    (for [[k v] (partition 2 fm)
-          :let [path (conj (vec pathv) k)
-                v (if (keyword? v) (from-dictionary fn-map v)
-                    v)]]
-      (cond
-        (sequential? v) (render-application v fn-map path)
-        (map? v) ^{:key v} [tinput fn-map path v]
+    (let [dictionary (:DICTIONARY fn-map)
+          fm (if dictionary
+               (keywordize-form fm dictionary)
+               fm)]
+       (println ">>>>>>> fm")
+       (prn {:fm fm})
 
-        :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)]))
+
+      (for [[k v] (partition 2 fm)
+            :let [path (conj (vec pathv) k)]]
+        (cond
+          (sequential? v) (render-application v fn-map path)
+          (map? v) ^{:key v} [tinput fn-map path v]
+
+          :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)])))
     :else (throw (ex-info "Unsupported arg for atom-or-map" {:atom-or-map fn-map}))))
 
 
@@ -336,12 +349,28 @@
              :k3 [{:k3a :v3}]}]
         vm2 [{:k1 :v1}
              {:k2 "v2 string unchanged"
-             :k3 [{:k3a :v3}]}]
+              :k3 [{:k3a :v3}]}]
+        vmreal [:example_element2 {:type :text
+                                         :validation-function identity
+                                         :invalid-feedback "Just type @..."
+                                         :label "Enter the @ symbol"
+                                         :required true
+                                         :id "example2"}
+                :mydefault-text :example/input-kw
+                :myselect {:label "A select"
+                                      :type :select
+                           :options :example/default-options}
+                :mytext {:type :text
+                         :label :example/default-scalar}
+                ]
+        
         TreeValues
         (s/recursive-path [] p
-                          [s/ALL (s/cond-path [s/LAST keyword?] [s/LAST] ;; if it's a keyword, select it
-                                              [s/LAST vector?] [s/LAST s/ALL p] ;; if it's a vector, go recursive on it
-                                              ;; if it's anything else, forget about it
+                          [s/ALL (s/cond-path
+                                  ;; need to handle the vector, kw part of things. If we are on a bare non-collection in the a vector, just move on
+                                  [s/LAST keyword?] [s/LAST] ;; if it's a keyword, select it
+                                  [s/LAST vector?] [s/LAST s/ALL p] ;; if it's a vector, go recursive on it
+                                  ;; if it's anything else, forget about it
                                               )])]
     
     ;(s/select [s/ALL TreeValues] vm) ;; [:v1 :v3][:v1 :v3]
@@ -349,7 +378,9 @@
     ;; [{:k1 "KEYEE", :k2 "v2 string unchanged", :k3 [{:k3a "KEYEE"}]}]
     ;(s/transform [s/ALL TreeValues] #(get DICTIONARY % "NOT FOUND IN DICT") vm)
     ;; [{:k1 "I was vee1", :k2 "v2 string unchanged", :k3 [{:k3a "I was deep vee3"}]}]
-    (s/transform [s/ALL TreeValues] #(get DICTIONARY % "NOT FOUND IN DICT") vm2)
+    ;;(s/transform [s/ALL TreeValues] #(get DICTIONARY % "NOT FOUND IN DICT") vm2)
     ;; [{:k1 "I was vee1"} {:k2 "v2 string unchanged", :k3 [{:k3a "I was deep vee3"}]}]
+    ;;(s/select [s/ALL map? #_TreeValues] vmreal)
+    (s/transform [s/ALL map? TreeValues] #(get DICTIONARY % "NOT FOUND IN DICT") vmreal)
     )
   )
