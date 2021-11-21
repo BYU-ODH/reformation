@@ -5,7 +5,8 @@
             [reformation.shared :as shared]
             ;[reformation.validation :as vali]
             #?(:cljs [reagent.core :refer [atom]])
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [com.rpl.specter :as s]))
 
 (declare tinput render-application render-review)
 
@@ -27,7 +28,7 @@
               :let [nv (cond
                          (vector? v) (map-structure v)
                          (map? v) (:value v "")
-                         :default "")]]
+                          :default "")]]
           [k nv])))
 
 (defn reset-default
@@ -324,3 +325,31 @@
   (render-application
    (shared/reviewify schema)
    (atom application)))
+
+(comment
+  ;; How to transform every keyword value?
+  (let [DICTIONARY {:v1 "I was vee1"
+                    :v3 "I was deep vee3"}
+        
+        vm [{:k1 :v1
+             :k2 "v2 string unchanged"
+             :k3 [{:k3a :v3}]}]
+        vm2 [{:k1 :v1}
+             {:k2 "v2 string unchanged"
+             :k3 [{:k3a :v3}]}]
+        TreeValues
+        (s/recursive-path [] p
+                          [s/ALL (s/cond-path [s/LAST keyword?] [s/LAST] ;; if it's a keyword, select it
+                                              [s/LAST vector?] [s/LAST s/ALL p] ;; if it's a vector, go recursive on it
+                                              ;; if it's anything else, forget about it
+                                              )])]
+    
+    ;(s/select [s/ALL TreeValues] vm) ;; [:v1 :v3][:v1 :v3]
+    ;(s/transform [s/ALL TreeValues] (constantly "KEYEE") vm)
+    ;; [{:k1 "KEYEE", :k2 "v2 string unchanged", :k3 [{:k3a "KEYEE"}]}]
+    ;(s/transform [s/ALL TreeValues] #(get DICTIONARY % "NOT FOUND IN DICT") vm)
+    ;; [{:k1 "I was vee1", :k2 "v2 string unchanged", :k3 [{:k3a "I was deep vee3"}]}]
+    (s/transform [s/ALL TreeValues] #(get DICTIONARY % "NOT FOUND IN DICT") vm2)
+    ;; [{:k1 "I was vee1"} {:k2 "v2 string unchanged", :k3 [{:k3a "I was deep vee3"}]}]
+    )
+  )
