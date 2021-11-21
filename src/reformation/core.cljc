@@ -273,7 +273,7 @@
     (cond
       ((complement qualified-keyword?) k) k ;; TODO should also log a warning about this
       (not v) (throw (ex-info (str "No " k " in DICTIONARY") {:DICTIONARY dictionary}))
-      ((some-fn vector? map?) v) v
+      ((some-fn vector? map? string?) v) v
       (fn? v) (v)
       :unknown (throw (ex-info (str "type of value in " k " not known")
                                {:type (type v)
