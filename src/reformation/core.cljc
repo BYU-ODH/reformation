@@ -267,19 +267,18 @@
        (catch #?(:clj Exception :cljs js/Error) _ false)))
 
 (defn from-dictionary
-  "Make sure both `:DICTIONARY` and `k` exist in `fn-map`, throwing meaningful errors as needed"
+  "Return valid entries `k` from `dictionary`, or error meaningfully"
   [dictionary k]
   (let [v (get dictionary k)]
     (cond
-      ((complement qualified-keyword?) k) k ;; TODO should also log a warning about this
+      ((complement qualified-keyword?) k) (do (println "unqualified keyword:: " k) k)
       (not v) (throw (ex-info (str "No " k " in DICTIONARY") {:DICTIONARY dictionary}))
-      ((some-fn vector? map? string?) v) v
+      ((some-fn vector? map? string?) v) (do (println "Sucess checking " k) v)
       (fn? v) (v)
       :unknown (throw (ex-info (str "type of value in " k " not known")
                                {:type (type v)
                                 :keyword k
                                 :DICTIONARY dictionary})))))
-
 (defn keywordize-form
   "Transform all keyword values in the form `fm` into their `dictionary` lookups"
   [fm dictionary]
@@ -314,10 +313,7 @@
           fm (if dictionary
                (keywordize-form fm dictionary)
                fm)]
-       (println ">>>>>>> fm")
-       (prn {:fm fm})
-
-
+      
       (for [[k v] (partition 2 fm)
             :let [path (conj (vec pathv) k)]]
         (cond
@@ -338,21 +334,13 @@
 
 (comment
   ;; How to transform every keyword value?
-  (let [DICTIONARY {:v1 "I was vee1"
-                    :v3 "I was deep vee3"}
-        real-d {:example/input-kw {:type :text
+  (let [real-d {:example/input-kw {:type :text
                                     :label "default kw-mapped text"
                                     :default-value "something good"
                                     :disabled true
                                     :style-classes "I-like-red"}
                  :example/default-scalar "Just a value from a keyword"
                  :example/default-options ["option-1" "option-2" "option-3"]}
-        vm [{:k1 :v1
-             :k2 "v2 string unchanged"
-             :k3 [{:k3a :v3}]}]
-        vm2 [{:k1 :v1}
-             {:k2 "v2 string unchanged"
-              :k3 [{:k3a :v3}]}]
         vmreal [:example_element2 {:type :text
                                          :validation-function identity
                                          :invalid-feedback "Just type @..."
@@ -361,7 +349,7 @@
                                          :id "example2"}
                 :mydefault-text :example/input-kw
                 :myselect {:label "A select"
-                                      :type :select
+                           :type :select
                            :options :example/default-options}
                 :mytext {:type :text
                          :label :example/default-scalar}
@@ -384,7 +372,9 @@
     ;; [{:k1 "I was vee1", :k2 "v2 string unchanged", :k3 [{:k3a "I was deep vee3"}]}]
     ;;(s/transform [s/ALL TreeValues] #(get DICTIONARY % "NOT FOUND IN DICT") vm2)
     ;; [{:k1 "I was vee1"} {:k2 "v2 string unchanged", :k3 [{:k3a "I was deep vee3"}]}]
-    ;;(s/select [s/ALL map? #_TreeValues] vmreal)
-    (s/transform [s/ALL map? TreeValues] get-from-dictionary vmreal)
+    ;;(s/select [s/ALL (s/cond-path map? TreeValues keyword? s/collect)] vmreal)
+    
+    ;;(s/transform [s/ALL map? TreeValues] get-from-dictionary vmreal)
+    (s/transform [s/ALL (s/cond-path map? TreeValues keyword? s/collect)] get-from-dictionary vmreal)
     )
   )

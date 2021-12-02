@@ -195,5 +195,5 @@
    [generate-form]
    [datasource-panel]
    [data-panel]
-   #_[form-component]
+   ;[form-component]
    [save-button]])
