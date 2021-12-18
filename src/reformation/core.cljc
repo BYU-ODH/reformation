@@ -6,7 +6,13 @@
             ;[reformation.validation :as vali]
             #?(:cljs [reagent.core :refer [atom]])
             [clojure.string :as string]
-            [com.rpl.specter :as s]))
+            [com.rpl.specter :as s]
+            [com.rpl.specter.protocols]))
+
+;; This is needed for the Specter recursive transform to work in cljs. https://github.com/redplanetlabs/specter/issues/312
+(extend-type #?(:clj clojure.lang.AFn :cljs cljs.core/MetaFn)
+  com.rpl.specter.protocols/ImplicitNav
+  (implicit-nav [this] (s/pred this)))
 
 (declare tinput render-application render-review)
 
@@ -287,7 +293,8 @@
                   [s/ALL (s/cond-path [s/LAST keyword?] [s/LAST] 
                                       [s/LAST vector?] [s/LAST s/ALL p])])
         get-from-dictionary (partial from-dictionary dictionary)]
-    (s/transform [s/ALL TreeValues] get-from-dictionary fm)
+    ;(s/transform [s/ALL map? TreeValues] get-from-dictionary fm)
+    (s/transform [s/ALL (s/cond-path map? TreeValues keyword? s/collect)] get-from-dictionary fm)
     ))
 
 (defn render-application
@@ -334,6 +341,18 @@
 
 (comment
   ;; How to transform every keyword value?
+  ;; #?(:cljs
+  ;;    (extend-protocol com.rpl.specter.protocols/ImplicitNav
+  ;;      cljs.core/MetaFn
+  ;;      (implicit-nav [this]
+  ;;        this) ;; this might not work, but it should at least change the error
+  ;;      )
+  ;;    )
+  
+  (extend-type #?(:clj clojure.lang.AFn :cljs cljs.core/MetaFn)
+    com.rpl.specter.protocols/ImplicitNav
+    (implicit-nav [this] (s/pred this)))
+
   (let [real-d {:example/input-kw {:type :text
                                     :label "default kw-mapped text"
                                     :default-value "something good"
