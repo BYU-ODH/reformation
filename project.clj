@@ -47,8 +47,10 @@
                                   [luminus-immutant "0.2.5"]
                                   [metosin/ring-http-response "0.9.1"]
                                   [mount "0.1.16"] ;; Modular runtime operation
-                                  [org.clojure/clojure "1.9.0"]
-                                  [org.clojure/clojurescript "1.10.439" :scope "provided"]
+                                  ;;[org.clojure/clojure "1.9.0"]
+                                  [org.clojure/clojure "1.10.1"]
+                                  [org.clojure/clojurescript "1.10.520" :scope "provided"]
+                                  ;[org.clojure/clojurescript "1.10.439" :scope "provided"]
                                   [org.clojure/tools.cli "0.4.1"]
                                   [org.clojure/tools.logging "0.4.1"]
                                   [org.webjars.npm/bulma "0.7.5"]

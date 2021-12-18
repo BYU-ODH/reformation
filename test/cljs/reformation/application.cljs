@@ -62,13 +62,35 @@
                                     :style-classes "I-like-red"}
                  :example/default-scalar "Just a value from a keyword"
                  :example/default-options ["option-1" "option-2" "option-3"]})
+(def DICTIONARY2
+  {:humplus/programs              ["one" "two"]
+   :humplus/grant-permission-text "Permission text"
+   :shared/USERNAME               "LovelyUser"})
 
-(def test-form-with-map [:example_element2 {:type :text
-                                            :validation-function f2
-                                            :invalid-feedback "Just type @..."
-                                            :label "Enter the @ symbol"
-                                            :required true
-                                            :id "example2"}
+(def test-form-with-map
+  [:programs {:name      "internship-program"
+              :required? true
+              :label     "Select from among the following eligible programs"
+              :type      :select
+              :options   :humplus/programs}
+   :other-explanation {:name        "other-explanation"
+                       :required    true
+                       :placeholder "Your program director,  program location, and program term/semester"
+                       :label       "Description of your program"}
+   :grant-permission {:name     "grant-permission"
+                      :required true
+                      :type     "checkbox"
+                      :value    :humplus/grant-permission-text
+                      :label    :humplus/grant-permission-text}
+   :netid {:type  "hidden"
+           :name  "netid"
+           :value :shared/USERNAME}]
+  #_  [:example_element2 {:type                :text
+                          :validation-function f2
+                          :invalid-feedback    "Just type @..."
+                          :label               "Enter the @ symbol"
+                          :required            true
+                          :id                  "example2"}
                          :mydefault-text :example/input-kw
                          :myselect {:label "A select"
                                     :type :select
@@ -148,7 +170,7 @@
                  "Save"]])
 
 (def data-sources {:atom my-atom
-                   :map {:DICTIONARY DICTIONARY
+                   :map {:DICTIONARY DICTIONARY2
                          :READ
                          (fn [kv]
                            @(reframe/subscribe [:read-form-item kv]))
@@ -164,7 +186,7 @@
   []
   [:a.button {:id "Save"
               :title "Submit form"
-              :on-click #(if (rfc/report-form-validation)
+              :on-click #(when (rfc/report-form-validation)
                            (js/alert "Passed"))
               :href nil} "Save"])
 

@@ -338,26 +338,10 @@
    (atom application)))
 
 (comment
-  (let [real-d {:example/input-kw {:type :text
-                                    :label "default kw-mapped text"
-                                    :default-value "something good"
-                                    :disabled true
-                                    :style-classes "I-like-red"}
-                 :example/default-scalar "Just a value from a keyword"
-                 :example/default-options ["option-1" "option-2" "option-3"]}
-        vmreal [:example_element2 {:type :text
-                                         :validation-function identity
-                                         :invalid-feedback "Just type @..."
-                                         :label "Enter the @ symbol"
-                                         :required true
-                                         :id "example2"}
-                :mydefault-text :example/input-kw
-                :myselect {:label "A select"
-                           :type :select
-                           :options :example/default-options}
-                :mytext {:type :text
-                         :label :example/default-scalar}
-                ]
+  (let [real-d {:humplus/programs ["one" "two"]
+                :humplus/grant-permission-text "Permission text"
+                :shared/USERNAME "LovelyUser"}
+        vmreal [:programs {:name "internship-program", :required? true, :label "Select from among the following eligible programs", :type :select, :options :humplus/programs} :other-explanation {:name "other-explanation", :required true, :placeholder "Your program director, program location, and program term/semester", :label "Description of your program"} :grant-permission {:name "grant-permission", :required true, :type "checkbox", :value :humplus/grant-permission-text, :label :humplus/grant-permission-text} :netid {:type "hidden", :name "netid", :value :shared/USERNAME}]
         
         TreeValues
         (s/recursive-path [] p
