@@ -1,0 +1,5 @@
+
+* Recent Changes
+
+** Version 15
+- Adds :DICTIONARY functionality for externalization of form components
