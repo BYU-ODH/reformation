@@ -69,12 +69,12 @@
                                             :label "Enter the @ symbol"
                                             :required true
                                             :id "example2"}
-                         #_#_ :mydefault-text :example/input-kw
-                         #_#_ :myselect {:label "A select"
+                         :mydefault-text :example/input-kw
+                         :myselect {:label "A select"
                                     :type :select
                                     :options :example/default-options}
-                         ;; :mytext {:type :text
-                         ;;          :label :example/default-scalar}
+                         :mytext {:type :text
+                                  :label :example/default-scalar}
                          ])
 
 
