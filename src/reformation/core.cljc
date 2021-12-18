@@ -263,8 +263,7 @@
         
         input
         (when invalid-feedback
-          [:div.invalid-feedback invalid-feedback])
-        ]])))
+          [:div.invalid-feedback invalid-feedback])]])))
 
 (defn atom?
   "ducktype an atom as something dereferable"
@@ -294,8 +293,7 @@
                                       [s/LAST vector?] [s/LAST s/ALL p])])
         get-from-dictionary (partial from-dictionary dictionary)]
     ;(s/transform [s/ALL map? TreeValues] get-from-dictionary fm)
-    (s/transform [s/ALL (s/cond-path map? TreeValues keyword? s/collect)] get-from-dictionary fm)
-    ))
+    (s/transform [s/ALL (s/cond-path map? TreeValues keyword? s/collect)] get-from-dictionary fm)))
 
 (defn render-application
   "Render the editable application.
@@ -310,25 +308,25 @@
   [fm fn-map & [pathv]]
   (reset! fm-map-atom fm)
   (cond (atom? fn-map)
-    (let [R (partial get-in @fn-map)
-          U (partial swap! fn-map update-in)
-          fn-map {:READ R :UPDATE U}]
-      (render-application fm fn-map pathv))
+        (let [R (partial get-in @fn-map)
+              U (partial swap! fn-map update-in)
+              fn-map {:READ R :UPDATE U}]
+          (render-application fm fn-map pathv))
 ;;;;;;;;;;;;;;;;
-    (map? fn-map)
-    (let [dictionary (:DICTIONARY fn-map)
-          fm (if dictionary
-               (keywordize-form fm dictionary)
-               fm)]
-      
-      (for [[k v] (partition 2 fm)
-            :let [path (conj (vec pathv) k)]]
-        (cond
-          (sequential? v) (render-application v fn-map path)
-          (map? v) ^{:key v} [tinput fn-map path v]
+        (map? fn-map)
+        (let [dictionary (:DICTIONARY fn-map)
+              fm (if dictionary
+                   (keywordize-form fm dictionary)
+                   fm)]
+          
+          (for [[k v] (partition 2 fm)
+                :let [path (conj (vec pathv) k)]]
+            (cond
+              (sequential? v) (render-application v fn-map path)
+              (map? v) ^{:key v} [tinput fn-map path v]
 
-          :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)])))
-    :else (throw (ex-info "Unsupported arg for atom-or-map" {:atom-or-map fn-map}))))
+              :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)])))
+        :else (throw (ex-info "Unsupported arg for atom-or-map" {:atom-or-map fn-map}))))
 
 
 (defn render-review
@@ -340,19 +338,6 @@
    (atom application)))
 
 (comment
-  ;; How to transform every keyword value?
-  ;; #?(:cljs
-  ;;    (extend-protocol com.rpl.specter.protocols/ImplicitNav
-  ;;      cljs.core/MetaFn
-  ;;      (implicit-nav [this]
-  ;;        this) ;; this might not work, but it should at least change the error
-  ;;      )
-  ;;    )
-  
-  (extend-type #?(:clj clojure.lang.AFn :cljs cljs.core/MetaFn)
-    com.rpl.specter.protocols/ImplicitNav
-    (implicit-nav [this] (s/pred this)))
-
   (let [real-d {:example/input-kw {:type :text
                                     :label "default kw-mapped text"
                                     :default-value "something good"
