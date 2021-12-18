@@ -189,6 +189,50 @@ An expandable table.  A common task for forms is a list of an indefinite number 
 ***** =:default-value= For text inputs, the initial value
 *** hidden
 
+** Using a :DICTIONARY
+Versions 15+ now allow inclusion of a =:DICTIONARY= to perform a replacement of matching namespaced (any namespace) keywords within any value position of your control map. This is designed to allow you include values in your map that will be provided by a function (for example an api call) while still allowing it to be raw data that can be included, for instance, in a database or a plain data output (the schema just has some keywords).
+
+Example (which also demonstrates optional use of re-frame):
+#+begin_src clojure
+  (def DICTIONARY {:example/input-kw        {:type          :text
+					     :label         "default kw-mapped text"
+					     :default-value "something good"
+					     :disabled      true
+					     :style-classes "I-like-red"}
+		   :example/default-scalar  "Just a value from a keyword"
+		   :example/default-options ["option-1" "option-2" "option-3"]})
+  
+  (def test-form-with-map [:example_element2 {:type             :text
+					      :invalid-feedback "Just type @..."
+					      :label            "Enter the @ symbol"
+					      :required         true
+					      :id               "example2"}
+			   :mydefault-text :example/input-kw
+			   :myselect {:label   "A select"
+				      :type    :select
+				      :options :example/default-options}
+			   :mytext {:type  :text
+				    :label :example/default-scalar}])
+  
+  (def control-map {:DICTIONARY DICTIONARY
+		    :READ
+		    (fn [kv]
+		      @(reframe/subscribe [:read-form-item kv]))
+		    #_          (partial get-in @my-atom)
+		    :UPDATE
+		    (fn [kv update-function]
+		      ;; dispatch-sync is required here, because the defer involved in plain reframe/dispatch causes the synthetic event to be released and the fn breaks. 
+		      (reframe/dispatch-sync [:update-form kv update-function]))})				  
+  
+  (defn generate-form []
+    (let [form-id "needs-validation"]
+      [:div.submission-form 
+       [:form.form-control {:id form-id}
+	(into [:div.form-contents]
+	      (reformation.core/render-application test-form-with-map control-map))]]))
+			   
+#+end_src
+
 ** TODO "required" on regular input
 ** TODO Format fn for date fields
 ** TODO Default values for select boxes
