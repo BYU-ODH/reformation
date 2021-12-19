@@ -278,7 +278,7 @@
     (cond
       ((complement qualified-keyword?) k) (do (println "unqualified keyword:: " k) k)
       (not v) (throw (ex-info (str "No " k " in DICTIONARY") {:DICTIONARY dictionary}))
-      ((some-fn vector? map? string?) v) (do (println "Sucess checking " k) v)
+      ((some-fn vector? map? string?) v) (do (println "Success checking " k) v)
       (fn? v) (v)
       :unknown (throw (ex-info (str "type of value in " k " not known")
                                {:type (type v)
@@ -363,6 +363,8 @@
     ;;(s/select [s/ALL (s/cond-path map? TreeValues keyword? s/collect)] vmreal)
     
     ;;(s/transform [s/ALL map? TreeValues] get-from-dictionary vmreal)
-    (s/transform [s/ALL (s/cond-path map? TreeValues keyword? s/collect)] get-from-dictionary vmreal)
+    (= (keywordize-form vmreal real-d)
+       (s/transform [s/ALL (s/cond-path map? TreeValues keyword? s/collect)] get-from-dictionary vmreal))
+    (keywordize-form vmreal real-d)
     )
   )
