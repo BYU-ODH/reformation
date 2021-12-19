@@ -84,9 +84,9 @@
                    {:keys [label id subtext columns min-rows vpath sum-field disabled style-classes]
                     :or {id "generic-id"
                          subtext nil
-                         vpath [(keyword id)]
                          min-rows 1} :as m}]
-  (let [row-template (zipmap (map :key columns) (repeat nil))
+  (let [vpath (or vpath [(keyword id)])
+        row-template (zipmap (map :key columns) (repeat nil))
         sub (when subtext
               [:small.form-text.text-muted {:id (str "sub_" id)} subtext])
         _init-table! (when (< (count (READ vpath)) min-rows)
