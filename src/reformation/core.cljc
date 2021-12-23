@@ -315,7 +315,7 @@
 ;;;;;;;;;;;;;;;;
         (map? fn-map)
         (let [dictionary (:DICTIONARY fn-map)
-              fm (if dictionary
+              fm (if dictionary ;; can I pull off a dissoc around here?
                    (keywordize-form fm dictionary)
                    fm)]
           
@@ -323,7 +323,8 @@
                 :let [path (conj (vec pathv) k)]]
             (cond
               (sequential? v) (render-application v fn-map path)
-              (map? v) ^{:key v} [tinput fn-map path v]
+              (map? v) ^{:key v} (tinput fn-map path v)
+              ;;(map? v) ^{:key v} [tinput fn-map path v]
 
               :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)])))
         :else (throw (ex-info "Unsupported arg for atom-or-map" {:atom-or-map fn-map}))))
@@ -367,4 +368,36 @@
        (s/transform [s/ALL (s/cond-path map? TreeValues keyword? s/collect)] get-from-dictionary vmreal))
     (keywordize-form vmreal real-d)
     )
+  ;; end dictionary parse
+  (let [a (atom {})
+        fm [:example-element {:type :text
+                              :validation {:timing :on-blur
+                                           :invalid-feedback "Needs more than 5 characters..."}
+                              :label "Enter more than 5 characters"
+                              :required true
+                              :id "example1"}
+            :example_element2 {:type :text
+                               :invalid-feedback "Just type @..."
+                               :label "Enter the @ symbol"
+                               :required true
+                               :id "example2"}
+            ;; :example_element3 {:type :date
+            ;;                    :validation {:timing :on-blur
+            ;;                                 :validation-function #(not= % nil)}
+            ;;                    :label "Enter a date"
+            ;;                    :required true
+            ;;                    :id "example3"}
+            ;; :example_element4 {:type :select
+            ;;                    :label "Select"
+            ;;                    :validation {:validation-function #(println "Howdy")}
+            ;;                    :required true
+            ;;                    :on-change #(js/alert "changed")
+            ;;                    :options [{:content "hi" :value "" :on-click #(js/alert "clicked")} "hello" "howdy"]
+            ;;                    :id "example4"}
+            ]]
+    (into [:div.form]
+          (render-application fm a))
+    )
+
+  
   )
