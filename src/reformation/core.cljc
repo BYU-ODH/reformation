@@ -251,8 +251,8 @@
                 :hidden [hidden-input opt-map]
                 ;; default
                 [:input.form-control opt-map])]
-    (case type
-      :hidden input
+    (if (= :hidden (keyword type))
+      input
       [:div.field
        {:class [(str id "_group") (when hidden "hidden")]}
        [render-label {:for-id id

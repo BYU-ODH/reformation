@@ -85,19 +85,7 @@
    :netid {:type  "hidden"
            :name  "netid"
            :value :shared/USERNAME}]
-  #_  [:example_element2 {:type                :text
-                          :validation-function f2
-                          :invalid-feedback    "Just type @..."
-                          :label               "Enter the @ symbol"
-                          :required            true
-                          :id                  "example2"}
-                         :mydefault-text :example/input-kw
-                         :myselect {:label "A select"
-                                    :type :select
-                                    :options :example/default-options}
-                         :mytext {:type :text
-                                  :label :example/default-scalar}
-                         ])
+  )
 
 
 (def test-form [:myhidden-text {:type :hidden
@@ -197,8 +185,7 @@
       (into [:div.form-contents]
             #_(rfc/render-application text-form (data-sources @chosen-datasource))
             #_(rfc/render-application test-form  (data-sources @chosen-datasource))
-            (rfc/render-application test-form-with-map (data-sources @chosen-datasource))
-            )]]))
+            (rfc/render-application test-form-with-map (data-sources @chosen-datasource)))]]))
 
 (defn datasource-panel []
   [:div [:span {:on-click (fn [e]
