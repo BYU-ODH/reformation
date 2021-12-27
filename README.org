@@ -3,7 +3,7 @@
 auto-generated docs: https://byu-odh.github.io/reformation/
 
 Installing in Leiningen:
-=[byu-odh/reformation "15"]=
+=[byu-odh/reformation "16"]=
 
 ** Overview
 Reformation is a library for building web forms.  More specifically, the library outputs Clojure data structures that can be easily rendered by Reagent.
@@ -193,7 +193,7 @@ An expandable table.  A common task for forms is a list of an indefinite number 
 *** hidden
 
 ** Using a :DICTIONARY
-Versions 15+ now allow inclusion of a =:DICTIONARY= to perform a replacement of matching namespaced (any namespace) keywords within any value position of your control map. This is designed to allow you include values in your map that will be provided by a function (for example an api call) while still allowing it to be raw data that can be included, for instance, in a database or a plain data output (the schema just has some keywords).
+Versions 15+ now allow inclusion of a =:DICTIONARY= to perform a replacement of matching namespaced (any namespace) keywords within any value position of your control map. This is designed to allow you to include values in your map that will be provided by a function (for example an api call) while still allowing it to be raw data that can be included, for instance, in a database or a plain data output (the schema just has some keywords).
 
 Example (which also demonstrates optional use of re-frame):
 #+begin_src clojure

@@ -1,4 +1,4 @@
-(defproject byu-odh/reformation "15"
+(defproject byu-odh/reformation "16"
   :description "Generate and manipulate form datastructures in pure Clojure, which can be read with Reagent."
   :url "https://github.com/BYU-ODH/reformation"
   :license {:name "Eclipse Public License"
