@@ -284,16 +284,28 @@
                                {:type (type v)
                                 :keyword k
                                 :DICTIONARY dictionary})))))
+
+(def substructure?
+  "Determine whether an item is a valid substructure for a form"
+  (every-pred
+   vector?
+   #(coll? (first %))))
+
 (defn keywordize-form
   "Transform all keyword values in the form `fm` into their `dictionary` lookups"
   [fm dictionary]
-  (let [TreeValues
+  (let [
+        TreeValues
         (s/recursive-path [] p
-                          [s/ALL (s/cond-path [s/LAST keyword?] [s/LAST] 
-                                              [s/LAST vector?] [s/LAST s/ALL p])])
+                          [s/ALL (s/cond-path
+                                  ;; need to handle the vector, kw part of things. If we are on a bare non-collection in the a vector, just move on
+                                  [s/LAST qualified-keyword?] [s/LAST] ;; if it's a namespaced keyword, select it
+                                  [s/LAST substructure?] [s/LAST s/ALL p] ;; if it's a vector with valid substructure, go recursive on it
+                                  ;; if it's anything else, pass on it
+                                  )])
         get-from-dictionary (partial from-dictionary dictionary)]
                                         ;(s/transform [s/ALL map? TreeValues] get-from-dictionary fm)
-    (s/transform [s/ALL (s/cond-path map? TreeValues keyword? s/collect)] get-from-dictionary fm)))
+    (s/transform [s/ALL (s/cond-path map? TreeValues)] get-from-dictionary fm)))
 
 (defn render-application
   "Render the editable application.
@@ -443,8 +455,8 @@
                                   )])
         get-from-dictionary (partial from-dictionary real-d)]
     
-    (s/transform [s/ALL map? TreeValues] get-from-dictionary vmreal)
-    ;;(keywordize-form vmreal real-d)
+    ;;(s/transform [s/ALL map? TreeValues] get-from-dictionary vmreal)
+    (keywordize-form vmreal real-d)
     )
 ;;;;;;;;;;;;;;;;;;;;; end 1
 
