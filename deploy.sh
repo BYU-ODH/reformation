@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 lein clean && lein deploy clojars && lein codox && git commit -am "Deployed to clojars, docs" && git push
 
