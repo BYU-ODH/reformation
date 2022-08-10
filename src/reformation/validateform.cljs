@@ -1,5 +1,4 @@
-(ns reformation.validateform
-  (:require [re-frame.core :as reframe]))
+(ns reformation.validateform)
 
 (defn validate-form []
   (let [form (.getElementById js/document "needs-validation")]
