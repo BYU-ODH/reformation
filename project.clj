@@ -1,9 +1,10 @@
-(defproject edu.byu.odh/reformation "17"
+(defproject edu.byu.odh/reformation "18"
   :description "Generate and manipulate form datastructures in pure Clojure, which can be read with Reagent."
   :url "https://github.com/BYU-ODH/reformation"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.9.0"]]
+  :dependencies [[org.clojure/clojure "1.9.0"]
+                 [com.rpl/specter "1.1.3"]]
   :source-paths ["src"]
   :repositories [["releases" {:url "https://repo.clojars.org"
                               :creds :gpg}]]
@@ -28,6 +29,7 @@
                    {:http-server-root "public"
                     :nrepl-port 7002
                     :css-dirs ["test/resources/public/css"]}
+
                    :dependencies [[cheshire "5.8.1"]
                                   [binaryage/devtools "0.9.10"]
                                   [clj-http "3.9.1"]
@@ -62,8 +64,7 @@
                                   [ring/ring-defaults "0.3.2"] ;; CLJ routing
                                   [secretary "1.2.3"] ;; CLJS routing
                                   [re-frame "0.11.0"]
-                                  [venantius/accountant "0.2.4"]
-                                  [com.rpl/specter "1.1.3"]]
+                                  [venantius/accountant "0.2.4"]]
                    :plugins [[lein-codox "0.10.7"]
                              [com.jakemccrary/lein-test-refresh "0.14.0"]
                              [lein-doo "0.1.7"]
