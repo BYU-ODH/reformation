@@ -205,6 +205,12 @@
 (defn invalid-feedback-el [invalid-feedback]
   [:div.invalid-feedback invalid-feedback])
 
+(defn sanitize-dom-args
+  "Remove args that the react doesn't like from the `opt-map`,
+  to be used right before a dom element is specified"
+  [opt-map]
+  (select-keys opt-map shared/valid-html-args))
+
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
   [{:keys [READ UPDATE DICTIONARY] :as fn-map} valpath & [opt-map]]
@@ -250,7 +256,7 @@
                 :file [file-upload opt-map]
                 :hidden ^{:key (str "hidden_" opt-map)}[hidden-input opt-map]
                 ;; default
-                [:input.form-control opt-map])]
+                [:input.form-control (sanitize-dom-args opt-map)])]
     (if (= :hidden (keyword type))
       input
       ^{:key input}
