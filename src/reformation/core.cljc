@@ -248,11 +248,12 @@
                 :togglebox [togglebox (merge (assoc fn-map :valpath valpath) opt-map)]
                 :checkbox [checkbox (assoc fn-map :valpath valpath) opt-map]
                 :file [file-upload opt-map]
-                :hidden [hidden-input opt-map]
+                :hidden ^{:key (str "hidden_" opt-map)}[hidden-input opt-map]
                 ;; default
                 [:input.form-control opt-map])]
     (if (= :hidden (keyword type))
       input
+      ^{:key input}
       [:div.field
        {:class [(str id "_group") (when hidden "hidden")]}
        [render-label {:for-id id
@@ -349,8 +350,9 @@
   ;[:h1 "I really aught to render a review here"]
   (render-application
    schema (atom nil)
-   #_(shared/reviewify schema)
-   #_application))
+   ;(shared/reviewify schema)
+   ;(atom nil)
+   #_ application))
 
 (comment
   (let [real-d {:humplus/programs ["one" "two"]
