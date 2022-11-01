@@ -2,18 +2,13 @@
   "The application with which users fill out the form to make or edit an application"
   (:require [reagent.core :as r]
             [reagent.session :as session]
-            ;[reformation.shared-test :as shared]
             [accountant.core]
-            ;[reformation.routes :as rt]
             [reformation.core :as rfc]
             [re-frame.core :as reframe]
             [reformation.reframe] ;; necessary for the re-frame tests
             [cljs.pprint :as pprint]))
 
-
-
 ;render-application returns a VECTOR with tinput at the front
-
 (def f1 #(if (> (count %) 5)
                  true
                  nil))
@@ -185,7 +180,7 @@
       (into [:div.form-contents]
             #_(rfc/render-application text-form (data-sources @chosen-datasource))
             (rfc/render-application test-form  (data-sources @chosen-datasource))
-            ;(rfc/render-application test-form-with-map (data-sources @chosen-datasource))
+            #_(rfc/render-application test-form-with-map (data-sources @chosen-datasource))
             )]]))
 
 (defn datasource-panel []
