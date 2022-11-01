@@ -32,7 +32,7 @@
                :timetable "timetable"})
 
 (defn app-page []
- (rfc/render-review hmeg-app-vals application/my-atom)
-
+  [:h3 [:b "Review page"]]
+ ;(rfc/render-review hmeg-app-vals application/my-atom)
 
   ) 
