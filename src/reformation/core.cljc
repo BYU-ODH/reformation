@@ -200,7 +200,7 @@
   (let [{:keys [value id]} input-map]
     [:input {:type "hidden"
              :name id :id id
-             :value value}]))
+             :value (str value)}]))
 
 (defn invalid-feedback-el [invalid-feedback]
   [:div.invalid-feedback invalid-feedback])
@@ -221,7 +221,7 @@
         {:keys [field-key contingent-fn]} contingent
         _init (when (and default-value (nil? (READ valpath)))
                 (UPDATE valpath (constantly default-value)))
-        input-value (or (READ valpath) default-value)
+        input-value (or (READ valpath) default-value "")
         changefn1 (fn [e] (UPDATE valpath #(shared/get-value-from-change e))) ;if changes update val
         call-validation-function (when-let [vf validation-function]
                                    (to-validation vf invalid-feedback))
@@ -342,18 +342,16 @@
               :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)])))
         :else (throw (ex-info "Unsupported arg for atom-or-map" {:atom-or-map fn-map}))))
 
-
 (defn render-review
-  "Parse the application map and render the review based on the ordered `schema` of the application, with values in `application` expected to be as given by `render-application`.
+  "Parse the application map and render the review based on the ordered `schema` of the application, with values in `application` expected to be as given by `render-application`, as an atom or not.
    Resulting form will be read-only with no changes possible."
   [schema application]
-  ;[:h1 "I really aught to render a review here"]
-  (render-application
-   schema (atom nil)
-   ;(shared/reviewify schema)
-   ;(atom nil)
-   #_ application))
-
+  (let [application (cond-> application ((complement atom?)) atom) ]
+    #_[:h1 "Application is not atom? " (str ((complement atom?) application))]
+    (render-application
+     (shared/reviewify schema)
+     application)))
+; (cond-> (atom 3) atom? :atom)
 (comment
   (let [real-d {:humplus/programs ["one" "two"]
                 :humplus/grant-permission-text "Permission text"
