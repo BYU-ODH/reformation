@@ -31,8 +31,11 @@
                 :username "tsatest"},
                :timetable "timetable"})
 
-(defn app-page []
-  [:h3 [:b "Review page"]]
- ;(rfc/render-review hmeg-app-vals application/my-atom)
+(def test-form-vals ; 2022305
+  {:myhidden-text "whisper", :mymultitable "", :mycheckbox false, :mymulti [{:item "uea", :amount "2", :purpose "uea"} {:item "aoeu", :amount "-1", :purpose "aoeu"}], :mytextarea "some area stuff", :myselect "", :mydefault-text "something good", :amount-total 1, :mytoggle true, :myradio "", :myfileupload "", :mytext "stuff", :test "togged"})
 
-  ) 
+(defn app-page []
+                                        ;[:h3 [:b "Review page"]]
+  [:form 
+   (rfc/render-review application/test-form test-form-vals)
+                                         ]) 

@@ -346,9 +346,11 @@
   "Parse the application map and render the review based on the ordered `schema` of the application, with values in `application` expected to be as given by `render-application`.
    Resulting form will be read-only with no changes possible."
   [schema application]
+  ;[:h1 "I really aught to render a review here"]
   (render-application
-   (shared/reviewify schema)
-   (atom application)))
+   schema (atom nil)
+   #_(shared/reviewify schema)
+   #_application))
 
 (comment
   (let [real-d {:humplus/programs ["one" "two"]
