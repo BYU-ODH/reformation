@@ -44,7 +44,6 @@
                         :name nameval
                         :on-change on-change-fn-bind
                         :value (let [v (READ multi-vpath)]
-                                 (println (str "v is nil:" (= v nil)) )
                                  (or v default-value))}]
 
     [:td {:key (or k title) :class [column-class nameval (str nameval "_" i)]}
