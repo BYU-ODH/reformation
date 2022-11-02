@@ -63,32 +63,32 @@
                                    :name id
                                    :required required
                                    :on-change on-change}]
-            (for [{:keys [content value on-click] :as o} options]
-              (let [[c v] [(or content value o) (or value content o)]]
-                [:option {:value v :on-click on-click}
-                 c]))))))
+            (doall (for [{:keys [content value on-click] :as o} options]
+             (let [[c v] [(or content value o) (or value content o)]]
+               [:option {:value v :on-click on-click}
+                c])))))))
 
 
 (defn radio [{:keys [options on-change]}]
   (into [:div.form-group]
         (let [nom `name#]
-          (for [o options]
-            (let [[v disp] (if (map? o)
-                             (let [{:keys [value contents]} o]
-                               [(or value contents)
-                                (or contents value)])
-                             [o o])
+          (doall (for [o options]
+           (let [[v disp] (if (map? o)
+                            (let [{:keys [value contents]} o]
+                              [(or value contents)
+                               (or contents value)])
+                            [o o])
 
-                  v (cond (map? o) (or (:value o)
-                                       (:contents o))
-                          :default o)
-                  disp (cond (map? o) (or (:contents o)
-                                          (:value o))
-                             :default o)
-                  idsym (gensym v)]
-              [:div [:input.form-control {:id idsym :type "radio" :name nom :value v
-                                          :on-change on-change}]
-               [:label {:for idsym} disp]])))))
+                 v (cond (map? o) (or (:value o)
+                                      (:contents o))
+                         :default o)
+                 disp (cond (map? o) (or (:contents o)
+                                         (:value o))
+                            :default o)
+                 idsym (gensym v)]
+             [:div [:input.form-control {:id idsym :type "radio" :name nom :value v
+                                         :on-change on-change}]
+              [:label {:for idsym} disp]]))))))
 
 
 (defn text-area 
@@ -256,7 +256,7 @@
                 :file [file-upload opt-map]
                 :hidden ^{:key (str "hidden_" opt-map)}[hidden-input opt-map]
                 ;; default
-                [:input.form-control (sanitize-dom-args opt-map)])]
+                [:input.form-control opt-map #_(sanitize-dom-args opt-map)])]
     (if (= :hidden (keyword type))
       input
       ^{:key input}

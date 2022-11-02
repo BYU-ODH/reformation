@@ -70,6 +70,7 @@
     :datetime
     :decoding
     :default
+    :default-value
     :defer
     :dir
     :dirname
