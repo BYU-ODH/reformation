@@ -192,7 +192,7 @@
       {:class (if checked? "togglebox-show" "togglebox-hidden")
        :style (when-not override-inline?
                 (assoc transition-style :height (if checked? open-height "0em")))}
-      (render-application content opt-map)]]))
+      (doall (render-application content opt-map))]]))
 
 (defn hidden-input 
   "Generate a hidden input"
@@ -275,6 +275,7 @@
 (defn atom?
   "ducktype an atom as something dereferable"
   [a]
+  ;(satisfies? IDeref "a") ;; this only works in CLJS
   (try (do (deref a) true)
        (catch #?(:clj Exception :cljs js/Error) _ false)))
 

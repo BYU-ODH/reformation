@@ -14,20 +14,20 @@
 
 (defn make-radio [c attr-map]
   (let [nom (gensym 'name)]
-    (for [{:keys [value contents] :as o} (:options c)]
-      (let [[v disp] [(or value contents o) (or contents value o)]
-            new-attr-map (merge attr-map {:id v :type "radio" :name nom :value v})]
-        [:div.form-group {:key v :style  {:text-align "right"}} 
-         [:div {:style {:text-align "left"}}
-          [:input.form-control new-attr-map]
-          [:label {:for v} disp]]]))))
+    (doall (for [{:keys [value contents] :as o} (:options c)]
+             (let [[v disp] [(or value contents o) (or contents value o)]
+                   new-attr-map (merge attr-map {:id v :type "radio" :name nom :value v})]
+               ^{:key (str "radio-" disp)}[:div.form-group {:key v :style  {:text-align "right"}} 
+                                           [:div {:style {:text-align "left"}}
+                                            [:input.form-control new-attr-map]
+                                            [:label {:for v} disp]]])))))
 
 (defn make-column [i {:keys [title input-type input-class disabled
                              placeholder default-value column-class]
                       k :key
                       :as c}
                    {vpath :vpath table-disabled :disabled
-                    {:keys [READ UPDATE]} :fn-map :as universals}]
+                    {:keys [READ UPDATE]} :fn-map :as _universals}]
   (let [is-checkbox? (= "checkbox" input-type)
         multi-vpath (conj vpath i (:key c))
         nameval (str (shared/idify title))
@@ -67,9 +67,9 @@
                                       {:keys [READ UPDATE]} :fn-map}]
   (let [sum-key (-> sum-field name (str "-total") keyword)       
         total (reduce + (for [c (READ vpath)]
-                         (if-let [c (sum-field c)]
-                           #?(:cljs (js/parseInt c) :clj (Integer/parseInt c))
-                           0)))]
+                          (if-let [c (sum-field c)]
+                            #?(:cljs (js/parseInt c) :clj (Integer/parseInt c))
+                            0)))]
     (UPDATE [sum-key] (constantly total))
     [:tr [:td.form-group.total {:col-span 2}
           [:label "Total"]
@@ -93,14 +93,14 @@
 
         universals {:vpath vpath :fn-map fn-map :disabled disabled}
         headers [:thead [:tr
-                         [:<> (for [{:keys [disabled title]} columns]
-                                [:th {:class (str disabled) :key title}
-                                 title])]]]
+                         [:<> (doall (for [{:keys [disabled title]} columns]
+                                       ^{:key (str vpath title)} [:th {:class (str disabled) :key title}
+                                                                  title]))]]]
         tbody [:tbody
-               [:<> (for [i (range (count (READ vpath)))]
-                      [:tr {:key i}
-                       [:<> (for [c columns]
-                              (make-column i c universals))]])]
+               [:<> (doall (for [i (range (count (READ vpath)))]
+                             ^{:key (str vpath i)}[:tr {:key i}
+                                                   [:<> (doall (for [c columns]
+                                                                 (make-column i c universals)))]]))]
                (when sum-field [sum-field-component sum-field universals])]]
     
     [:div.multi-table
