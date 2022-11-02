@@ -209,7 +209,8 @@
   "Remove args that the react doesn't like from the `opt-map`,
   to be used right before a dom element is specified"
   [opt-map]
-  (select-keys opt-map shared/valid-html-args))
+  (let [non-dom-args [:style-classes] ]
+    (apply dissoc opt-map non-dom-args)))
 
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
@@ -256,7 +257,7 @@
                 :file [file-upload opt-map]
                 :hidden ^{:key (str "hidden_" opt-map)}[hidden-input opt-map]
                 ;; default
-                [:input.form-control opt-map #_(sanitize-dom-args opt-map)])]
+                [:input.form-control (sanitize-dom-args opt-map)])]
     (if (= :hidden (keyword type))
       input
       ^{:key input}
@@ -358,210 +359,110 @@
     (render-application
      (shared/reviewify schema)
      application)))
-; (cond-> (atom 3) atom? :atom)
-(comment
-  (let [real-d {:humplus/programs ["one" "two"]
-                :humplus/grant-permission-text "Permission text"
-                :shared/USERNAME "LovelyUser"}
-        FILE (atom {})
-        vmreal [:myhidden-text {:type :hidden
-                                :default-value "whisper"}
-                :mydefault-text {:type :text
-                                 :label "default text"
-                                 :default-value "something good"
-                                 :disabled true
-                                 :style-classes "I-like-red"}
-                :mytext {:type :text
-                         :label "My text"}
-                :mytextarea {:type :textarea
-                             :rows 4
-                             :cols 100
-                             :label "My textarea"
-                             :char-count {:limit 500
-                                          :enforce? true}
-                             :validation {:timing :on-change
-                                          :validation-function #(= "@" %)}}
-                :mymultitable  {:label "My multitable"
-                                :id :mymulti
-                                :required? true
-                                :type :multi-table
-                                :style-classes ["is-striped" "is-fullwidth" "is-hoverable"]
-                                :min-rows 2
-                                :subtext "Indicate any expenses involved in carrying out your request, including a reason for each expense"
-                                :value-path [:my-multitable]
-                                :sum-field :amount
-                                :columns [{:key :item
-                                           :title "Item"}
-                                          {:key :amount
-                                           :title "Amount"
-                                           :input-type "number"}
+(let [real-d {:humplus/programs ["one" "two"]
+              :humplus/grant-permission-text "Permission text"
+              :shared/USERNAME "LovelyUser"}
+      FILE (atom {})
+      vmreal [:myhidden-text {:type :hidden
+                              :default-value "whisper"}
+              :mydefault-text {:type :text
+                               :label "default text"
+                               :default-value "something good"
+                               :disabled true
+                               :style-classes "I-like-red"}
+              :mytext {:type :text
+                       :label "My text"}
+              :mytextarea {:type :textarea
+                           :rows 4
+                           :cols 100
+                           :label "My textarea"
+                           :char-count {:limit 500
+                                        :enforce? true}
+                           :validation {:timing :on-change
+                                        :validation-function #(= "@" %)}}
+              :mymultitable  {:label "My multitable"
+                              :id :mymulti
+                              :required? true
+                              :type :multi-table
+                              :style-classes ["is-striped" "is-fullwidth" "is-hoverable"]
+                              :min-rows 2
+                              :subtext "Indicate any expenses involved in carrying out your request, including a reason for each expense"
+                              :value-path [:my-multitable]
+                              :sum-field :amount
+                              :columns [{:key :item
+                                         :title "Item"}
+                                        {:key :amount
+                                         :title "Amount"
+                                         :input-type "number"}
 
-                                          {:key :purpose
-                                           :title "Purpose"
-                                           :input-type "textarea"}
-                                          {:key :justification
-                                           :title "Justification"
-                                           :input-type "radio"
-                                           :options ["I really want it"
-                                                     "Department needs it"
-                                                     "Have to use full budget or it will get cut"]}
-                                          ]}
+                                        {:key :purpose
+                                         :title "Purpose"
+                                         :input-type "textarea"}
+                                        {:key :justification
+                                         :title "Justification"
+                                         :input-type "radio"
+                                         :options ["I really want it"
+                                                   "Department needs it"
+                                                   "Have to use full budget or it will get cut"]}
+                                        ]}
 
-                :myselect {:label "A select" :type :select :options [1 2 3]}
-                :myradio {:type :radio :options [1 2 {:value 3}]}
+              :myselect {:label "A select" :type :select :options [1 2 3]}
+              :myradio {:type :radio :options [1 2 {:value 3}]}
                 
-                :mytoggle {:type :togglebox
-                           :label "My togglebox"
-                           :content [:test {:type :text :label "My toggled "}]}
-                :mycheckbox {:type :checkbox :label "My checkbox" :default-value true}
-                :myfileupload {:type :file
-                               :label "My file"
-                               :submit-text "Click or Drop a File Here"
-                               :error-text "Maybe We had an error?"
-                                        ;:submit-button [:a.btn.btn-success "Submit!"]
-                               :submit-fn #(println "Trying to submit:")
-                               :save-fn #(reset! FILE %)                               
-                               :allowed-extensions-f #{"txt"}
-                               :style-classes {:drag-over "dragover"
-                                               :inactive "undragged"
-                                               :have-file "have-file"}}
-                [:a.button {:id "Save"
-                            :alt "Save"
-                            :type :submit
-                            :title "Save"
-                            ;;:on-click validate-and-submit
-                            :href nil}
-                 "Save"]
-                :example_element2 {:type :text
-                                   :invalid-feedback "Just type @..."
-                                   :label "Enter the @ symbol"
-                                   :required true
-                                   :id "example2"}
-                :example_element3 {:type :date
-                                   :validation {:timing :on-blur
-                                                :validation-function #(not= % nil)}
-                                   :label "Enter a date"
-                                   :required true
-                                   :id "example3"}
-                :example_element4 {:type :select
-                                   :label "Select"
-                                   :validation {:validation-function #(println "Howdy")}
-                                   :required true
-                                   ;:on-change #(js/alert "changed")
-                                   ;:options [{:content "hi" :value "" :on-click #(js/alert "clicked")} "hello" "howdy"]
-                                   :id "example4"}
-                ]
-        substructure? (every-pred
-                       vector?
-                       #(coll? (first %)))
-        TreeValues
-        (s/recursive-path [] p
-                          [s/ALL (s/cond-path
-                                  ;; need to handle the vector, kw part of things. If we are on a bare non-collection in the a vector, just move on
-                                  [s/LAST qualified-keyword?] [s/LAST] ;; if it's a namespaced keyword, select it
-                                  [s/LAST substructure?] [s/LAST s/ALL p] ;; if it's a vector with valid substructure, go recursive on it
-                                  ;; if it's anything else, pass on it
-                                  )])
-        get-from-dictionary (partial from-dictionary real-d)]
+              :mytoggle {:type :togglebox
+                         :label "My togglebox"
+                         :content [:test {:type :text :label "My toggled "}]}
+              :mycheckbox {:type :checkbox :label "My checkbox" :default-value true}
+              :myfileupload {:type :file
+                             :label "My file"
+                             :submit-text "Click or Drop a File Here"
+                             :error-text "Maybe We had an error?"
+                                      ;:submit-button [:a.btn.btn-success "Submit!"]
+                             :submit-fn #(println "Trying to submit:")
+                             :save-fn #(reset! FILE %)                               
+                             :allowed-extensions-f #{"txt"}
+                             :style-classes {:drag-over "dragover"
+                                             :inactive "undragged"
+                                             :have-file "have-file"}}
+              [:a.button {:id "Save"
+                          :alt "Save"
+                          :type :submit
+                          :title "Save"
+                          ;;:on-click validate-and-submit
+                          :href nil}
+               "Save"]
+              :example_element2 {:type :text
+                                 :invalid-feedback "Just type @..."
+                                 :label "Enter the @ symbol"
+                                 :required true
+                                 :id "example2"}
+              :example_element3 {:type :date
+                                 :validation {:timing :on-blur
+                                              :validation-function #(not= % nil)}
+                                 :label "Enter a date"
+                                 :required true
+                                 :id "example3"}
+              :example_element4 {:type :select
+                                 :label "Select"
+                                 :validation {:validation-function #(println "Howdy")}
+                                 :required true
+                                 ;:on-change #(js/alert "changed")
+                                 ;:options [{:content "hi" :value "" :on-click #(js/alert "clicked")} "hello" "howdy"]
+                                 :id "example4"}
+              ]
+      substructure? (every-pred
+                     vector?
+                     #(coll? (first %)))
+      TreeValues
+      (s/recursive-path [] p
+                        [s/ALL (s/cond-path
+                                ;; need to handle the vector, kw part of things. If we are on a bare non-collection in the a vector, just move on
+                                [s/LAST qualified-keyword?] [s/LAST] ;; if it's a namespaced keyword, select it
+                                [s/LAST substructure?] [s/LAST s/ALL p] ;; if it's a vector with valid substructure, go recursive on it
+                                ;; if it's anything else, pass on it
+                                )])
+      get-from-dictionary (partial from-dictionary real-d)]
     
-    ;;(s/transform [s/ALL map? TreeValues] get-from-dictionary vmreal)
-    (keywordize-form vmreal real-d)
-    )
-;;;;;;;;;;;;;;;;;;;;; end 1
-
-  ;; end dictionary parse
-  (let [a (atom {})
-        FILE (atom {})
-        fm [:myhidden-text {:type :hidden
-                            :default-value "whisper"}
-            ;; :mydefault-text {:type :text
-            ;;                  :label "default text"
-            ;;                  :default-value "something good"
-            ;;                  :disabled true
-            ;;                  :style-classes "I-like-red"}
-            ;; :mytext {:type :text
-            ;;          :label "My text"}
-            ;; :mytextarea {:type :textarea
-            ;;              :rows 4
-            ;;              :cols 100
-            ;;              :label "My textarea"
-            ;;              :char-count {:limit 500
-            ;;                           :enforce? true}
-            ;;              :validation {:timing :on-change
-            ;;                           :validation-function #(= "@" %)}}
-            :mymultitable  {:label "My multitable"
-                            :id :mymulti
-                            :required? true
-                            :type :multi-table
-                            :style-classes ["is-striped" "is-fullwidth" "is-hoverable"]
-                            :min-rows 2
-                            :subtext "Indicate any expenses involved in carrying out your request, including a reason for each expense"
-                            :value-path [:my-multitable]
-                            :sum-field :amount
-                            :columns [{:key :item
-                                       :title "Item"}
-                                      {:key :amount
-                                       :title "Amount"
-                                       :input-type "number"}
-
-                                      {:key :purpose
-                                       :title "Purpose"
-                                       :input-type "textarea"}
-                                      {:key :justification
-                                       :title "Justification"
-                                       :input-type "radio"
-                                       :options ["I really want it"
-                                                 "Department needs it"
-                                                 "Have to use full budget or it will get cut"]}
-                                      ]}
-
-            ;; :myselect {:label "A select" :type :select :options [1 2 3]}
-            ;; :myradio {:type :radio :options [1 2 {:value 3}]}
-            
-            ;; :mytoggle {:type :togglebox
-            ;;            :label "My togglebox"
-            ;;            :content [:test {:type :text :label "My toggled "}]}
-            ;; :mycheckbox {:type :checkbox :label "My checkbox" :default-value true}
-            ;; :myfileupload {:type :file
-            ;;                :label "My file"
-            ;;                :submit-text "Click or Drop a File Here"
-            ;;                :error-text "Maybe We had an error?"
-            ;;                             ;:submit-button [:a.btn.btn-success "Submit!"]
-            ;;                :submit-fn #(println "Trying to submit:")
-            ;;                :save-fn #(reset! FILE %)                               
-            ;;                :allowed-extensions-f #{"txt"}
-            ;;                :style-classes {:drag-over "dragover"
-            ;;                                :inactive "undragged"
-            ;;                                :have-file "have-file"}}
-            ;; [:a.button {:id "Save"
-            ;;             :alt "Save"
-            ;;             :type :submit
-            ;;             :title "Save"
-            ;;             ;;:on-click validate-and-submit
-            ;;             :href nil}
-            ;;  "Save"]
-            ;; :example_element2 {:type :text
-            ;;                    :invalid-feedback "Just type @..."
-            ;;                    :label "Enter the @ symbol"
-            ;;                    :required true
-            ;;                    :id "example2"}
-            ;; :example_element3 {:type :date
-            ;;                    :validation {:timing :on-blur
-            ;;                                 :validation-function #(not= % nil)}
-            ;;                    :label "Enter a date"
-            ;;                    :required true
-            ;;                    :id "example3"}
-            ;; :example_element4 {:type :select
-            ;;                    :label "Select"
-            ;;                    :validation {:validation-function #(println "Howdy")}
-            ;;                    :required true
-            ;;                    :on-change #(js/alert "changed")
-            ;;                    :options [{:content "hi" :value "" :on-click #(js/alert "clicked")} "hello" "howdy"]
-            ;;                    :id "example4"}
-            ]]
-    (into [:div.form]
-          (render-application fm a))
-    )
-
-  
+  ;;(s/transform [s/ALL map? TreeValues] get-from-dictionary vmreal)
+  (keywordize-form vmreal real-d)
   )
