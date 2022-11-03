@@ -281,7 +281,6 @@
   #_(try (do (deref a) true)
          (catch #?(:clj Exception :cljs js/Error) _ false)))
 
-
 (defn from-dictionary
   "Return valid entries `k` from `dictionary`, or error meaningfully"
   [dictionary k]
