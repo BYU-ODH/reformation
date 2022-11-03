@@ -276,9 +276,11 @@
 (defn atom?
   "ducktype an atom as something dereferable"
   [a]
-  ;(satisfies? IDeref "a") ;; this only works in CLJS
-  (try (do (deref a) true)
-       (catch #?(:clj Exception :cljs js/Error) _ false)))
+  #?(:clj  (instance? clojure.lang.Atom a)
+     :cljs (satisfies? IAtom a))
+  #_(try (do (deref a) true)
+         (catch #?(:clj Exception :cljs js/Error) _ false)))
+
 
 (defn from-dictionary
   "Return valid entries `k` from `dictionary`, or error meaningfully"
