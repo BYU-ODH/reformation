@@ -106,15 +106,14 @@
                                  :class class
                                  :name id 
                                  :rows rows
-                                 :cols cols
-                                 ;:default-value input-value
-                                 ;:value value
-                                 ;:on-change on-change
+                                 :cols cols                                 
+                                 ;:value value ;; this causes breaks input
+                                 :on-change on-change
                                  ;timing on-blur
                                  :required required
                                  :placeholder placeholder
                                  :disabled disabled}]]
-    (println {"value is" value})
+    ;; (println {"value is" value})
     (println {"opt-map is" opt-map})
     [:div.form-group
      textarea
@@ -251,7 +250,6 @@
         given-value (get-given-value opt-map)
         _init (when (and given-value (nil? (READ valpath)))
                 (UPDATE valpath (constantly given-value)))
-        input-value (or (READ valpath) default-value "")        
         changefn1 #(base-text-on-change (assoc fn-map :event %
                                                :valpath valpath))
         call-validation-function (when-let [vf validation-function]
@@ -271,12 +269,14 @@
                                 :name id
                                 timing changefn
                                 :required required
-                                :value input-value})
+                                #_#_:value input-value ;;This causes focus loss in the browser if added here
+                                })
         input (case type
                 :radio [radio opt-map]
                 :select [select-box opt-map]
                 :multi-table [multi-table fn-map opt-map]
-                :textarea [text-area opt-map]
+                :textarea [text-area (sanitize-dom-args opt-map)
+                           #_ fn-map #_ opt-map]
                 :togglebox [togglebox (merge (assoc fn-map :valpath valpath) opt-map)]
                 :checkbox [checkbox (assoc fn-map :valpath valpath) opt-map]
                 :file [file-upload opt-map]
