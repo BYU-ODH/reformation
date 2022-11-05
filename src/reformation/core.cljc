@@ -107,8 +107,8 @@
                                  :name id 
                                  :rows rows
                                  :cols cols
-                                 :default-value input-value
-                                 :value value
+                                 ;:default-value input-value
+                                 :value input-value
                                  :on-change on-change
                                  ;timing on-blur
                                  :required required
@@ -131,7 +131,7 @@
 
 (defn to-validation 
   "Given a predicate, wrap it properly to be a validation function for tinput.
-  Validation function runs on the input at every change, altering the validity of the element as prescribed. It waits for .checkValidity on the input to explain the error"
+  Validation function runs on the input at earlier-given `:timing` (default every change), altering the validity of the element as prescribed. It waits for .checkValidity on the input to explain the error"
   [f & [error-message]]
   (if (validation-function? f) f 
       (with-meta (fn [click]
@@ -242,7 +242,7 @@
               type "text"
               default-value ""}} opt-map
         {:keys [timing validation-function invalid-feedback]
-         :or {timing :on-change
+         :or {timing :on-blur
               validation-function (:validation-function opt-map)
               invalid-feedback (:invalid-feedback opt-map)}} validation
         {:keys [limit enforce?]} char-count
@@ -253,12 +253,12 @@
         input-value (or (READ valpath) default-value "")        
         changefn1 #(base-text-on-change (assoc fn-map :event %
                                                :valpath valpath))
-        call-validation-function (when-let [vf validation-function]
+        #_#_call-validation-function (when-let [vf validation-function]
                                    (to-validation vf invalid-feedback)) ;; TODO validation is broken
         changefn (cond
                    validation-function (fn [e] (doto e
                                                  changefn1
-                                                 call-validation-function))
+                                                 #_call-validation-function))
                    enforce? (fn [e]
                               (let [v (shared/get-value-from-change e)]
                                 (cond
@@ -266,11 +266,11 @@
                                   (< limit (count v)) #(UPDATE valpath (constantly (apply str (take limit v))))
                                   :default (changefn1 e))))
                    :default changefn1)
-        opt-map (merge opt-map (merge {:on-change changefn1
-                                       :name id
-                                       timing changefn
-                                       :required required}
-                                      (when (= timing :on-change) {:value input-value})))
+        opt-map (merge opt-map {:on-change changefn1
+                                :name id
+                                timing changefn
+                                :required required
+                                :value input-value})
         input (case type
                 :radio [radio opt-map]
                 :select [select-box opt-map]
