@@ -95,8 +95,8 @@
   "Renders `:type :textarea` elements. In addition to the usual
   opts includes optional `:rows` and `cols` for the html \"rows=\"
   and \"cols=\" attributes."
-  [opt-map]
-  (let [{:keys [id input-value placeholder disabled label valpath changefn value char-count on-change required class rows cols validation on-blur]
+  [fn-map opt-map]
+  (let [{:keys [id input-value placeholder disabled _label _valpath _changefn value char-count on-change required class rows cols validation _on-blur]
          :or {rows 5}} opt-map
         {:keys [limit enforce?]} char-count
         {:keys [timing] :or {timing :on-change}} validation 
@@ -107,7 +107,7 @@
                                  :rows rows
                                  :cols cols
                                  :default-value input-value
-                                 :value value
+                                 :value value ;; TODO NEEDS a READ fn
                                  :on-change on-change
                                  ;timing on-blur
                                  :required required
@@ -212,6 +212,16 @@
   (let [non-dom-args [:style-classes] ]
     (apply dissoc opt-map non-dom-args)))
 
+(defn base-text-on-change
+  "Basic text on-change event handler.
+  `:UPDATE` update function passed on, changing elements at
+  `:valpath` according to the value got from
+  synthetic event `event`"
+  [{:keys [UPDATE valpath event]}]
+  (let [val (shared/get-value-from-change event)]
+    (println {:val val :valpath valpath})
+    (UPDATE valpath (constantly val))))
+
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
   [{:keys [READ UPDATE DICTIONARY] :as fn-map} valpath & [opt-map]]
@@ -228,8 +238,9 @@
         {:keys [field-key contingent-fn]} contingent
         _init (when (and default-value (nil? (READ valpath)))
                 (UPDATE valpath (constantly default-value)))
-        input-value (or (READ valpath) default-value "")
-        changefn1 (fn [e] (UPDATE valpath #(shared/get-value-from-change e))) ;if changes update val
+        input-value (or (READ valpath) default-value "")        
+        changefn1 #(base-text-on-change (assoc fn-map :event %
+                                               :valpath valpath))
         call-validation-function (when-let [vf validation-function]
                                    (to-validation vf invalid-feedback))
         changefn (cond
@@ -243,7 +254,8 @@
                                   (< limit (count v)) #(UPDATE valpath (constantly (apply str (take limit v))))
                                   :default (changefn1 e))))
                    :default changefn1)
-        opt-map (merge opt-map (merge {:name id
+        opt-map (merge opt-map (merge {:on-change changefn1
+                                       :name id
                                        timing changefn
                                        :required required}
                                       (when (= timing :on-change) {:value input-value})))
@@ -251,7 +263,7 @@
                 :radio [radio opt-map]
                 :select [select-box opt-map]
                 :multi-table [multi-table fn-map opt-map]
-                :textarea [text-area opt-map]
+                :textarea [text-area fn-map opt-map]
                 :togglebox [togglebox (merge (assoc fn-map :valpath valpath) opt-map)]
                 :checkbox [checkbox (assoc fn-map :valpath valpath) opt-map]
                 :file [file-upload opt-map]
@@ -327,16 +339,16 @@
   `:UPDATE` a function that takes args with the same signature as update-in
   `:DICTIONARY`(optional) a map of keyword to reformation-compatible structures
   "
-  [fm fn-map & [pathv]]
+  [fm fn-map-or-atom & [pathv]]
   (reset! fm-map-atom fm)
-  (cond (atom? fn-map)
-        (let [R (partial get-in @fn-map)
-              U (partial swap! fn-map update-in)
-              fn-map {:READ R :UPDATE U}]
-          (render-application fm fn-map pathv))
+  (cond (atom? fn-map-or-atom)
+        (let [R (partial get-in @fn-map-or-atom)
+              U (partial swap! fn-map-or-atom update-in)
+              fn-map-or-atom {:READ R :UPDATE U}]
+          (render-application fm fn-map-or-atom pathv))
 ;;;;;;;;;;;;;;;;
-        (map? fn-map)
-        (let [dictionary (:DICTIONARY fn-map)
+        (map? fn-map-or-atom)
+        (let [dictionary (:DICTIONARY fn-map-or-atom)
               fm (if dictionary ;; can I pull off a dissoc around here?
                    (keywordize-form fm dictionary)
                    fm)]
@@ -344,12 +356,12 @@
           (for [[k v] (partition 2 fm)
                 :let [path (conj (vec pathv) k)]]
             (cond
-              (sequential? v) (render-application v fn-map path)
-              (map? v) ^{:key v} (tinput fn-map path v)
-              ;;(map? v) ^{:key v} [tinput fn-map path v]
+              (sequential? v) (render-application v fn-map-or-atom path)
+              (map? v) ^{:key v} (tinput fn-map-or-atom path v)
+              ;;(map? v) ^{:key v} [tinput fn-map-or-atom path v]
 
               :default [:h3.error (str "Failed to render (type:" (type v) ") \n\n" fm)])))
-        :else (throw (ex-info "Unsupported arg for atom-or-map" {:atom-or-map fn-map}))))
+        :else (throw (ex-info "Unsupported arg for atom-or-map" {:map-or-atom fn-map-or-atom}))))
 
 (defn render-review
   "Parse the application map and render the review based on the ordered `schema` of the application, with values in `application` expected to be as given by `render-application`, as an atom or not.

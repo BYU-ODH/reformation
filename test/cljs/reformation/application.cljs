@@ -98,7 +98,7 @@
                              :label "My textarea"
                              :char-count {:limit 500
                                           :enforce? true}
-                             :validation {:timing :on-change
+                            #_#_ :validation {:timing :on-change
                                           :validation-function #(= "@" %)}}
                 :mymultitable  {:label "My multitable"
                                 :id :mymulti
