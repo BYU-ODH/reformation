@@ -253,12 +253,12 @@
         input-value (or (READ valpath) default-value "")        
         changefn1 #(base-text-on-change (assoc fn-map :event %
                                                :valpath valpath))
-        #_#_call-validation-function (when-let [vf validation-function]
+        call-validation-function (when-let [vf validation-function]
                                    (to-validation vf invalid-feedback)) ;; TODO validation is broken
         changefn (cond
                    validation-function (fn [e] (doto e
                                                  changefn1
-                                                 #_call-validation-function))
+                                                 call-validation-function))
                    enforce? (fn [e]
                               (let [v (shared/get-value-from-change e)]
                                 (cond
@@ -270,7 +270,7 @@
                                 :name id
                                 timing changefn
                                 :required required
-                                :value input-value})
+                                #_#_:value input-value})
         input (case type
                 :radio [radio opt-map]
                 :select [select-box opt-map]
