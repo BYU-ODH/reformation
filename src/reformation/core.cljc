@@ -95,7 +95,7 @@
   "Renders `:type :textarea` elements. In addition to the usual
   opts includes optional `:rows` and `cols` for the html \"rows=\"
   and \"cols=\" attributes."
-  [opt-map]
+  [{:keys [READ _UPDATE _DICTIONARY valpath] :as _fn-map-with-path} opt-map]
   (let [{:keys [id placeholder disabled value char-count on-change required class rows cols validation _on-blur]
          :or {rows 5}} opt-map
         {:keys [limit enforce?]} char-count
@@ -106,8 +106,9 @@
                                  :class class
                                  :name id 
                                  :rows rows
-                                 :cols cols                                 
-                                 ;:value value ;; this causes breaks input
+                                 :cols cols
+                                 :value (READ valpath)
+                                 ;:value value ;; this causes breaks input for some reason
                                  :on-change on-change
                                  ;timing on-blur
                                  :required required
@@ -233,6 +234,13 @@
                               :value value}))))
   (or default-value ""))
 
+(defn text-input
+  "Generate a regular text input, sanitizing the args"
+  [{:keys [READ valpath] :as fn-map-with-path}
+   opt-map]
+  [:input.form-control (assoc (sanitize-dom-args opt-map)
+                              :value (READ valpath))])
+
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
   [{:keys [READ UPDATE _DICTIONARY] :as fn-map} valpath & [opt-map]]
@@ -269,20 +277,21 @@
                                 :name id
                                 timing changefn
                                 :required required
-                                #_#_:value input-value ;;This causes focus loss in the browser if added here
+                                ;:value (READ valpath) ;;This causes focus loss in the browser if added here
                                 })
+        fn-map-with-path (assoc fn-map :valpath valpath)
         input (case type
                 :radio [radio opt-map]
                 :select [select-box opt-map]
-                :multi-table [multi-table fn-map opt-map]
-                :textarea [text-area (sanitize-dom-args opt-map)
+                :multi-table [multi-table fn-map-with-path opt-map]
+                :textarea [text-area fn-map-with-path (sanitize-dom-args opt-map)
                            #_ fn-map #_ opt-map]
-                :togglebox [togglebox (merge (assoc fn-map :valpath valpath) opt-map)]
-                :checkbox [checkbox (assoc fn-map :valpath valpath) opt-map]
+                :togglebox [togglebox (merge fn-map opt-map)]
+                :checkbox [checkbox fn-map-with-path opt-map]
                 :file [file-upload opt-map]
                 :hidden ^{:key (str "hidden_" opt-map)}[hidden-input opt-map]
                 ;; default
-                [:input.form-control (sanitize-dom-args opt-map)])]
+                [text-input fn-map-with-path opt-map])]
     (if (= :hidden (keyword type))
       input
       ^{:key input}
