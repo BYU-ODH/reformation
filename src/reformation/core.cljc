@@ -96,7 +96,7 @@
   opts includes optional `:rows` and `cols` for the html \"rows=\"
   and \"cols=\" attributes."
   [opt-map]
-  (let [{:keys [id input-value placeholder disabled _label _valpath _changefn value char-count on-change required class rows cols validation _on-blur]
+  (let [{:keys [id placeholder disabled value char-count on-change required class rows cols validation _on-blur]
          :or {rows 5}} opt-map
         {:keys [limit enforce?]} char-count
         {:keys [timing] :or {timing :on-change}} validation 
@@ -108,13 +108,14 @@
                                  :rows rows
                                  :cols cols
                                  ;:default-value input-value
-                                 :value input-value
-                                 :on-change on-change
+                                 ;:value value
+                                 ;:on-change on-change
                                  ;timing on-blur
                                  :required required
                                  :placeholder placeholder
                                  :disabled disabled}]]
     (println {"value is" value})
+    (println {"opt-map is" opt-map})
     [:div.form-group
      textarea
      (when char-count
@@ -266,11 +267,11 @@
                                   (< limit (count v)) #(UPDATE valpath (constantly (apply str (take limit v))))
                                   :default (changefn1 e))))
                    :default changefn1)
-        opt-map (merge opt-map {:on-change changefn1
+        opt-map (merge opt-map {:on-change changefn
                                 :name id
                                 timing changefn
                                 :required required
-                                #_#_:value input-value})
+                                :value input-value})
         input (case type
                 :radio [radio opt-map]
                 :select [select-box opt-map]
