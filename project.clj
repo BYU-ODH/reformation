@@ -27,7 +27,8 @@
                    
                    :figwheel
                    {:http-server-root "public"
-                    :nrepl-port 7002
+                    :nrepl-port 7003
+                    :server-port 3450
                     :css-dirs ["test/resources/public/css"]}
 
                    :dependencies [[cheshire "5.8.1"]
