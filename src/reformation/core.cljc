@@ -95,11 +95,12 @@
   "Renders `:type :textarea` elements. In addition to the usual
   opts includes optional `:rows` and `cols` for the html \"rows=\"
   and \"cols=\" attributes."
-  [fn-map opt-map]
+  [opt-map]
   (let [{:keys [id input-value placeholder disabled _label _valpath _changefn value char-count on-change required class rows cols validation _on-blur]
          :or {rows 5}} opt-map
         {:keys [limit enforce?]} char-count
         {:keys [timing] :or {timing :on-change}} validation 
+
         textarea
         [:textarea.form-control {:id id
                                  :class class
@@ -107,12 +108,13 @@
                                  :rows rows
                                  :cols cols
                                  :default-value input-value
-                                 :value value ;; TODO NEEDS a READ fn
+                                 :value value
                                  :on-change on-change
                                  ;timing on-blur
                                  :required required
                                  :placeholder placeholder
                                  :disabled disabled}]]
+    (println {"value is" value})
     [:div.form-group
      textarea
      (when char-count
@@ -222,27 +224,37 @@
     (println {:val val :valpath valpath})
     (UPDATE valpath (constantly val))))
 
+(defn get-given-value
+  "Get the given value, given a warning if `:value` is being mis-used"
+  [{:keys [value default-value]}]
+  (when (and value
+             (not default-value)
+             (throw (ex-data {:message "You gave a :value but meant :default-value"
+                              :value value}))))
+  (or default-value ""))
+
 (defn tinput
   "Produce data-bound inputs for a given map, using `:READ` and `:UPDATE` for values and changes. `opt-map` specifies options including display variables."
-  [{:keys [READ UPDATE DICTIONARY] :as fn-map} valpath & [opt-map]]
+  [{:keys [READ UPDATE _DICTIONARY] :as fn-map} valpath & [opt-map]]
   (let [{:keys [char-count contingent default-value disabled hidden id required style-classes subtext type placeholder name-separator validation]
          :or {name-separator "-"
               id (string/join "-" (map name valpath))
               type "text"
               default-value ""}} opt-map
         {:keys [timing validation-function invalid-feedback]
-         :or {timing :on-blur
+         :or {timing :on-change
               validation-function (:validation-function opt-map)
               invalid-feedback (:invalid-feedback opt-map)}} validation
         {:keys [limit enforce?]} char-count
         {:keys [field-key contingent-fn]} contingent
-        _init (when (and default-value (nil? (READ valpath)))
-                (UPDATE valpath (constantly default-value)))
+        given-value (get-given-value opt-map)
+        _init (when (and given-value (nil? (READ valpath)))
+                (UPDATE valpath (constantly given-value)))
         input-value (or (READ valpath) default-value "")        
         changefn1 #(base-text-on-change (assoc fn-map :event %
                                                :valpath valpath))
         call-validation-function (when-let [vf validation-function]
-                                   (to-validation vf invalid-feedback))
+                                   (to-validation vf invalid-feedback)) ;; TODO validation is broken
         changefn (cond
                    validation-function (fn [e] (doto e
                                                  changefn1
@@ -263,7 +275,7 @@
                 :radio [radio opt-map]
                 :select [select-box opt-map]
                 :multi-table [multi-table fn-map opt-map]
-                :textarea [text-area fn-map opt-map]
+                :textarea [text-area opt-map]
                 :togglebox [togglebox (merge (assoc fn-map :valpath valpath) opt-map)]
                 :checkbox [checkbox (assoc fn-map :valpath valpath) opt-map]
                 :file [file-upload opt-map]
