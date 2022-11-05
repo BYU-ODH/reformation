@@ -178,9 +178,10 @@
     [:div.submission-form 
      [:form.form-control {:id form-id}
       (into [:div.form-contents]
+            [:h1 "hello"]
             #_(rfc/render-application text-form (data-sources @chosen-datasource))
-            (rfc/render-application test-form  (data-sources @chosen-datasource))
-            #_(rfc/render-application test-form-with-map (data-sources @chosen-datasource))
+            #_(rfc/render-application test-form  (data-sources @chosen-datasource))
+            (rfc/render-application test-form-with-map (data-sources @chosen-datasource))
             )]]))
 
 (defn datasource-panel []
