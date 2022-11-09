@@ -115,7 +115,7 @@
                                  :placeholder placeholder
                                  :disabled disabled}]]
     ;; (println {"value is" value})
-    (println {"opt-map is" opt-map})
+    ;;;(println {"opt-map is" opt-map})
     [:div.form-group
      textarea
      (when char-count
@@ -222,7 +222,7 @@
   synthetic event `event`"
   [{:keys [UPDATE valpath event]}]
   (let [val (shared/get-value-from-change event)]
-    (println {:val val :valpath valpath})
+    ;#_ (println {:val val :valpath valpath})
     (UPDATE valpath (constantly val))))
 
 (defn get-given-value
@@ -320,9 +320,9 @@
   [dictionary k]
   (let [v (get dictionary k)]
     (cond
-      ((complement qualified-keyword?) k) (do (println "unqualified keyword:: " k) k)
+      ((complement qualified-keyword?) k) (do #_ (println "unqualified keyword:: " k) k)
       (not v) (throw (ex-info (str "No " k " in DICTIONARY") {:DICTIONARY dictionary}))
-      ((some-fn vector? map? string?) v) (do (println "Success checking " k) v)
+      ((some-fn vector? map? string?) v) (do #_ (println "Success checking " k) v)
       (fn? v) (v)
       :unknown (throw (ex-info (str "type of value in " k " not known")
                                {:type (type v)
@@ -453,7 +453,7 @@
                              :submit-text "Click or Drop a File Here"
                              :error-text "Maybe We had an error?"
                                       ;:submit-button [:a.btn.btn-success "Submit!"]
-                             :submit-fn #(println "Trying to submit:")
+                             :submit-fn ##_ (println "Trying to submit:")
                              :save-fn #(reset! FILE %)                               
                              :allowed-extensions-f #{"txt"}
                              :style-classes {:drag-over "dragover"
@@ -479,7 +479,7 @@
                                  :id "example3"}
               :example_element4 {:type :select
                                  :label "Select"
-                                 :validation {:validation-function #(println "Howdy")}
+                                 :validation {:validation-function ##_ (println "Howdy")}
                                  :required true
                                  ;:on-change #(js/alert "changed")
                                  ;:options [{:content "hi" :value "" :on-click #(js/alert "clicked")} "hello" "howdy"]
