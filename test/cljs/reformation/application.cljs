@@ -8,10 +8,10 @@
             [reformation.reframe] ;; necessary for the re-frame tests
             [cljs.pprint :as pprint]))
 
-;render-application returns a VECTOR with tinput at the front
+                                        ;render-application returns a VECTOR with tinput at the front
 (def f1 #(if (> (count %) 5)
-                 true
-                 nil))
+           true
+           nil))
 (def f2 #(if (= "@" %)
            true
            nil))
@@ -83,74 +83,75 @@
   )
 
 
-(def test-form [:myhidden-text {:type :hidden
-                                :default-value "whisper"}
-                :mydefault-text {:type :text
-                                 :label "default text"
-                                 :default-value "something good"
-                                 :disabled true
-                                 :style-classes "I-like-red"}
-                :mytext {:type :text
-                         :label "My text"}
-                :mytextarea {:type :textarea
-                             :rows 4
-                             :cols 100
-                             :label "My textarea"
-                             :char-count {:limit 500
-                                          :enforce? true}
-                            #_#_ :validation {:timing :on-change
-                                          :validation-function #(= "@" %)}}
-                :mymultitable  {:label "My multitable"
-                                :id :mymulti
-                                :required? true
-                                :type :multi-table
-                                :style-classes ["is-striped" "is-fullwidth" "is-hoverable"]
-                                :min-rows 2
-                                :subtext "Indicate any expenses involved in carrying out your request, including a reason for each expense"
-                                :value-path [:my-multitable]
-                                :sum-field :amount
-                                :columns [{:key :item
-                                           :title "Item"}
-                                          {:key :amount
-                                           :title "Amount"
-                                           :input-type "number"}
+(defn test-form []
+  [:myhidden-text {:type :hidden
+                   :default-value "whisper"}
+   :mydefault-text {:type :text
+                    :label "default text"
+                    :default-value "something good"
+                    :disabled true
+                    :style-classes "I-like-red"}
+   :mytext {:type :text
+            :label "My text"}
+   :mytextarea {:type :textarea
+                :rows 4
+                :cols 100
+                :label "My textarea"
+                :char-count {:limit 500
+                             :enforce? true}
+                #_#_ :validation {:timing :on-change
+                                  :validation-function #(= "@" %)}}
+   :mymultitable  {:label "My multitable"
+                   :id :mymulti
+                   :required? true
+                   :type :multi-table
+                   :style-classes ["is-striped" "is-fullwidth" "is-hoverable"]
+                   :min-rows 2
+                   :subtext "Indicate any expenses involved in carrying out your request, including a reason for each expense"
+                   :value-path [:my-multitable]
+                   :sum-field :amount
+                   :columns [{:key :item
+                              :title "Item"}
+                             {:key :amount
+                              :title "Amount"
+                              :input-type "number"}
 
-                                          {:key :purpose
-                                           :title "Purpose"
-                                           :input-type "textarea"}
-                                          {:key :justification
-                                           :title "Justification"
-                                           :input-type "radio"
-                                           :options ["I really want it"
-                                                     "Department needs it"
-                                                     "Have to use full budget or it will get cut"]}
-                                          ]}
+                             {:key :purpose
+                              :title "Purpose"
+                              :input-type "textarea"}
+                             {:key :justification
+                              :title "Justification"
+                              :input-type "radio"
+                              :options ["I really want it"
+                                        "Department needs it"
+                                        "Have to use full budget or it will get cut"]}
+                             ]}
 
-                :myselect {:label "A select" :type :select :options [1 2 3]}
-                :myradio {:type :radio :options [1 2 {:value 3}]}
-                
-                :mytoggle {:type :togglebox
-                           :label "My togglebox"
-                           :content [:test {:type :text :label "My toggled "}]}
-                :mycheckbox {:type :checkbox :label "My checkbox" :default-value true}
-                :myfileupload {:type :file
-                               :label "My file"
-                               :submit-text "Click or Drop a File Here"
-                               :error-text "Maybe We had an error?"
-                               ;:submit-button [:a.btn.btn-success "Submit!"]
-                               :submit-fn #(js/alert "Trying to submit:")
-                               :save-fn #(reset! FILE %)                               
-                               :allowed-extensions-f #{"txt"}
-                               :style-classes {:drag-over "dragover"
-                                               :inactive "undragged"
-                                               :have-file "have-file"}}
-                [:a.button {:id "Save"
-                            :alt "Save"
-                            :type :submit
-                            :title "Save"
-                            ;;:on-click validate-and-submit
-                            :href nil}
-                 "Save"]])
+   :myselect {:label "A select" :type :select :options [1 2 3]}
+   :myradio {:type :radio :options [1 2 {:value 3}]}
+   
+   :mytoggle {:type :togglebox
+              :label "My togglebox"
+              :content [:test {:type :text :label "My toggled "}]}
+   :mycheckbox {:type :checkbox :label "My checkbox" :default-value true}
+   :myfileupload {:type :file
+                  :label "My file"
+                  :submit-text "Click or Drop a File Here"
+                  :error-text "Maybe We had an error?"
+                                        ;:submit-button [:a.btn.btn-success "Submit!"]
+                  :submit-fn #(js/alert "Trying to submit:")
+                  :save-fn #(reset! FILE %)                               
+                  :allowed-extensions-f #{"txt"}
+                  :style-classes {:drag-over "dragover"
+                                  :inactive "undragged"
+                                  :have-file "have-file"}}
+   [:a.button {:id "Save"
+               :alt "Save"
+               :type :submit
+               :title "Save"
+               ;;:on-click validate-and-submit
+               :href nil}
+    "Save"]])
 
 (def data-sources {:atom my-atom
                    :map {:DICTIONARY DICTIONARY2
@@ -178,10 +179,10 @@
     [:div.submission-form 
      [:form.form-control {:id form-id}
       (into [:div.form-contents]
-            [:h1 "hello"]
+                                        ;[:h1 "hello"]
             #_(rfc/render-application text-form (data-sources @chosen-datasource))
-            #_(rfc/render-application test-form  (data-sources @chosen-datasource))
-            (rfc/render-application test-form-with-map (data-sources @chosen-datasource))
+            (rfc/render-application test-form  (data-sources @chosen-datasource))
+            #_(rfc/render-application test-form-with-map (data-sources @chosen-datasource))
             )]]))
 
 (defn datasource-panel []
@@ -201,5 +202,5 @@
    [generate-form]
    [datasource-panel]
    [data-panel]
-   ;[form-component]
+                                        ;[form-component]
    [save-button]])
