@@ -8,8 +8,7 @@
 
 (defn home-page [req]
   (let [username (:username req)
-        userinfo (-> (get-in req [:session :user-data])
-                     (assoc :username username))]
+        userinfo {:username "dummy"}]
     (layout/hiccup-render-cljs-base userinfo)))
 
 (defroutes home-routes
