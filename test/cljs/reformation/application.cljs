@@ -86,6 +86,12 @@
 (defn test-form []
   [:myhidden-text {:type :hidden
                    :default-value "whisper"}
+   :a-js-date {:default-value (js/Date.)
+               :label "using render-application"
+               :disabled true}
+   :a-name {:default-value (get (js->clj js/USER) "username")
+            :label "Username"
+            :disabled true}
    :mydefault-text {:type :text
                     :label "default text"
                     :default-value "something good"
@@ -165,6 +171,7 @@
                            (reframe/dispatch-sync [:update-form kv update-function]))}})
 
 (def chosen-datasource (r/atom :map))
+;; re-frame.db/app-db
 
 (defn save-button
   []
@@ -178,10 +185,17 @@
   (let [form-id "needs-validation"]
     [:div.submission-form 
      [:form.form-control {:id form-id}
+      #_ [rfc/tinput
+       (data-sources @chosen-datasource)
+       [:test-js-val]
+       {:label "Testing date"
+        :disabled true
+        :default-value (js/Date.)}]
+
       (into [:div.form-contents]
                                         ;[:h1 "hello"]
             #_(rfc/render-application text-form (data-sources @chosen-datasource))
-            (rfc/render-application test-form  (data-sources @chosen-datasource))
+            (rfc/render-application (test-form)  (data-sources @chosen-datasource))
             #_(rfc/render-application test-form-with-map (data-sources @chosen-datasource))
             )]]))
 
