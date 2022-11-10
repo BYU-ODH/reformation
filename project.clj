@@ -39,9 +39,15 @@
                                   [clj-json "0.5.3"]
                                   [clj-time "0.15.1"]                                  
                                   [cljs-ajax "0.8.0"]
-                                  [cljsjs/react "16.8.1-0"]
-                                  [cljsjs/react-dom "16.8.1-0"]
-                                  [cljsjs/react-dom-server "16.8.1-0"]
+
+                                  [reagent "1.1.1"];; REACT 
+                                  [reagent-utils "0.3.4"];; & REACT
+                                  [cljsjs/react "17.0.2-0"]
+                                  [cljsjs/react-dom "17.0.2-0"]
+
+                                  ;[cljsjs/react "16.8.1-0"]
+                                  ;[cljsjs/react-dom "16.8.1-0"]
+                                  [cljsjs/react-dom-server "18.2.0-0"]
                                   [com.andrewmcveigh/cljs-time "0.5.2"]
                                   [compojure "1.6.1"]
                                   [cprop "0.1.13"]
