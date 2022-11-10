@@ -453,7 +453,7 @@
                              :submit-text "Click or Drop a File Here"
                              :error-text "Maybe We had an error?"
                                       ;:submit-button [:a.btn.btn-success "Submit!"]
-                             :submit-fn ##_ (println "Trying to submit:")
+                             :submit-fn #(println "Trying to submit:")
                              :save-fn #(reset! FILE %)                               
                              :allowed-extensions-f #{"txt"}
                              :style-classes {:drag-over "dragover"
@@ -479,7 +479,7 @@
                                  :id "example3"}
               :example_element4 {:type :select
                                  :label "Select"
-                                 :validation {:validation-function ##_ (println "Howdy")}
+                                 :validation {:validation-function #(println "Howdy")}
                                  :required true
                                  ;:on-change #(js/alert "changed")
                                  ;:options [{:content "hi" :value "" :on-click #(js/alert "clicked")} "hello" "howdy"]
