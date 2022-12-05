@@ -10,12 +10,13 @@
   (-> s s/lower-case (s/replace #" " "-") (s/replace #"[^0-9 \- a-z]" "")))
 
 (defn reviewify-map
+  "Parse the map and modify all keys for disabling"
   [m]
   (cond-> m
+    ;; TODO replace text area with div
     true (assoc :disabled true)
     (= (:type m) :select) (dissoc :type)
     (:content m) (update :content reviewify)))
-
 
 (defn reviewify
   "Adjust a submission-default map for review rather than editing"

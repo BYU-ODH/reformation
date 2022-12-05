@@ -281,6 +281,7 @@
                                 })
         fn-map-with-path (assoc fn-map :valpath valpath)
         input (case type
+                :div [:div opt-map]  ;; TODO display div
                 :radio [radio opt-map]
                 :select [select-box opt-map]
                 :multi-table [multi-table fn-map-with-path opt-map]
@@ -390,11 +391,11 @@
    Resulting form will be read-only with no changes possible."
   [schema application]
   (let [application (cond-> application ((complement atom?)) atom) ]
-    #_[:h1 "Application is not atom? " (str ((complement atom?) application))]
     (render-application
      (shared/reviewify schema)
      application)))
-(let [real-d {:humplus/programs ["one" "two"]
+
+#_(let [real-d {:humplus/programs ["one" "two"]
               :humplus/grant-permission-text "Permission text"
               :shared/USERNAME "LovelyUser"}
       FILE (atom {})
