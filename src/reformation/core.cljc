@@ -234,9 +234,15 @@
                               :value value}))))
   (or default-value ""))
 
+(defn div
+  "produce a div, usually for review-versions from a textarea"
+  [{:keys [READ valpath] :as _fn-map-with-path}]
+  (let [content (READ valpath)]
+    [:div.textarea content]))
+
 (defn text-input
   "Generate a regular text input, sanitizing the args"
-  [{:keys [READ valpath] :as fn-map-with-path}
+  [{:keys [READ valpath] :as _fn-map-with-path}
    opt-map]
   [:input.form-control (assoc (sanitize-dom-args opt-map)
                               :value (READ valpath))])
@@ -281,7 +287,7 @@
                                 })
         fn-map-with-path (assoc fn-map :valpath valpath)
         input (case type
-                :div [:div opt-map]  ;; TODO display div
+                :div [div fn-map-with-path]  ;; TODO display read-only div
                 :radio [radio opt-map]
                 :select [select-box opt-map]
                 :multi-table [multi-table fn-map-with-path opt-map]
