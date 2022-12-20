@@ -9,14 +9,19 @@
 (defn idify [s]
   (-> s s/lower-case (s/replace #" " "-") (s/replace #"[^0-9 \- a-z]" "")))
 
+(defn str-or-conj
+  "If `x` is a string, use str to join to it. Otherwise assume it is a coll and use conj."
+  [x val] (if (string? x) (str x val) (conj x val)))
+
 (defn reviewify-map
   "Parse the map and modify all keys for disabling"
   [m]
   (cond-> m
-    ;; TODO replace text area with div
-    true (assoc :disabled true)
-                                        ;(= (:type m) :textarea) (assoc :type :div)
-    (#{:textarea :input :text} (:type m :input)) (assoc :type :div)
+    true (assoc :disabled true)    
+    (#{:textarea :input :text} (:type m :input)) (#(-> %
+                                                     (update :style-classes str-or-conj
+                                                             (str ((comp (fnil name :generic) :type) m) "-input"))
+                                                     (assoc :type :div))) 
     (= (:type m) :select) (dissoc :type)
     (:content m) (update :content reviewify)))
 

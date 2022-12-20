@@ -236,9 +236,10 @@
 
 (defn div
   "produce a div, usually for review-versions from a textarea"
-  [{:keys [READ valpath] :as _fn-map-with-path}]
+  [{:keys [READ valpath] :as _fn-map-with-path}
+   &[{:keys [style-classes] :as _opt-map}]]
   (let [content (READ valpath)]
-    [:div.text.review content]))
+    [:div.text.review {:class style-classes} content]))
 
 (defn text-input
   "Generate a regular text input, sanitizing the args"
@@ -287,7 +288,7 @@
                                 })
         fn-map-with-path (assoc fn-map :valpath valpath)
         input (case type
-                :div [div fn-map-with-path]
+                :div [div fn-map-with-path opt-map]
                 :radio [radio opt-map]
                 :select [select-box opt-map]
                 :multi-table [multi-table fn-map-with-path opt-map]
