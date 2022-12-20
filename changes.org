@@ -1,5 +1,7 @@
 
 * Recent Changes
-
+** Version 24
+- reviewify now makes inputs and text areas into divs, so that their content and width can be styled as desired.
+  
 ** Version 15
 - Adds :DICTIONARY functionality for externalization of form components
