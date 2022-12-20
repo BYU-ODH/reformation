@@ -15,7 +15,8 @@
   (cond-> m
     ;; TODO replace text area with div
     true (assoc :disabled true)
-    (= (:type m) :textarea) (assoc :type :div)
+                                        ;(= (:type m) :textarea) (assoc :type :div)
+    (#{:textarea :input :text} (:type m :input)) (assoc :type :div)
     (= (:type m) :select) (dissoc :type)
     (:content m) (update :content reviewify)))
 

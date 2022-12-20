@@ -238,7 +238,7 @@
   "produce a div, usually for review-versions from a textarea"
   [{:keys [READ valpath] :as _fn-map-with-path}]
   (let [content (READ valpath)]
-    [:div.textarea content]))
+    [:div.text.review content]))
 
 (defn text-input
   "Generate a regular text input, sanitizing the args"
@@ -287,7 +287,7 @@
                                 })
         fn-map-with-path (assoc fn-map :valpath valpath)
         input (case type
-                :div [div fn-map-with-path]  ;; TODO display read-only div
+                :div [div fn-map-with-path]
                 :radio [radio opt-map]
                 :select [select-box opt-map]
                 :multi-table [multi-table fn-map-with-path opt-map]
@@ -315,12 +315,10 @@
           [:div.invalid-feedback invalid-feedback])]])))
 
 (defn atom?
-  "ducktype an atom as something dereferable"
+  "A CLJC implementation of atom?"
   [a]
   #?(:clj  (instance? clojure.lang.Atom a)
-     :cljs (satisfies? IAtom a))
-  #_(try (do (deref a) true)
-         (catch #?(:clj Exception :cljs js/Error) _ false)))
+     :cljs (satisfies? IAtom a)))
 
 (defn from-dictionary
   "Return valid entries `k` from `dictionary`, or error meaningfully"
