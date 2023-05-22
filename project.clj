@@ -68,7 +68,8 @@
                                   [ring/ring-defaults "0.3.2"] ;; CLJ routing
                                   [secretary "1.2.3"] ;; CLJS routing
                                   [re-frame "0.11.0"]
-                                  [venantius/accountant "0.2.4"]]
+                                  [venantius/accountant "0.2.4"]
+                                  [com.taoensso/timbre "5.1.2"]]
                    :plugins [[lein-codox "0.10.7"]
                              [com.jakemccrary/lein-test-refresh "0.14.0"]
                              [lein-doo "0.1.7"]
