@@ -2,7 +2,6 @@
   "core functions to start/stop the application"
   (:require [reformation.handler :as handler]
             [luminus.http-server :as http]
-            [reformation.config :refer [env]]
             [clojure.tools.cli :refer [parse-opts]]
             [taoensso.timbre :as log]
             [mount.core :as mount])
@@ -16,9 +15,8 @@
   http-server
   :start
   (http/start
-   (-> env
-       (assoc :host "127.0.0.1" :handler #'handler/app)
-       (update :port #(or (-> env :options :port) %))))
+   (-> {}
+       (assoc :host "127.0.0.1" :handler #'handler/app :port 3000)))
   :stop
   (http/stop http-server))
 
