@@ -169,7 +169,23 @@
                          (fn [kv update-function]
                            ;; dispatch-sync is required here, because the defer involved in plain reframe/dispatch causes the synthetic event to be released and the fn breaks. 
                            (reframe/dispatch-sync [:update-form kv update-function]))}})
+[:forms :address :street-name] (constantly that-thing-they-typed)
 
+(defn confirm
+  "A confirm dialogue that can be treated as a predicate (returns truthy or falsy) or as info"
+  ([])
+  ([arg-map]
+   (let [{:keys [confirm-text cancel-text text-content title pred?]
+          :or {pred? true}} arg-map
+         approved? (fn [goog-return-value] (do-stuff goog-return-value))]
+     
+     (if pred?
+       (boolean (approved?))
+       (approved?)))
+)
+  )
+
+(if (flats/confirm) do-thing)
 (def chosen-datasource (r/atom :map))
 ;; re-frame.db/app-db
 
