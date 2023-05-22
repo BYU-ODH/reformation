@@ -67,6 +67,7 @@
                                   [secretary "1.2.3"] ;; CLJS routing
                                   [re-frame "0.11.0"]
                                   [venantius/accountant "0.2.4"]
+                                  [luminus-immutant "0.2.5"]
                                   [com.taoensso/timbre "5.1.2"]]
                    :plugins [[lein-codox "0.10.7"]
                              [com.jakemccrary/lein-test-refresh "0.14.0"]
