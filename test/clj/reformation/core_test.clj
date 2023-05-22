@@ -14,28 +14,22 @@
   http-server
   :start
   (http/start
-   {:port 3000
-    :host "127.0.0.1"
-    :handler (handler/app)})
+   (-> env
+       (assoc :host "127.0.0.1" :handler #'handler/app)
+       (update :port #(or (-> env :options :port) %))))
   :stop
   (http/stop http-server))
 
-(comment (mount/defstate ^{:on-reload :noop}
-           repl-server
-           :start
-           (let [nrepl-port 7000]
-             (repl/start {:port nrepl-port}))
-           :stop
-           (when repl-server
-             (repl/stop repl-server))))
-
-
-(defn stop-app []
+(defn stop-app
+  "Stops the app and logs an info"
+  []
   (doseq [component (:stopped (mount/stop))]
     (log/info component "stopped"))
   (shutdown-agents))
 
-(defn start-app [args]
+(defn start-app
+  "Starts the app and logs an info"
+  [args]
   (doseq [component (-> args
                         (parse-opts cli-options)
                         mount/start-with-args
@@ -43,12 +37,6 @@
     (log/info component "started"))
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app)))
 
-(defn -main [& args]
-  (cond
-    (some #{"migrate" "rollback"} args)
-    (do
-      (mount/start)
-      (System/exit 0))
-    :else
-    (start-app args)))
 
+(defn -main [& args]
+  (start-app args))
