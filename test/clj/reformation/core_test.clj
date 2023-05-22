@@ -1,8 +1,10 @@
-(ns reformation.core-test
+(ns reformation.core
+  "core functions to start/stop the application"
   (:require [reformation.handler :as handler]
             [luminus.http-server :as http]
+            [reformation.config :refer [env]]
             [clojure.tools.cli :refer [parse-opts]]
-            [clojure.tools.logging :as log]
+            [taoensso.timbre :as log]
             [mount.core :as mount])
   (:gen-class))
 
@@ -39,4 +41,9 @@
 
 
 (defn -main [& args]
-  (start-app args))
+  (cond
+    (some #{"migrate" "rollback"} args)
+    (System/exit 0)
+    
+    :else
+    (start-app args)))
