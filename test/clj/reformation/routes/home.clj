@@ -1,5 +1,6 @@
 (ns reformation.routes.home
-  (:require [reformation.layout :as layout]))
+  (:require [reformation.layout :as layout]
+            [reformation.middleware :as middleware]))
 
 (defn home-page [req]
   (let [username (:username req)
@@ -9,5 +10,6 @@
 (defn home-routes
   "All the basic routes to be handled by the SPA"
   []
-  ["/" {:get home-page}
-   "/review" {:get home-page}])
+  ["" {:middleware [middleware/wrap-base]}
+   ["/" {:get home-page}
+    "/review" {:get home-page}]])

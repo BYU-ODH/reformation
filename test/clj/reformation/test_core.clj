@@ -21,7 +21,7 @@
          (assoc :handler #'handler/app)))
     :stop
     (http/stop http-server))
-  )
+  (log/info "Server started at " config))
 
 (defn stop-app
   "Stops the app and logs an info"

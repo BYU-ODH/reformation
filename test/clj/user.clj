@@ -2,7 +2,7 @@
   (:require [mount.core :as mount]
             [reformation.figwheel :refer [start-fw stop-fw cljs]]
             [garden-gnome.watcher :as garden-gnome]
-            reformation.core-test))
+            reformation.test-core))
 
 (mount/defstate garden
   :start (garden-gnome/start! (garden-gnome/default-config))
