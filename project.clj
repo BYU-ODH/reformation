@@ -20,7 +20,7 @@
   :profiles {:dev {:jvm-opts ["-server" "-Dconf=.lein-env"]
                    :resource-paths ["test/resources" "test/target/cljsbuild"]
                    :target-path "test/target/"
-                   :main reformation.core-test
+                   :main reformation.test-core
 
                    :clean-targets ^{:protect false}
                    [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]

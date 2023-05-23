@@ -1,4 +1,4 @@
-(ns reformation.core-test
+(ns reformation.test-core
   "core functions to start/stop the application"
   (:require [reformation.handler :as handler]
             [luminus.http-server :as http]
@@ -11,14 +11,17 @@
   [["-p" "--port PORT" "Port number"
     :parse-fn #(Integer/parseInt %)]])
 
-(mount/defstate ^{:on-reload :noop}
-  http-server
-  :start
-  (http/start
-   (-> {}
-       (assoc :host "127.0.0.1" :handler #'handler/app :port 3000)))
-  :stop
-  (http/stop http-server))
+(let [config {:port 3000
+              :host "127.0.0.1"}]
+  (mount/defstate ^{:on-reload :noop}
+    http-server
+    :start
+    (http/start
+     (-> config
+         (assoc :handler #'handler/app)))
+    :stop
+    (http/stop http-server))
+  )
 
 (defn stop-app
   "Stops the app and logs an info"
