@@ -50,7 +50,8 @@
                                   [figwheel-sidecar "0.5.18"]
                                   [garden "1.3.6"]
                                   [garden-gnome "0.1.0"]
-                                  [hiccup "1.0.5"]                                  
+                                  [hiccup "1.0.5"]
+                                  [http-kit "2.6.0"]
                                   [metosin/ring-http-response "0.9.1"]
                                   [mount "0.1.16"] ;; Modular runtime operation
                                   [org.clojure/clojure "1.10.1"]

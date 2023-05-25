@@ -15,7 +15,7 @@
   :start ((or (:init defaults) identity))
   :stop  ((or (:stop defaults) identity)))
 
-(mount/defstate app
+(mount/defstate app-routes
   :start
   (do
     (log/info "Starting ring-handler")
@@ -38,3 +38,6 @@
         :not-acceptable #(do
                            (constantly (error-page {:status 406
                                                     :title "406 - Not acceptable"})))})))))
+
+(defn app []
+  (middleware/wrap-base #'app-routes))

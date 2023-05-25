@@ -1,7 +1,7 @@
 (ns reformation.test-core
   "core functions to start/stop the application"
-  (:require [reformation.handler :as handler]
-            [luminus.http-server :as http]
+  (:require [reformation.handler :as handler]            
+            [org.httpkit.server :as http]
             [clojure.tools.cli :refer [parse-opts]]
             [clojure.tools.logging :as log]
             [mount.core :as mount])
@@ -11,17 +11,24 @@
   [["-p" "--port PORT" "Port number"
     :parse-fn #(Integer/parseInt %)]])
 
-(let [config {:port 3000
-              :host "127.0.0.1"}]
-  (mount/defstate ^{:on-reload :noop}
-    http-server
-    :start
-    (http/start
-     (-> config
-         (assoc :handler #'handler/app)))
-    :stop
-    (http/stop http-server))
-  (log/info "Server started at " config))
+(def config {:port 3000
+             :host "127.0.0.1"})
+
+(def server (atom nil))
+
+(defn stop-server
+  "Stop the http server, with optional delay"
+  [&[delay]]
+  (let [delay (or delay 500)]
+    (when-let [s @server]
+      (log/info "Stopping Server")
+      (s :timeout delay))))
+
+(mount/defstate ^{:on-reload :noop} http-server
+  :start
+  (http/run-server handler/app config)  
+  :stop
+  (stop-server))
 
 (defn stop-app
   "Stops the app and logs an info"
@@ -37,7 +44,7 @@
                         (parse-opts cli-options)
                         mount/start-with-args
                         :started)]
-    (log/info component "started"))
+    (log/info component "started with ⟫" config ))
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app)))
 
 
@@ -48,3 +55,13 @@
     
     :else
     (start-app args)))
+
+(comment
+  http-server
+  ;; => #function[clojure.lang.AFunction/1]#function[clojure.lang.AFunction/1]
+  ;; => #function[clojure.lang.AFunction/1]
+  (http-server "/")
+  ;; => Execution error (IllegalArgumentException) at org.httpkit.server$run_server$stop_server__18602/doInvoke (server.clj:121).
+  ;;    No value supplied for key: /
+  
+  )
