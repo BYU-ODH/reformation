@@ -58,10 +58,6 @@
 
 (comment
   http-server
-  ;; => #function[clojure.lang.AFunction/1]#function[clojure.lang.AFunction/1]
-  ;; => #function[clojure.lang.AFunction/1]
   (http-server "/")
-  ;; => Execution error (IllegalArgumentException) at org.httpkit.server$run_server$stop_server__18602/doInvoke (server.clj:121).
-  ;;    No value supplied for key: /
   
   )

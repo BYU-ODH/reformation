@@ -46,7 +46,9 @@
 (comment
   (let [request {:request-method :get
                  :uri "/"}]
-    (app request)) ;; returns 404
+    (app request)) ;; with the app as a def, returns 200
+
+
   (let [routes [(home-routes)]
         router (r/router routes)
 ;; [(home-routes)] is [["" {:middleware [#function[reformation.middleware/wrap-base]]} ["/" {:get #function[reformation.routes.home/home-page]} "/review" {:get #function[reformation.routes.home/home-page]}]]]
