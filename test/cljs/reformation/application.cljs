@@ -185,7 +185,6 @@
 )
   )
 
-(if (flats/confirm) do-thing)
 (def chosen-datasource (r/atom :map))
 ;; re-frame.db/app-db
 
