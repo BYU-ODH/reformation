@@ -11,5 +11,5 @@
   "All the basic routes to be handled by the SPA"
   []
   ["" {:middleware [middleware/wrap-base]}
-   ["/" {:get home-page}
-    "/review" {:get home-page}]])
+   ["/" {:get home-page}]
+   ["/review" {:get home-page}]])
