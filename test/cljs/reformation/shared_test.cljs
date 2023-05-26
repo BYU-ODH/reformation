@@ -21,3 +21,13 @@
            [:div hc])]])
      (when contents contents)]))
 
+(def custom-formatter (timef/formatter "YYYY-MM-dd hh:mm a"))
+
+(defn format-date [d]
+  ;;(str d)
+  (->> d
+       timec/date-time
+       timec/from-default-time-zone
+      ;timec/from-utc-time-zone
+      (timef/unparse custom-formatter)
+      str))
