@@ -6,6 +6,7 @@
             [reformation.env :refer [defaults]]
             [mount.core :as mount]
             [reformation.middleware :as middleware]
+            [reitit.core :as r]
             [reitit.ring :as ring]
             [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.webjars :refer [wrap-webjars]]            
@@ -39,5 +40,32 @@
                            (constantly (error-page {:status 406
                                                     :title "406 - Not acceptable"})))})))))
 
-(defn app []
+(def app
   (middleware/wrap-base #'app-routes))
+
+(comment
+  (let [request {:request-method :get
+                 :uri "/"}]
+    (app request)) ;; returns 404
+  (let [routes [(home-routes)]
+        router (r/router routes)
+;; [(home-routes)] is [["" {:middleware [#function[reformation.middleware/wrap-base]]} ["/" {:get #function[reformation.routes.home/home-page]} "/review" {:get #function[reformation.routes.home/home-page]}]]]
+        ]
+    {:routes routes
+     "" (r/match-by-path router "")
+     "/" (r/match-by-path router "/")
+     } ;; => {:routes [["" {:middleware [#function[reformation.middleware/wrap-base]]}
+    ;;                   ["/" {:get #function[reformation.routes.home/home-page]}
+    ;;                    "/review" {:get #function[reformation.routes.home/home-page]}]]],
+    ;;        "" nil, "/" nil}
+
+      )
+(let [router (r/router [["" ::home]])]
+  {"" (r/match-by-path router "") ;; => {:template "", :data {:name :reformation.handler/home}, :result nil, :path-params {}, :path ""}
+   "/" (r/match-by-path router "/")}
+      ) ; {"" {:template "", :data {:name :reformation.handler/home}, :result nil, :path-params {}, :path ""}, "/" nil}
+
+
+  )
+
+
