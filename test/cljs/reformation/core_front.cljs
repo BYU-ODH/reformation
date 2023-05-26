@@ -6,16 +6,26 @@
             [accountant.core :as accountant]))
 
 
-(defn page []
-  [(pages (session/get :page))])
+;; (defn page []
+;;   [(pages (session/get :page))]) ;; TODO nothing to display yet
 
 ;; -------------------------
 ;; Initialize app
 
+(defn not-page
+  "Filler content during dev"
+  []
+  [:div.content 
+   [:h1 "REFORMATION FILLER"]]
+  )
+
 (defn mount-components []
-  (rd/render [page] (.getElementById js/document "app")))
+  (rd/render [not-page] (.getElementById js/document "app")))
 
 (defn init! []
   (load-interceptors!)
   (routes/init-routes!)
   (mount-components))
+
+(comment
+  (session/state))
