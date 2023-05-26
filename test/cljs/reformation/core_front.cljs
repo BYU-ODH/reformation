@@ -2,16 +2,9 @@
   (:require [reagent.dom :as rd]
             [reagent.session :as session]
             [reformation.ajax :refer [load-interceptors!]]
-            [reformation.routes :as routes]
-            
-            [accountant.core :as accountant]
-            [reformation.review-front :as review]))
+            [reformation.routes :as routes]            
+            [accountant.core :as accountant]))
 
-
-(def pages
-  {:home app/app-page
-   :review review/app-page
-   :app app/app-page})
 
 (defn page []
   [(pages (session/get :page))])
@@ -23,6 +16,6 @@
   (rd/render [page] (.getElementById js/document "app")))
 
 (defn init! []
-  (load-interceptors!)  
-  (accountant/dispatch-current!)
+  (load-interceptors!)
+  (routes/init-routes!)
   (mount-components))
