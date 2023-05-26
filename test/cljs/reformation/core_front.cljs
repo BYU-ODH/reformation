@@ -6,21 +6,18 @@
             [accountant.core :as accountant]))
 
 
-;; (defn page []
-;;   [(pages (session/get :page))]) ;; TODO nothing to display yet
+(defn page []
+  (let [session-page (session/get :page)]
+    (if-let [render-fn (get-in session-page [:data :view]) ]
+      render-fn
+      [:div.content
+       [:h1 "page not found"]])))
 
 ;; -------------------------
 ;; Initialize app
 
-(defn not-page
-  "Filler content during dev"
-  []
-  [:div.content 
-   [:h1 "REFORMATION FILLER"]]
-  )
-
 (defn mount-components []
-  (rd/render [not-page] (.getElementById js/document "app")))
+  (rd/render [page] (.getElementById js/document "app")))
 
 (defn init! []
   (load-interceptors!)
