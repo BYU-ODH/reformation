@@ -4,7 +4,6 @@
             [reagent.session :as session]
             [reformation.shared-test :as shared]
             [accountant.core]
-            [reformation.routes :as rt]
             [reformation.application :as application]
             [reformation.core :as rfc]))
 

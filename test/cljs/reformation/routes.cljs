@@ -4,7 +4,8 @@
             [reitit.frontend.easy :as rfe]
             [reformation.application :as app]
             [reformation.review-front :as review]
-            [reagent.session :as session]))
+            [reagent.session :as session]
+            [taoensso.timbre :as log]))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Reitit routes ;;
@@ -25,6 +26,7 @@
   (rfe/start!
    routes
    (fn [new-match]
+     (log/info "init routes")
      (session/put! :page new-match))
    {:use-fragment false}))
 
