@@ -3,7 +3,7 @@
             [reagent.session :as session]
             [reformation.ajax :refer [load-interceptors!]]
             [reformation.routes :as routes]
-            [reformation.application :as app]
+            
             [accountant.core :as accountant]
             [reformation.review-front :as review]))
 
