@@ -4,7 +4,8 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0"]
-                 [com.rpl/specter "1.1.3"]]
+                 [com.rpl/specter "1.1.3"]
+                 [com.taoensso/timbre "6.0.3"]]
   :source-paths ["src"]
   :repositories [["releases" {:url "https://repo.clojars.org"
                               :creds :gpg}]]
@@ -69,7 +70,7 @@
                                   [re-frame "0.11.0"]
                                   [venantius/accountant "0.2.4"]
                                   [luminus-immutant "0.2.5"]
-                                  [com.taoensso/timbre "5.1.2"]]
+                                  #_[com.taoensso/timbre "6.0.3"]]
                    :plugins [[lein-codox "0.10.7"]
                              [com.jakemccrary/lein-test-refresh "0.14.0"]
                              [lein-doo "0.1.7"]
