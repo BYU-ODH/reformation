@@ -287,7 +287,7 @@
                                 ;:value (READ valpath) ;;This causes focus loss in the browser if added here
                                 })
         fn-map-with-path (assoc fn-map :valpath valpath)
-        input (case type
+        input (case type ;; TODO this should be refactored to use protocols so as to be extensible
                 :div [div fn-map-with-path opt-map]
                 :radio [radio opt-map]
                 :select [select-box opt-map]
