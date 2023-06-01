@@ -82,6 +82,16 @@
            :value :shared/USERNAME}]
   )
 
+(defn autocomplete-form
+  "Form with only the autocomplete on it, for dev purposes"
+  []
+  [:an-autocomplete {:label "Dummy Autocomplete"
+                     :type :autocomplete
+                     :autocomplete-args {:fuzzy? true
+                                         :display-key :value
+                                         ; can I get away twithout a data-subscription, only with the read and update functions normal to reformation?
+                                         }}]
+  )
 
 (defn test-form []
   [:myhidden-text {:type :hidden
@@ -92,6 +102,12 @@
    :a-name {:default-value (get (js->clj js/USER) "username")
             :label "Username"
             :disabled true}
+   #_#_:an-autocomplete {:label "Dummy Autocomplete"
+                     :type :autocomplete
+                     :autocomplete-args {:fuzzy? true
+                                         :display-key :value
+                                         ; can I get away twithout a data-subscription, only with the read and update functions normal to reformationz?
+                                         }}
    :mydefault-text {:type :text
                     :label "default text"
                     :default-value "something good"
@@ -196,7 +212,8 @@
       (into [:div.form-contents]
                                         ;[:h1 "hello"]
             #_(rfc/render-application text-form (data-sources @chosen-datasource))
-            (rfc/render-application (test-form)  (data-sources @chosen-datasource))
+            (rfc/render-application (autocomplete-form)  (data-sources @chosen-datasource))
+            ;(rfc/render-application (test-form)  (data-sources @chosen-datasource))
             #_(rfc/render-application test-form-with-map (data-sources @chosen-datasource))
             )]]))
 

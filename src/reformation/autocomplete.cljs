@@ -1,19 +1,16 @@
 (ns reformation.autocomplete
-  ns flats.views.components.autocomplete
-  "The autocomplete element to be used whenever selection is to be made from an over-long list"
-(:require [flats.shared :as shared]
-            [re-frame.core :as rfc]
-            [reagent.core :as r]
+  "The autocomplete element to be using goog.ac and built-in components"
+  (:require [reagent.core :as r]
             [reagent.dom :as dom]
             [clojure.set :as set]
             [clojure.string :as str]
             [taoensso.timbre :as log]
-            [reformation.shared])
-(:import goog.events
-           goog.ui.ac)
-  )
+            [reformation.shared :as shared])
+  (:import goog.events
+           goog.ui.ac))
 
 
+;; rich map input so data can be retrieved from the json object on the `.-map` field
 (deftype DataItem [map key]
   Object
   (toString [this]
@@ -22,50 +19,22 @@
 (comment
   (let [d (DataItem. {:name "ZZZ" :other "YYY"}
                      :other)]
-    ;(console.log (str d)) ;; YYY
-    (console.log d)
-    #_(console.log
-     (.-map d)) 
-    )
-)
+                                        ;(console.log (str d)) ;; YYY
+    (console.log d)))
 
 (defn ac-update-fn
   "Renders the appropriate function to be executed on a goog listener event, extracting the value"
   [registration-key-to-update]
   (fn [goog-event]
-    (let [v (reformation.shared/get-value-from-change goog-event)
+    (let [v (shared/get-value-from-change goog-event)
           entry-id (-> goog-event .-row .-map :id)] 
       (log/info (str "received goog-event with id value " entry-id))
       (log/info ^:meta {:raw-console? true} goog-event)
-      (rfc/dispatch
-       [:registration-update [registration-key-to-update] entry-id]))))
-
-(defn *proto_autocomplete!
-  "ARCHIVED
-
-  Creates and Decorates an `:input-id` to be a goog autocomplete.
-
-  Takes in an arg-map with the following parameters:
-   input-id: the element id of the input box to attach the autoselect
-   data-list: the list of searchable data
-   display-key: the key to for the data to display (ex. :institution-name)
-   multi?: true if the multiple selections should be allowed
-   update-fn: function to run on update"
-
-  [arg-map]
-  (let [{:keys [input-id data-list display-key multi? update-fn]} arg-map
-        data-list (if display-key
-                    (map #(DataItem. % display-key) data-list)
-                    data-list)
-        fuzzy? true
-        ac  (ac.createSimpleAutoComplete (apply array data-list) (js/document.getElementById input-id)  multi? fuzzy?)]
-
-    (events.listen ac goog.ui.ac.AutoComplete.EventType.UPDATE
-                   update-fn)
-    ac))
+      ;; TODO perform the appropriate DB update
+      )))
 
 (defn listen-to-me!
-  "Set a goog.event listener on `auto-complete` that will perform `update-fn`"
+  "Set a goog.event UPDATE listener on dom item `auto-complete` that will perform `update-fn`"
   [auto-complete update-fn]
   (log/info "Firing listener on auto-complete"); on refresh this seems to break the autocomplete
   (events.listen auto-complete goog.ui.ac.AutoComplete.EventType.UPDATE ;; probably this cannot receive a dom object but needs an ac
@@ -79,7 +48,7 @@
   (log/info "incoming-event:")
   (log/info ^:meta {:raw-console? true} e))
 
-(defn render
+(defn _render
   "Trying to make this more reagent compatible by creating the thing ourself.
 
   `data` is a vector of maps of the approrpriate data
@@ -112,9 +81,9 @@
               multi? false
               fuzzy? true}} ac-args
         data-js (if display-key
-                    (map #(DataItem. % display-key) data)
-                    data)
-        ;data-js (->> data (map display-key) (apply array))
+                  (map #(DataItem. % display-key) data)
+                  data)
+                                        ;data-js (->> data (map display-key) (apply array))
         matcher (goog.ui.ac.ArrayMatcher. data-js (not fuzzy?))
         renderer (goog.ui.ac.Renderer.)
         input-handler (goog.ui.ac.InputHandler. separators literals multi? throttle-time)
@@ -146,12 +115,25 @@
 (comment
   (let [display-key :state-name
         data-subscription (rfc/subscribe [:get-us-states])
-        data-list (->> data-subscription deref #_(map #(DataItem. % display-key)) #_(apply array))]
+        data-list (as-> data-subscription d (fnil deref d (atom {})) (map #(DataItem. d display-key)) #_(apply array d))]
     (js/console.log data-list)
-    data-list
-    )
-
+    data-list) 
   (as-> {:foo 3} $ (first $)) ;; => [:foo 3]
   (-> {:foo 3} vals first) ;; => 3
   )
 
+(comment
+  (as-> [1 2 3] r (map inc r))
+  )
+
+
+(defn autocomplete
+  "The entry-function for reformation. `opt-map` is expected to have `:autocomplete-args`"
+  [fn-map-with-path opt-map]
+  (let [autocomplete-args (:autocomplete-args opt-map)
+        subscription (:data-subscription autocomplete-args (atom {}))
+        data @subscription]
+    
+      )
+
+  )

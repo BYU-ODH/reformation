@@ -26,7 +26,9 @@
 
 (mount/defstate ^{:on-reload :noop} http-server
   :start
-  (http/run-server handler/app config)  
+  (do
+    (log/info "Server starting: " config)
+    (http/run-server handler/app config))  
   :stop
   (stop-server))
 
@@ -58,6 +60,4 @@
 
 (comment
   http-server
-  (http-server "/")
-  
-  )
+  (http-server "/"))

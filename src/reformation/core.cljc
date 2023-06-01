@@ -3,6 +3,7 @@
             [reformation.fileupload :refer [file-upload]]
             [reformation.validateform :as vf]
             [reformation.shared :as shared]
+            [reformation.autocomplete :as ac]
             ;[reformation.validation :as vali]
             #?(:cljs [reagent.core :refer [atom]])
             [clojure.string :as string]
@@ -287,6 +288,7 @@
                                 ;:value (READ valpath) ;;This causes focus loss in the browser if added here
                                 })
         fn-map-with-path (assoc fn-map :valpath valpath)
+        combined-map (merge fn-map opt-map)
         input (case type ;; TODO this should be refactored to use protocols so as to be extensible
                 :div [div fn-map-with-path opt-map]
                 :radio [radio opt-map]
@@ -294,10 +296,11 @@
                 :multi-table [multi-table fn-map-with-path opt-map]
                 :textarea [text-area fn-map-with-path (sanitize-dom-args opt-map)
                            #_ fn-map #_ opt-map]
-                :togglebox [togglebox (merge fn-map opt-map)]
+                :togglebox [togglebox combined-map]
                 :checkbox [checkbox fn-map-with-path opt-map]
                 :file [file-upload opt-map]
                 :hidden ^{:key (str "hidden_" opt-map)}[hidden-input opt-map]
+                :autocomplete [ac/autocomplete fn-map-with-path opt-map]
                 ;; default
                 [text-input fn-map-with-path opt-map])]
     (if (= :hidden (keyword type))
