@@ -88,8 +88,9 @@
   [:an-autocomplete {:label "Dummy Autocomplete"
                      :type :autocomplete
                      :autocomplete-args {:fuzzy? true
-                                         :display-key :value
-                                         :data-subcription (r/atom ["Capaldi" "Whitaker" "Smith" "Tennet"])
+                                         :placeholder "Type for suggestions"
+                                         :display-key constantly
+                                         :data-subscription (r/atom ["Capaldi" "Whitaker" "Smith" "Tennet"])
                                          ; can I get away twithout a data-subscription, only with the read and update functions normal to reformation?
                                          }}]
   )

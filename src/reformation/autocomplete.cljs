@@ -36,7 +36,7 @@
 (defn listen-to-me!
   "Set a goog.event UPDATE listener on dom item `auto-complete` that will perform `update-fn`"
   [auto-complete update-fn]
-  (log/info "Firing listener on auto-complete"); on refresh this seems to break the autocomplete
+  (log/info "Firing listener on autocomplete"); on refresh this seems to break the autocomplete
   (events.listen auto-complete goog.ui.ac.AutoComplete.EventType.UPDATE ;; probably this cannot receive a dom object but needs an ac
                  (fn [e]
                    (update-fn e)))
@@ -122,19 +122,11 @@
   (-> {:foo 3} vals first) ;; => 3
   )
 
-(comment
-  (as-> [1 2 3] r (map inc r))
-  )
-
-
 (defn autocomplete
   "The entry-function for reformation. `opt-map` is expected to have `:autocomplete-args`"
   [fn-map-with-path opt-map]
   (let [autocomplete-args (:autocomplete-args opt-map)
         subscription (:data-subscription autocomplete-args (atom {}))
         data @subscription]
-    (_render data opt-map)
-
-
-    )
-  )
+    (log/info "My args:" autocomplete-args)
+    (_render data autocomplete-args)))
