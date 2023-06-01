@@ -18,7 +18,7 @@
 
 (def example-atom (atom nil))
 
-(def text-form "timng can be set to on-change and on-blur currently"
+(def text-form "timing can be set to on-change and on-blur currently"
   [:example-element {:type :text
                      :validation {:timing :on-blur
                                   :validation-function f1
@@ -89,6 +89,7 @@
                      :type :autocomplete
                      :autocomplete-args {:fuzzy? true
                                          :display-key :value
+                                         :data-subcription (r/atom ["Capaldi" "Whitaker" "Smith" "Tennet"])
                                          ; can I get away twithout a data-subscription, only with the read and update functions normal to reformation?
                                          }}]
   )

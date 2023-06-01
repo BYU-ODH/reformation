@@ -133,7 +133,8 @@
   (let [autocomplete-args (:autocomplete-args opt-map)
         subscription (:data-subscription autocomplete-args (atom {}))
         data @subscription]
-    
-      )
+    (_render data opt-map)
 
+
+    )
   )
