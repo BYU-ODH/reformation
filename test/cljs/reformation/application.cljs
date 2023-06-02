@@ -92,7 +92,8 @@
                                :doctor# 10}]))
 
 (comment
-  (swap! completion-data conj {:name "Eccleston" :doctor# 9}))
+  (swap! completion-data conj {:name "Eccleston" :doctor# 9})
+  )
 
 (defn autocomplete-form
   "Form with only the autocomplete on it, for dev purposes"
