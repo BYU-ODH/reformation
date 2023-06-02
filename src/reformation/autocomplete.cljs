@@ -103,7 +103,8 @@
                                (.attachInputs input-handler this-dom)
                                (listen-to-me! auto-complete update-fn)))
       :component-did-update (fn [_this]
-                              (log/info "Updating ac mount")
+                              (log/info "Updating ac mount with data >>")
+                              (log/info data-subscription)
                               (when-not data-subscription
                                 (throw (ex-info "No :data-subscription given" ac-args)))
                               (let [data (->> data-subscription deref (map #(DataItem. % display-key)) (apply array))]
