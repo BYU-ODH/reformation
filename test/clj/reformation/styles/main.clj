@@ -346,6 +346,20 @@
                       :border "solid 1px"
                       :border-color (defs/ycolors :midblue)}]]]]]))
 
+(def autocomplete
+  [:.ac-renderer
+   {:font "normal 13px Arial, sans-serif"
+    :position "absolute"
+    :background "#fff"
+    :border "1px solid #666"
+    :-moz-box-shadow "2px 2px 2px rgba(102, 102, 102, .4)"
+    :-webkit-box-shadow "2px 2px 2px rgba(102, 102, 102, .4)"
+    :width "300px"}
+   [:.ac-row {:cursor "pointer"
+              :padding ".4em"}]
+   [:.ac-highlighted {:font-weight "bold"}]
+
+   [:.ac-active {:background-color "#b2b4bf"}]])
 
 (defstyles main
   {:output-to "resources/public/css/isp.css"
@@ -362,6 +376,7 @@
   comments-style-
   ;;comments/style
   lightbox
+  autocomplete
 
   [:a.btn {:cursor "pointer"}]
   [:div.goog-tooltip {:background "#000"

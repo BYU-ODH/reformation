@@ -83,6 +83,8 @@
         data-js (if display-key
                   (map #(DataItem. % display-key) data)
                   data)
+        _ (log/info "Data-js data items are:")
+        _                      (log/info ^:meta {:raw-console? true} data-js)
                                         ;data-js (->> data (map display-key) (apply array))
         matcher (goog.ui.ac.ArrayMatcher. data-js (not fuzzy?))
         renderer (goog.ui.ac.Renderer.)

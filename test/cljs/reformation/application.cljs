@@ -82,6 +82,15 @@
            :value :shared/USERNAME}]
   )
 
+(def completion-data (r/atom [{:name "Capaldi"
+                               :doctor# 12}
+                              {:name "Whitaker"
+                               :doctor# 13}
+                              {:name "Smith"
+                               :doctor# 11}
+                              {:name "Tennet"
+                               :doctor# 10}]))
+
 (defn autocomplete-form
   "Form with only the autocomplete on it, for dev purposes"
   []
@@ -89,8 +98,8 @@
                      :type :autocomplete
                      :autocomplete-args {:fuzzy? true
                                          :placeholder "Type for suggestions"
-                                         :display-key constantly
-                                         :data-subscription (r/atom ["Capaldi" "Whitaker" "Smith" "Tennet"])
+                                         :display-key :name
+                                         :data-subscription completion-data
                                          ; can I get away twithout a data-subscription, only with the read and update functions normal to reformation?
                                          }}]
   )
@@ -226,7 +235,10 @@
          (str "Chosen datasource (click to toggle): " @chosen-datasource)]])
 
 (defn data-panel []
-  [:div 
+  [:div
+   [:p
+    [:strong "Completion data is:"]
+    [:span (str @completion-data)]]
    (case @chosen-datasource
      :atom (str @(data-sources @chosen-datasource))
      :map (str @(reframe/subscribe [:read-form-item []])))])
