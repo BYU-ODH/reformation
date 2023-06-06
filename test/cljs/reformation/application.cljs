@@ -93,6 +93,7 @@
 
 (comment
   (swap! completion-data conj {:name "Eccleston" :doctor# 9})
+  (swap! completion-data conj {:name "Baker" :doctor# 8})
   )
 
 (def autocomplete-form
