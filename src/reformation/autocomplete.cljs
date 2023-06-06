@@ -102,7 +102,7 @@
                                (log/info ^:meta {:raw-console? true} this-dom)
                                (.attachInputs input-handler this-dom)
                                (listen-to-me! auto-complete update-fn)))
-      :component-did-update (fn [_this]
+      :component-did-update (fn [_this _prev-argv]
                               (log/info "Updating ac mount with data >>")
                               (log/info data-subscription)
                               (when-not data-subscription
