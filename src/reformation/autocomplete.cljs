@@ -53,7 +53,7 @@
   [data & [display-key]]
   (log/info "Making DataItem s with " {:data data :display-key display-key})
   (if display-key
-    (map #(DataItem. % display-key) data)
+    (apply array (map #(DataItem. % display-key) data))
     data))
 
 (defn _render
