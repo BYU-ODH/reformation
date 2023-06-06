@@ -48,6 +48,14 @@
   (log/info "incoming-event:")
   (log/info ^:meta {:raw-console? true} e))
 
+(defn make-data-items
+  "make data items from an array of maps with at least a key `:display-key`"
+  [data display-key]
+  (log/info "Making DataItem s with " {:data data :display-key display-key})
+  (if display-key
+    (map #(DataItem. % display-key) data)
+    data))
+
 (defn _render
   "Trying to make this more reagent compatible by creating the thing ourself.
 
@@ -70,7 +78,7 @@
   `:update-fn` includes will receive the goog event
 
   Consulting https://github.com/google/closure-library/blob/34fcddbda216bb338b2e631b988eb52ed4fdf025/closure/goog/ui/ac/ac.js#L31"
-  [data &[ac-args]] ;; REGRET that I have to receive data AND (:data-subscription ac-args) in order for this to update properly
+  [data ac-args] ;; REGRET that I have to receive data AND (:data-subscription ac-args) in order for this to update properly
   (let [{:keys [:input-id :separators :literals :multi? :throttle-time :fuzzy? :display-name :display-key :placeholder :data-subscription :update-fn] 
          :or {separators nil literals nil throttle-time nil
               display-key :no-display-key-given
@@ -80,11 +88,9 @@
               update-fn log-event
               multi? false
               fuzzy? true}} ac-args
-        data-js (if display-key
-                  (map #(DataItem. % display-key) data)
-                  data)
+        data-js (make-data-items data display-key)
         _ (log/info "Data-js data items are:")
-        _                      (log/info ^:meta {:raw-console? true} data-js)
+        _ (log/info ^:meta {:raw-console? true} data-js)
                                         ;data-js (->> data (map display-key) (apply array))
         matcher (goog.ui.ac.ArrayMatcher. data-js (not fuzzy?))
         renderer (goog.ui.ac.Renderer.)
@@ -103,14 +109,14 @@
                                (.attachInputs input-handler this-dom)
                                (listen-to-me! auto-complete update-fn)))
       :component-did-update (fn [_this _prev-argv]
-                              (log/info "Updating ac mount with data >>")
+                              (log/info "UPDATING ac mount with data >>")
                               (log/info data-subscription)
                               (when-not data-subscription
                                 (throw (ex-info "No :data-subscription given" ac-args)))
-                              (let [data (->> data-subscription deref (map #(DataItem. % display-key)) (apply array))]
+                              (let [data (-> data-subscription deref (make-data-items display-key))]
                                 (.setRows matcher data)
-                                (listen-to-me! auto-complete update-fn)))
-      :component-will-unmount (fn [& _]
+                                #_(listen-to-me! auto-complete update-fn)))
+      #_#_:component-will-unmount (fn [& _]
                                 (log/info "disposing auto-complete")
                                 (.dispose auto-complete))
       })))
