@@ -50,7 +50,7 @@
 
 (defn make-data-items
   "make data items from an array of maps with at least a key `:display-key`"
-  [data display-key]
+  [data & [display-key]]
   (log/info "Making DataItem s with " {:data data :display-key display-key})
   (if display-key
     (map #(DataItem. % display-key) data)
@@ -90,8 +90,7 @@
               fuzzy? true}} ac-args
         data-js (make-data-items data display-key)
         _ (log/info "Data-js data items are:")
-        _ (log/info ^:meta {:raw-console? true} data-js)
-                                        ;data-js (->> data (map display-key) (apply array))
+        _ (log/info ^:meta {:raw-console? true} data-js)                                       
         matcher (goog.ui.ac.ArrayMatcher. data-js (not fuzzy?))
         renderer (goog.ui.ac.Renderer.)
         input-handler (goog.ui.ac.InputHandler. separators literals multi? throttle-time)
