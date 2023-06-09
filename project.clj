@@ -71,7 +71,7 @@
                                   [venantius/accountant "0.2.4"]
                                   [luminus-immutant "0.2.5"]
                                   #_[com.taoensso/timbre "6.0.3"]]
-                   :plugins [[lein-codox "0.10.7"]
+                   :plugins [[lein-codox "0.10.8"]
                              [com.jakemccrary/lein-test-refresh "0.14.0"]
                              [lein-doo "0.1.7"]
                              [lein-figwheel "0.5.18"]
