@@ -17,6 +17,7 @@
                                 :pretty-print? true}}]}
 
   :codox {:output-path "docs"
+          :language :clojurescript
           :source-paths ["src"]}
   :profiles {:dev {:jvm-opts ["-server" "-Dconf=.lein-env"]
                    :resource-paths ["test/resources" "test/target/cljsbuild"]
