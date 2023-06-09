@@ -118,7 +118,7 @@
   (-> {:foo 3} vals first) ;; => 3
   )
 
-(defn autocomplete ;; this wrapper is perhaps not allowing the lifecycle update to occur
+(defn autocomplete
   "The entry-function for reformation. `opt-map` is expected to have `:autocomplete-args`"
   [fn-map-with-path opt-map]
   (let [autocomplete-args (merge fn-map-with-path
