@@ -22,22 +22,23 @@
                                         ;(console.log (str d)) ;; YYY
     (console.log d)))
 
-(defn ac-update-fn
+(defn create-ac-update-fn
   "Renders the appropriate function to be executed on a goog listener event, extracting the value"
-  [registration-key-to-update]
+  [UPDATE valpath val-key]
   (fn [goog-event]
-    (let [v (shared/get-value-from-change goog-event)
-          entry-id (-> goog-event .-row .-map :id)] 
-      (log/info (str "received goog-event with id value " entry-id))
-      (log/info ^:meta {:raw-console? true} goog-event)
-      ;; TODO perform the appropriate DB update
+    (let [entry-map (-> goog-event .-row .-map)
+          selected-val (get entry-map val-key :val-not-found)] 
+      (log/info (str "received goog-event with attached map: "  entry-map))
+      (log/info (str "about to update:" {:val selected-val :valpath valpath}))
+      (UPDATE valpath (constantly selected-val))
+      ;(log/info re-frame.db/app-db)
       )))
 
-(defn listen-to-me!
+(defn listening-to-me!
   "Set a goog.event UPDATE listener on dom item `auto-complete` that will perform `update-fn`"
   [auto-complete update-fn]
-  (log/info "Firing listener on autocomplete"); on refresh this seems to break the autocomplete
-  (events.listen auto-complete goog.ui.ac.AutoComplete.EventType.UPDATE ;; probably this cannot receive a dom object but needs an ac
+  (log/info "Firing listener on autocomplete")
+  (events.listen auto-complete goog.ui.ac.AutoComplete.EventType.UPDATE
                  (fn [e]
                    (update-fn e)))
   auto-complete)
@@ -61,8 +62,6 @@
 
   `data` is a vector of maps of the approrpriate data
   
-  `display-key` is the key within the ratom maps which will provide the entry name in the autocomplete.
-
   `ac-args` is a map containing information used for the dom input, and the goog renderer, matcher, and input-handler. It may have keys
   :data-subscription
   :input-id
@@ -72,23 +71,25 @@
   :throttle-time
   :fuzzy?
   :display-name
-  :update-fn
+  :val-key
 
   Note that the `:data-subscription` is needed for the `component-did-update` React lifecycle.
   `:update-fn` includes will receive the goog event
 
   Consulting https://github.com/google/closure-library/blob/34fcddbda216bb338b2e631b988eb52ed4fdf025/closure/goog/ui/ac/ac.js#L31"
-  [data ac-args] ;; REGRET that I have to receive data AND (:data-subscription ac-args) in order for this to update properly
-  (let [{:keys [:input-id :separators :literals :multi? :throttle-time :fuzzy? :display-name :display-key :placeholder :data-subscription :update-fn] 
+  [data ac-args]
+  (let [{:keys [:input-id :separators :literals :multi? :throttle-time :fuzzy? :display-name :display-key :placeholder :data-subscription :val-key :UPDATE :valpath] 
          :or {separators nil literals nil throttle-time nil
               display-key :no-display-key-given
+              valpath :no-valpath-given
               placeholder "Placeholder"
               display-name "Unnamed Autocomplete"
               input-id (gensym "autocomplete-")
-              update-fn log-event
+              val-key :no-val-key-given             
               multi? false
               fuzzy? true}} ac-args
         data-js (make-data-items data display-key)
+        update-fn (create-ac-update-fn UPDATE valpath val-key)
         _ (log/info "Data-js data items are:")
         _ (log/info ^:meta {:raw-console? true} data-js)                                       
         matcher (goog.ui.ac.ArrayMatcher. data-js (not fuzzy?))
@@ -106,7 +107,7 @@
                                (log/info "initial mounting ac")
                                (log/info ^:meta {:raw-console? true} this-dom)
                                (.attachInputs input-handler this-dom)
-                               (listen-to-me! auto-complete update-fn)))
+                               (listening-to-me! auto-complete update-fn)))
       :component-did-update (fn [_this _prev-argv]
                               (log/info "UPDATING ac mount with data >>")
                               (log/info data-subscription)
@@ -114,7 +115,7 @@
                                 (throw (ex-info "No :data-subscription given" ac-args)))
                               (let [data (-> data-subscription deref (make-data-items display-key))]
                                 (.setRows matcher data)
-                                #_(listen-to-me! auto-complete update-fn)))
+                                #_(listening-to-me! auto-complete update-fn)))
       #_#_:component-will-unmount (fn [& _]
                                 (log/info "disposing auto-complete")
                                 (.dispose auto-complete))
@@ -133,8 +134,8 @@
 (defn autocomplete ;; this wrapper is perhaps not allowing the lifecycle update to occur
   "The entry-function for reformation. `opt-map` is expected to have `:autocomplete-args`"
   [fn-map-with-path opt-map]
-  (let [autocomplete-args (:autocomplete-args opt-map)
-        subscription (:data-subscription autocomplete-args (atom {}))
-        data @subscription]
+  (let [autocomplete-args (merge fn-map-with-path
+                                 (:autocomplete-args opt-map))
+        data @(:data-subscription autocomplete-args (atom {}))]
     (log/info "My args:" autocomplete-args)
     (_render data autocomplete-args)))
