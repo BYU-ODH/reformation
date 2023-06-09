@@ -4,6 +4,7 @@
             [reagent.session :as session]
             [accountant.core]
             [reformation.core :as rfc]
+            [reformation.autocomplete :as ac]
             [re-frame.core :as reframe]
             [reformation.reframe] ;; necessary for the re-frame tests
             [cljs.pprint :as pprint]))
@@ -103,6 +104,7 @@
                      :autocomplete-args {:fuzzy? true
                                          :placeholder "Type for suggestions"
                                          :display-key :name
+                                         :val-key  :doctor# ;; choosing a value that is associated with what is displayed
                                          :data-subscription completion-data
                                          ; can I get away twithout a data-subscription, only with the read and update functions normal to reformation?
                                          }}]
