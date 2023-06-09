@@ -300,4 +300,4 @@ None. Just use this library.
    :CUSTOM_ID: license
    :END:
 
-Copyright © 2018 Tory S. Anderson
+Copyright © 2023 Tory S. Anderson, BYU Office of Digital Humanites
