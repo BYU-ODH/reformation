@@ -191,7 +191,24 @@ An expandable table.  A common task for forms is a list of an indefinite number 
 ***** =:placeholder= For text inputs, the =placeholder= attribute
 ***** =:default-value= For text inputs, the initial value
 *** hidden
+*** =:autocomplete=
+Generates an goog autocomplete (no external dependencies required), which is given a reference subscription to the data it will include and supplemental information. Of course this subscription can reference an atom being populated by data from a remote call.
 
+*TO BE USABLE THE AUTOCOMPLETE MUST BE STYLED.* Working styling, selecting on the goog-created classes, is available in reformation at ~reformation.styles.main/autocomplete~.
+
+ Options:
+ #+begin_src clojure
+ :data-subscription
+ :input-id
+ :separators
+ :literals
+ :multi?
+ :throttle-time
+ :fuzzy?
+ :display-name
+ :val-key
+ #+end_src
+ 
 ** Using a :DICTIONARY
 Versions 15+ now allow inclusion of a =:DICTIONARY= to perform a replacement of matching namespaced (any namespace) keywords within any value position of your control map. This is designed to allow you to include values in your map that will be provided by a function (for example an api call) while still allowing it to be raw data that can be included, for instance, in a database or a plain data output (the schema just has some keywords).
 
