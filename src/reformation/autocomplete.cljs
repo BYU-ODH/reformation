@@ -19,7 +19,7 @@
 (comment
   (let [d (DataItem. {:name "ZZZ" :other "YYY"}
                      :other)]
-                                        ;(console.log (str d)) ;; YYY
+    ;;(console.log (str d)) ;; YYY
     (console.log d)))
 
 (defn create-ac-update-fn
@@ -28,16 +28,11 @@
   (fn [goog-event]
     (let [entry-map (-> goog-event .-row .-map)
           selected-val (get entry-map val-key :val-not-found)] 
-      (log/info (str "received goog-event with attached map: "  entry-map))
-      (log/info (str "about to update:" {:val selected-val :valpath valpath}))
-      (UPDATE valpath (constantly selected-val))
-      ;(log/info re-frame.db/app-db)
-      )))
+      (UPDATE valpath (constantly selected-val)))))
 
 (defn listening-to-me!
   "Set a goog.event UPDATE listener on dom item `auto-complete` that will perform `update-fn`"
   [auto-complete update-fn]
-  (log/info "Firing listener on autocomplete")
   (events.listen auto-complete goog.ui.ac.AutoComplete.EventType.UPDATE
                  (fn [e]
                    (update-fn e)))
@@ -51,8 +46,7 @@
 
 (defn make-data-items
   "make data items from an array of maps with at least a key `:display-key`"
-  [data & [display-key]]
-  (log/info "Making DataItem s with " {:data data :display-key display-key})
+  [data & [display-key]]  
   (if display-key
     (apply array (map #(DataItem. % display-key) data))
     data))
@@ -90,8 +84,6 @@
               fuzzy? true}} ac-args
         data-js (make-data-items data display-key)
         update-fn (create-ac-update-fn UPDATE valpath val-key)
-        _ (log/info "Data-js data items are:")
-        _ (log/info ^:meta {:raw-console? true} data-js)                                       
         matcher (goog.ui.ac.ArrayMatcher. data-js (not fuzzy?))
         renderer (goog.ui.ac.Renderer.)
         input-handler (goog.ui.ac.InputHandler. separators literals multi? throttle-time)
@@ -104,13 +96,9 @@
         [:input {:id input-id :placeholder placeholder}])
       :component-did-mount (fn [this]
                              (let [this-dom (dom/dom-node this)]
-                               (log/info "initial mounting ac")
-                               (log/info ^:meta {:raw-console? true} this-dom)
                                (.attachInputs input-handler this-dom)
                                (listening-to-me! auto-complete update-fn)))
       :component-did-update (fn [_this _prev-argv]
-                              (log/info "UPDATING ac mount with data >>")
-                              (log/info data-subscription)
                               (when-not data-subscription
                                 (throw (ex-info "No :data-subscription given" ac-args)))
                               (let [data (-> data-subscription deref (make-data-items display-key))]
@@ -125,7 +113,6 @@
   (let [display-key :state-name
         data-subscription (rfc/subscribe [:get-us-states])
         data-list (as-> data-subscription d (fnil deref d (atom {})) (map #(DataItem. d display-key)) #_(apply array d))]
-    (js/console.log data-list)
     data-list) 
   (as-> {:foo 3} $ (first $)) ;; => [:foo 3]
   (-> {:foo 3} vals first) ;; => 3
@@ -137,5 +124,4 @@
   (let [autocomplete-args (merge fn-map-with-path
                                  (:autocomplete-args opt-map))
         data @(:data-subscription autocomplete-args (atom {}))]
-    (log/info "My args:" autocomplete-args)
     (_render data autocomplete-args)))
