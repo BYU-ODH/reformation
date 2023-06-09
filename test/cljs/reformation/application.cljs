@@ -105,10 +105,7 @@
                                          :placeholder "Type for suggestions"
                                          :display-key :name
                                          :val-key  :doctor# ;; choosing a value that is associated with what is displayed
-                                         :data-subscription completion-data
-                                         ; can I get away twithout a data-subscription, only with the read and update functions normal to reformation?
-                                         }}]
-  )
+                                         :data-subscription completion-data}}])
 
 (defn test-form []
   [:myhidden-text {:type :hidden
@@ -124,6 +121,14 @@
                     :default-value "something good"
                     :disabled true
                     :style-classes "I-like-red"}
+
+   :an-autocomplete {:label "Dummy Autocomplete"
+                     :type :autocomplete
+                     :autocomplete-args {:fuzzy? true
+                                         :placeholder "Type for suggestions"
+                                         :display-key :name
+                                         :val-key  :doctor# ;; choosing a value that is associated with what is displayed
+                                         :data-subscription completion-data}}
    :mytext {:type :text
             :label "My text"}
    :mytextarea {:type :textarea
@@ -223,8 +228,8 @@
       (into [:div.form-contents]
                                         ;[:h1 "hello"]
             #_(rfc/render-application text-form (data-sources @chosen-datasource))
-            (rfc/render-application autocomplete-form  (data-sources @chosen-datasource))
-            ;(rfc/render-application (test-form)  (data-sources @chosen-datasource))
+            #_(rfc/render-application autocomplete-form  (data-sources @chosen-datasource))
+            (rfc/render-application (test-form)  (data-sources @chosen-datasource))
             #_(rfc/render-application test-form-with-map (data-sources @chosen-datasource))
             )]]))
 
@@ -232,16 +237,18 @@
   [:div [:span {:on-click (fn [e]
                             (swap! chosen-datasource #(do (println %)
                                                           (case % :atom :map :map :atom))))}
-         (str "Chosen datasource (click to toggle): " @chosen-datasource)]])
+         [:strong "Chosen datasource (click to toggle): "]
+         (str @chosen-datasource)]])
 
 (defn data-panel []
   [:div
-   [:p
-    [:strong "Completion data is:"]
-    [:span (str @completion-data)]]
-   (case @chosen-datasource
-     :atom (str @(data-sources @chosen-datasource))
-     :map (str @(reframe/subscribe [:read-form-item []])))])
+   [:div.datasource-display 
+    (case @chosen-datasource
+      :atom (str @(data-sources @chosen-datasource))
+      :map (str @(reframe/subscribe [:read-form-item []])))]
+   [:div.completion-display
+    [:strong "Completion data is: "]
+    [:span (str @completion-data)]]])
 
 (defn app-page []
   [:div.container.mycontent
