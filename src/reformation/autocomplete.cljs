@@ -52,9 +52,7 @@
     data))
 
 (defn _render
-  "Trying to make this more reagent compatible by creating the thing ourself.
-
-  `data` is a vector of maps of the approrpriate data
+  "`data` is a vector of maps of the approrpriate data
   
   `ac-args` is a map containing information used for the dom input, and the goog renderer, matcher, and input-handler. It may have keys
   :data-subscription
@@ -66,6 +64,8 @@
   :fuzzy?
   :display-name
   :val-key
+
+  it is merged with the fn-map-with-valpath provided by reformation.
 
   Note that the `:data-subscription` is needed for the `component-did-update` React lifecycle.
   `:update-fn` includes will receive the goog event

@@ -4,9 +4,7 @@
 ;; dummy for compilation
 
 (defn _render
-  "Trying to make this more reagent compatible by creating the thing ourself.
-
-  `data` is a vector of maps of the approrpriate data
+  "`data` is a vector of maps of the approrpriate data
   
   `ac-args` is a map containing information used for the dom input, and the goog renderer, matcher, and input-handler. It may have keys
   :data-subscription
