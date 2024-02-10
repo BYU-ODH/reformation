@@ -10,12 +10,19 @@
             [cljs.pprint :as pprint]))
 
                                         ;render-application returns a VECTOR with tinput at the front
-(def f1 #(if (> (count %) 5)
+(defn f1
+  "validation function for string length"
+  [s]
+  (if (> (count s) 5)
            true
            nil))
-(def f2 #(if (= "@" %)
-           true
-           nil))
+
+(defn f2
+  "pseudo email validation (does it have an @)?"
+  [s]
+  (if (= "@" s)
+    true
+    nil))
 
 (def example-atom (atom nil))
 
@@ -113,7 +120,7 @@
    :a-js-date {:default-value (js/Date.)
                :label "using render-application"
                :disabled true}
-   :a-name {:default-value (get (js->clj js/USER) "username")
+   :a-name {:default-value (str "js provided: " (get (js->clj js/USER) "username"))
             :label "Username"
             :disabled true}
    :mydefault-text {:type :text
@@ -131,6 +138,11 @@
                                          :data-subscription completion-data}}
    :mytext {:type :text
             :label "My text"}
+   :myemail {:type :email
+             :label "One Email Address"
+             :required true
+             :validation {:timing :on-change
+                          :validation-function rfc/validate-email-address}}
    :mytextarea {:type :textarea
                 :rows 4
                 :cols 100
@@ -183,13 +195,13 @@
                   :style-classes {:drag-over "dragover"
                                   :inactive "undragged"
                                   :have-file "have-file"}}
-   [:a.button {:id "Save"
-               :alt "Save"
+   [:a.button {:id "Submit"
+               :alt "Submit"
                :type :submit
-               :title "Save"
+               :title "Submit"
                ;;:on-click validate-and-submit
                :href nil}
-    "Save"]])
+    "Submit"]])
 
 (def data-sources {:atom my-atom
                    :map {:DICTIONARY DICTIONARY2
@@ -212,7 +224,7 @@
               :title "Submit form"
               :on-click #(when (rfc/report-form-validation)
                            (js/alert "Passed"))
-              :href nil} "Save"])
+              :href nil} "Submit"])
 
 (defn generate-form []
   (let [form-id "needs-validation"]

@@ -510,3 +510,18 @@
   ;;(s/transform [s/ALL map? TreeValues] get-from-dictionary vmreal)
   (keywordize-form vmreal real-d)
   )
+
+(defn validate-email-address
+  "regexp check for whether `s` is a valid (legal) email address
+
+  see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#validation"
+  [s] 
+  (let [validation-regexp #"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"]
+    (re-find validation-regexp s)))
+
+(comment
+  (let [test-good-email-address "me@example.com"
+        test-bad-email-address "me@examplecom"
+        results (map validate-email-address [test-good-email-address test-bad-email-address])]
+    results))
+
