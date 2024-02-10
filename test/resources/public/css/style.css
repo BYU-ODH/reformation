@@ -226,7 +226,6 @@ div.submission-form form div.upload .error {
 }
 
 div.submission-form form .invalid-feedback {
-  display: none;
   color: #dc3545;
 }
 
