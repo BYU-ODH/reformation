@@ -142,6 +142,7 @@
              :label "One Email Address"
              :required true
              :validation {:timing :on-change
+                          :invalid-feedback "Requires exactly one valid email address"
                           :validation-function rfc/validate-email-address}}
    :mytextarea {:type :textarea
                 :rows 4
